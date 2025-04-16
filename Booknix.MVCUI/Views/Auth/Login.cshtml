@@ -4,28 +4,40 @@
     ViewData["Title"] = "Giriş Yap";
 }
 
-<div class="container mt-5" style="max-width: 400px;">
-    <h2 class="text-center mb-4">Giriş Yap</h2>
+<div class="p-[80px] flex items-center justify-center">
+    <div class="w-full max-w-md bg-white shadow-lg rounded-lg p-8">
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Giriş Yap</h2>
 
-    <div id="login-alert" class="alert d-none" role="alert"></div>
+        <div id="login-alert" class="hidden mb-4 px-4 py-2 text-sm rounded bg-red-100 text-red-700"></div>
 
-    <form id="login-form">
-        <div class="mb-3">
-            <label asp-for="Email" class="form-label">Email</label>
-            <input asp-for="Email" class="form-control" />
+        <form id="login-form" class="space-y-5">
+            <div>
+                <label asp-for="Email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input asp-for="Email" type="email"
+                       class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+            </div>
+
+            <div>
+                <label asp-for="Password" class="block text-sm font-medium text-gray-700 mb-1">Şifre</label>
+                <input asp-for="Password" type="password"
+                       class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+            </div>
+
+            <div class="flex items-center">
+                <input type="checkbox" id="rememberMe" name="RememberMe" value="true"
+                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                <label for="rememberMe" class="ml-2 block text-sm text-gray-600">Beni Hatırla</label>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded transition">
+                Giriş Yap
+            </button>
+        </form>
+
+        <div class="text-center mt-6 text-sm">
+            <a href="/Auth/Register" class="text-blue-600 hover:underline">Hesabın yok mu? Kayıt ol</a>
         </div>
-        <div class="mb-3">
-            <label asp-for="Password" class="form-label">Şifre</label>
-            <input asp-for="Password" type="password" class="form-control" />
-        </div>
-        <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" value="true" id="rememberMe" name="RememberMe" />
-            <label class="form-check-label" for="rememberMe">Beni Hatırla</label>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
-    </form>
-    <div class="text-center mt-3">
-        <a href="/Auth/Register">Hesabın yok mu? Kayıt ol</a>
     </div>
 </div>
 
@@ -43,7 +55,9 @@
                     window.location.href = "/";
                 },
                 error: function () {
-                    $("#login-alert").removeClass("d-none").addClass("alert-danger").text("Email veya şifre hatalı!");
+                    $("#login-alert")
+                        .removeClass("hidden")
+                        .text("Email veya şifre hatalı!");
                 }
             });
         });
