@@ -15,6 +15,8 @@ namespace Booknix.MVCUI.Controllers
 
         public IActionResult Index()
         {
+            ViewBag.FullName = HttpContext.Session.GetString("FullName");
+            ViewBag.Role = HttpContext.Session.GetString("Role");
             return View();
         }
 

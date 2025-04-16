@@ -21,15 +21,25 @@ namespace Booknix.MVCUI.Controllers
         {
             var result = await _authService.LoginAsync(dto);
             if (result == null)
+                return BadRequest("Hatalı giriş.");
+
+            HttpContext.Session.SetString("FullName", result.FullName);
+            HttpContext.Session.SetString("Role", result.Role);
+            HttpContext.Session.SetString("Email", result.Email);
+
+            // Süreyi cookie üzerinden belirleyeceğiz (Session süresi zaten tanımlı)
+            if (dto.RememberMe)
             {
-                TempData["Error"] = "Email veya şifre hatalı.";
-                return View();
+                // 2 gün boyunca tarayıcıyı kapatsan bile session cookie silinmez
+                Response.Cookies.Append("RememberMe", "true", new CookieOptions
+                {
+                    Expires = DateTimeOffset.Now.AddDays(1)
+                });
             }
 
-            // TODO: Session veya Cookie ile kullanıcıyı oturumda tut
-            TempData["Success"] = $"Hoşgeldin {result.FullName}!";
-            return RedirectToAction("Index", "Home");
+            return Ok();
         }
+
 
         [HttpGet]
         public IActionResult Register() => View();
@@ -45,6 +55,15 @@ namespace Booknix.MVCUI.Controllers
             }
 
             TempData["Success"] = "Kayıt başarılı! Giriş yapabilirsiniz.";
+            return RedirectToAction("Login");
+        }
+
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            Response.Cookies.Delete("RememberMe");
+
             return RedirectToAction("Login");
         }
     }

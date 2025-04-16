@@ -28,6 +28,13 @@ builder.Services.AddScoped<IRoleRepository, EfRoleRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Oturum zaman aþýmýný 30 dakika olarak ayarla
+    options.Cookie.HttpOnly = true; // Çerezlerin HttpOnly olmasýný saðla
+    options.Cookie.IsEssential = true; // Çerezlerin gerekli olduðunu belirt
+});
+
 
 var app = builder.Build();
 
@@ -35,6 +42,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
