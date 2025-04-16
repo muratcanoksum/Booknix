@@ -1,0 +1,51 @@
+﻿@model Booknix.Application.DTOs.RegisterRequestDto
+
+@{
+    ViewData["Title"] = "Kayıt Ol";
+}
+
+<div class="container mt-5" style="max-width: 400px;">
+    <h2 class="text-center mb-4">Kayıt Ol</h2>
+
+    <div id="register-alert" class="alert d-none" role="alert"></div>
+
+    <form id="register-form">
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label">Ad Soyad</label>
+            <input asp-for="FullName" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label">Email</label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label">Şifre</label>
+            <input asp-for="Password" type="password" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-success w-100">Kayıt Ol</button>
+    </form>
+    <div class="text-center mt-3">
+        <a href="/Auth/Login">Zaten bir hesabın var mı? Giriş yap</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $("#register-form").submit(function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: "POST",
+                url: "/Auth/Register",
+                data: $(this).serialize(),
+                success: function () {
+                    window.location.href = "/Auth/Login";
+                },
+                error: function () {
+                    $("#register-alert").removeClass("d-none").addClass("alert-danger").text("Kayıt başarısız! Email daha önce alınmış olabilir.");
+                }
+            });
+        });
+    </script>
+}
