@@ -39,9 +39,10 @@ namespace Booknix.Persistence.Repositories
             await _context.UserProfiles.AddAsync(profile);
         }
 
-        public async Task UpdateAsync(UserProfile profile)
+        public Task UpdateAsync(UserProfile profile)
         {
             _context.UserProfiles.Update(profile);
+            return Task.CompletedTask;
         }
 
         public async Task SaveChangesAsync()

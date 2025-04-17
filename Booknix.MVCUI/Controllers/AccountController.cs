@@ -44,6 +44,53 @@ namespace Booknix.MVCUI.Controllers
             return Ok("Profil bilgileri başarıyla güncellendi.");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ProfilePhoto()
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var profile = await _profileService.GetProfileAsync(userId);
+            return PartialView("_ProfilePhotoPartial", profile);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProfilePhoto(IFormFile profileImage)
+        {
+            if (profileImage != null && profileImage.Length > 0)
+            {
+                var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+
+                // Fotoğrafı kaydetmek için bir yol belirleyelim
+                var directoryPath = Path.Combine("wwwroot", "images", "profile_images");
+
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                var filePath = Path.Combine(directoryPath, $"{userId}.jpg");
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await profileImage.CopyToAsync(stream);
+                }
+
+                var profileImagePath = $"/images/profile_images/{userId}.jpg";
+
+                // Servis ile veritabanı güncelleme işlemi
+                var success = await _profileService.UpdateProfileAsync(userId, new ProfileViewModel
+                {
+                    ProfileImagePath = profileImagePath
+                });
+
+                if (!success)
+                    return BadRequest("Profil fotoğrafı güncellenemedi.");
+
+                return Ok(profileImagePath); // Yeni fotoğraf yolunu döndür
+            }
+
+            return BadRequest("Bir dosya seçmelisiniz.");
+        }
 
 
 

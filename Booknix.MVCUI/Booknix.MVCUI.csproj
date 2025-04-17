@@ -21,4 +21,9 @@
     <ProjectReference Include="..\Booknix.Shared\Booknix.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\profile_images\" />
+    <Folder Include="wwwroot\profile_images\" />
+  </ItemGroup>
+
 </Project>

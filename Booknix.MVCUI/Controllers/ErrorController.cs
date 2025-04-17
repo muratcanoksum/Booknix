@@ -8,7 +8,7 @@ public class ErrorController : Controller
         return View("Error404");
     }
 
-    [Route("Error/{code}")]
+    [Route("Error/{code:int}")]
     public IActionResult General(int code)
     {
         if (code == 404)
@@ -17,5 +17,4 @@ public class ErrorController : Controller
         ViewData["Title"] = $"Hata Kodu: {code}";
         return View("Error");
     }
-
 }

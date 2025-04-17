@@ -32,19 +32,29 @@ namespace Booknix.Application.Services
             var profile = await _profileRepo.GetByUserIdAsync(userId);
             if (profile == null) return false;
 
-            profile.PhoneNumber = dto.PhoneNumber;
+            // Profil Fotoğrafı Güncelleniyor
+            if (!string.IsNullOrEmpty(dto.ProfileImagePath))
+            {
+                profile.ProfileImagePath = dto.ProfileImagePath;
+            }
 
-            // Uygun şekilde UTC olarak ayarla
-            profile.BirthDate = dto.BirthDate.HasValue
-                ? DateTime.SpecifyKind(dto.BirthDate.Value, DateTimeKind.Utc)
-                : null;
+            // Eğer telefon numarası var, o zaman güncelle
+            if (!string.IsNullOrEmpty(dto.PhoneNumber))
+            {
+                profile.PhoneNumber = dto.PhoneNumber;
+            }
 
-            profile.ProfileImagePath = dto.ProfileImagePath;
+            // Eğer doğum tarihi varsa, o zaman güncelle
+            if (dto.BirthDate.HasValue)
+            {
+                profile.BirthDate = DateTime.SpecifyKind(dto.BirthDate.Value, DateTimeKind.Utc);
+            }
 
             await _profileRepo.UpdateAsync(profile);
             await _profileRepo.SaveChangesAsync();
             return true;
         }
+
 
     }
 }
