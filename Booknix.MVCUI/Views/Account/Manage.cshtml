@@ -181,6 +181,44 @@
             });
         });
 
+        //Hesap şifresi değiştirme
+        $(document).on("submit", "#reset-password-form", function (e) {
+            e.preventDefault();
+
+            const $form = $(this);
+            const $btn = $form.find("button[type='submit']");
+            const $alert = $("#reset-password-alert");
+            const token = $form.find('input[name="__RequestVerificationToken"]').val();
+
+            console.log($form)
+
+            $btn.prop("disabled", true).text("Kaydediliyor...");
+
+            $.ajax({
+                type: "POST",
+                url: "/Account/ChangePassword",  // POST işlemi yapılacak URL
+                data: $form.serialize(),
+                headers: {
+                    "RequestVerificationToken": token
+                },
+                success: function (msg) {
+                    $alert
+                        .removeClass("hidden text-red-500 bg-red-100 border-red-300")
+                        .addClass("text-green-600 bg-green-100 border border-green-300")
+                        .text(msg);
+                },
+                error: function (xhr) {
+                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    $alert
+                        .removeClass("hidden text-green-600 bg-green-100 border-green-300")
+                        .addClass("text-red-500 bg-red-100 border border-red-300")
+                        .text(msg);
+                },
+                complete: function () {
+                    $btn.prop("disabled", false).text("Şifreyi Güncelle");
+                }
+            });
+        });
 
 
     </script>

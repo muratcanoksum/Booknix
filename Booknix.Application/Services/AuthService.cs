@@ -188,7 +188,7 @@ namespace Booknix.Application.Services
         { "minutes", EmailHelper.TokenExpireMinutes.ToString() }
     });
 
-            await _emailSender.SendEmailAsync(user.Email, "Booknix | Şifre Sıfırlama", html,"Booknix Account");
+            await _emailSender.SendEmailAsync(user.Email, "Booknix | Şifre Sıfırlama", html, "Booknix Account");
             return true;
         }
 
@@ -208,6 +208,24 @@ namespace Booknix.Application.Services
             await _userRepo.UpdateAsync(user);
             return true;
         }
+
+        public async Task<bool> ResetPasswordWithPass(Guid userId, string oldPassword, string newPassword)
+        {
+            var user = await _userRepo.GetByIdAsync(userId);
+            if (user == null) return false;
+
+            // Eski şifreyi doğrulama
+            var isOldPasswordValid = BCrypt.Net.BCrypt.Verify(oldPassword, user.PasswordHash);
+            if (!isOldPasswordValid) return false;
+
+            // Yeni şifreyi hash'leyerek kaydetme
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
+            await _userRepo.UpdateAsync(user);
+
+            return true;
+        }
+
 
 
     }

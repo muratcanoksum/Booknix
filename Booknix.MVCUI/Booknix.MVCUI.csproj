@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\profile_images\**" />
+    <Content Remove="wwwroot\profile_images\**" />
+    <EmbeddedResource Remove="wwwroot\profile_images\**" />
+    <None Remove="wwwroot\profile_images\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
       <PrivateAssets>all</PrivateAssets>
@@ -23,7 +30,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\profile_images\" />
-    <Folder Include="wwwroot\profile_images\" />
   </ItemGroup>
 
 </Project>

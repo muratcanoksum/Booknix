@@ -9,5 +9,6 @@ namespace Booknix.Application.Interfaces
         Task<VerifyEmailResult> VerifyEmailAsync(string token);
         Task<bool> SendPasswordResetTokenAsync(string email);
         Task<bool> ResetPasswordAsync(string token, string newPassword);
+        Task<bool> ResetPasswordWithPass(Guid userId, string oldPassword, string newPassword);
     }
 }
