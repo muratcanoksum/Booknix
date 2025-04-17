@@ -1,0 +1,35 @@
+@using Booknix.Application.Helpers
+@model Booknix.Domain.Entities.Location
+
+<div class="max-w-6xl mx-auto px-4 py-10">
+    <!-- Lokasyon adı ve adres -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-1">@Model.Name</h2>
+    <p class="text-gray-500 mb-6">@Model.Address</p>
+
+    <!-- Hizmet Başlığı -->
+    <h3 class="text-xl font-semibold text-gray-700 mb-4">Sunulan Hizmetler</h3>
+
+    @if (!Model.Services.Any())
+    {
+        <p class="text-gray-500 italic">Bu lokasyonda henüz tanımlı bir hizmet yok.</p>
+    }
+    else
+    {
+        <!-- Hizmet kartları -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @foreach (var service in Model.Services)
+            {
+                <a href="/hizmet/@StringHelper.ToUrlFriendly(service.Name)" class="block">
+                    <div class="bg-white rounded-xl shadow hover:shadow-md transition duration-200 overflow-hidden">
+                        <div class="p-4">
+                            <h4 class="text-md font-bold text-gray-800">@service.Name</h4>
+                            <p class="text-sm text-gray-500 truncate">@service.Description</p>
+                            <p class="text-sm text-blue-600 font-semibold mt-2">₺@service.Price</p>
+                            <p class="text-xs text-gray-400">Süre: @service.Duration.Minutes dk</p>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>

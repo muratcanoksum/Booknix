@@ -3,6 +3,7 @@ using System;
 using Booknix.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Booknix.Persistence.Migrations
 {
     [DbContext(typeof(BooknixDbContext))]
-    partial class BooknixDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250417145642_AppointmentSystemInitial")]
+    partial class AppointmentSystemInitial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -170,9 +173,6 @@ namespace Booknix.Persistence.Migrations
                     b.Property<Guid?>("LocationId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("SectorId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid?>("ServiceId")
                         .HasColumnType("uuid");
 
@@ -185,8 +185,6 @@ namespace Booknix.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
-
-                    b.HasIndex("SectorId");
 
                     b.HasIndex("ServiceId");
 
@@ -409,14 +407,6 @@ namespace Booknix.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("BirthDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProfileImagePath")
-                        .HasColumnType("text");
                     b.Property<Guid>("LocationId")
                         .HasColumnType("uuid");
 
@@ -428,10 +418,6 @@ namespace Booknix.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("UserProfiles");
                     b.HasIndex("LocationId");
 
                     b.HasIndex("UserId");
@@ -543,11 +529,6 @@ namespace Booknix.Persistence.Migrations
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Booknix.Domain.Entities.Sector", "Sector")
-                        .WithMany("MediaFiles")
-                        .HasForeignKey("SectorId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Booknix.Domain.Entities.Service", "Service")
                         .WithMany("MediaFiles")
                         .HasForeignKey("ServiceId")
@@ -559,8 +540,6 @@ namespace Booknix.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Location");
-
-                    b.Navigation("Sector");
 
                     b.Navigation("Service");
 
@@ -642,17 +621,6 @@ namespace Booknix.Persistence.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("Booknix.Domain.Entities.UserProfile", b =>
-                {
-                    b.HasOne("Booknix.Domain.Entities.User", "User")
-                        .WithOne("Profile")
-                        .HasForeignKey("Booknix.Domain.Entities.UserProfile", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Booknix.Domain.Entities.UserLocation", b =>
                 {
                     b.HasOne("Booknix.Domain.Entities.Location", "Location")
@@ -704,14 +672,9 @@ namespace Booknix.Persistence.Migrations
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("Booknix.Domain.Entities.User", b =>
-                {
-                    b.Navigation("Profile");
             modelBuilder.Entity("Booknix.Domain.Entities.Sector", b =>
                 {
                     b.Navigation("Locations");
-
-                    b.Navigation("MediaFiles");
                 });
 
             modelBuilder.Entity("Booknix.Domain.Entities.Service", b =>

@@ -26,6 +26,15 @@ namespace Booknix.Domain.Entities
         // Navigation
         public Role? Role { get; set; }
         public UserProfile? Profile { get; set; }
+        public ICollection<UserLocation> UserLocations { get; set; } = new List<UserLocation>();
+        public ICollection<Service> Services { get; set; } = new List<Service>();
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
+        public ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
+        public ICollection<ServiceEmployee> ServiceEmployees { get; set; } = new List<ServiceEmployee>();
+        public ICollection<MediaFile> MediaFiles { get; set; } = new List<MediaFile>();
+
+
 
     }
 }

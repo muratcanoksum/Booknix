@@ -1,16 +1,37 @@
-﻿@{
+﻿@using Booknix.Application.Helpers
+@model List<Booknix.Domain.Entities.Sector>
+
+@{
     ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="container mt-5">
-    @if (ViewBag.FullName != null)
-    {
-        <h2>Hoşgeldin, @ViewBag.FullName!</h2>
-        <p>Rolün: @ViewBag.Role</p>
-    }
-    else
-    {
-        <h2>Hoşgeldin ziyaretçi!</h2>
-        <p>Lütfen <a href="/Auth/Login">giriş yap</a>.</p>
-    }
+<div class="bg-white py-10">
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- Hoş Geldin Mesajı -->
+        <h2 class="text-gray-800 text-2xl md:text-3xl font-semibold text-center mb-2">
+            Güzellikten sağlığa, tüm hizmetler tek bir platformda!
+        </h2>
+        <p class="text-gray-500 text-center max-w-2xl mx-auto mb-10 text-sm md:text-base">
+            Berberden dişçiye, kuaförden fizik tedaviye kadar birçok sektörde hizmet sağlayıcıları keşfedin.
+            Booknix ile kolayca randevu alın, zamanınızı verimli yönetin.
+        </p>
+
+        <!-- Sektör Kartları -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-items-center">
+            @foreach (var sector in Model)
+            {
+                <a href="/sektor/@StringHelper.ToUrlFriendly(sector.Name)">
+                    <div class="w-48 bg-gray-100 rounded-xl shadow hover:scale-105 transform transition duration-300">
+                        <img src="@sector.MediaFiles.FirstOrDefault()?.FilePath"
+                             alt="@sector.Name"
+                             class="w-full h-36 object-cover rounded-t-xl" />
+
+                        <div class="p-3 text-center">
+                            <p class="text-gray-800 font-semibold text-sm">@sector.Name</p>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
 </div>

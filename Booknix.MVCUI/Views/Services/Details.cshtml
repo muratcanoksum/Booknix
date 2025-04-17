@@ -1,0 +1,42 @@
+@model Booknix.Domain.Entities.Service
+
+<div class="max-w-5xl mx-auto px-4 py-10">
+    <!-- Hizmet Detayı -->
+    <div class="mb-8 border-b pb-4">
+        <h2 class="text-3xl font-bold text-gray-800">@Model.Name</h2>
+        <p class="text-gray-600 mt-2">@Model.Description</p>
+        <div class="mt-4 text-lg font-semibold text-gray-700">
+            ₺@Model.Price • @Model.Duration.Minutes dk
+        </div>
+    </div>
+
+    <!-- Çalışanlar -->
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Bu hizmeti sunan çalışanlar</h3>
+
+    @if (!Model.ServiceEmployees.Any())
+    {
+        <p class="text-gray-500 italic">Bu hizmete henüz atanmış çalışan bulunmamaktadır.</p>
+    }
+    else
+    {
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @foreach (var se in Model.ServiceEmployees)
+            {
+                var emp = se.Employee;
+                if (emp != null)
+                {
+                    <a href="/randevu/@emp.Id/@Model.Id" class="block">
+                        <div class="bg-white rounded-xl shadow hover:shadow-md transition duration-200 text-center p-4">
+                            <img src="@emp.MediaFiles.FirstOrDefault()?.FilePath" 
+                                 alt="@emp.FullName"
+                                 class="w-24 h-24 object-cover rounded-full mx-auto mb-3" />
+                            <p class="text-gray-800 font-medium">@emp.FullName</p>
+                            <p class="text-sm text-gray-500">Çalışan</p>
+                        </div>
+                    </a>
+
+                }
+            }
+        </div>
+    }
+</div>

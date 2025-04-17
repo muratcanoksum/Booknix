@@ -13,10 +13,9 @@ using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// .env dosyasýný yükle
-Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", ".env"));
-
-// PostgreSQL baðlantý cümlesini oluþtur
+// .env dosyasï¿½nï¿½ yï¿½kle
+Env.Load();
+// PostgreSQL baï¿½lantï¿½ cï¿½mlesini oluï¿½tur
 var connectionString = $"Host={Env.GetString("DB_HOST")};" +
                        $"Port={Env.GetString("DB_PORT")};" +
                        $"Database={Env.GetString("DB_NAME")};" +
@@ -48,7 +47,7 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-// Token süresi yapýlandýrmasý (EmailHelper'a aktar)
+// Token sï¿½resi yapï¿½landï¿½rmasï¿½ (EmailHelper'a aktar)
 var appSettings = app.Services.GetRequiredService<IAppSettings>();
 EmailHelper.Configure(appSettings.TokenExpireMinutes);
 
