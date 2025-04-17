@@ -25,5 +25,8 @@ namespace Booknix.Domain.Entities
 
         // Navigation
         public Role? Role { get; set; }
+        public ICollection<UserLocation> UserLocations { get; set; } = new List<UserLocation>();
+        public ICollection<Service> Services { get; set; } = new List<Service>();
+
     }
 }
