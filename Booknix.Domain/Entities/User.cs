@@ -25,5 +25,7 @@ namespace Booknix.Domain.Entities
 
         // Navigation
         public Role? Role { get; set; }
+        public UserProfile? Profile { get; set; }
+
     }
 }

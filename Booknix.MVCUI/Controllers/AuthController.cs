@@ -15,10 +15,15 @@ namespace Booknix.MVCUI.Controllers
 
         // LOGIN
         [HttpGet]
-        public IActionResult Login() => View();
+        public IActionResult Login(string? returnUrl = null)
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
+        }
+
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginRequestDto dto)
+        public async Task<IActionResult> Login(LoginRequestDto dto, string? returnUrl)
         {
             var result = await _authService.LoginAsync(dto);
 
@@ -28,9 +33,11 @@ namespace Booknix.MVCUI.Controllers
             if (result.Role == "Unverified")
                 return BadRequest("Email adresiniz doğrulanmamış. Lütfen gelen kutunuzu kontrol ediniz.");
 
+            HttpContext.Session.SetString("UserId", result.Id.ToString());
             HttpContext.Session.SetString("FullName", result.FullName);
             HttpContext.Session.SetString("Role", result.Role);
             HttpContext.Session.SetString("Email", result.Email);
+
 
             if (dto.RememberMe)
             {
@@ -40,7 +47,7 @@ namespace Booknix.MVCUI.Controllers
                 });
             }
 
-            return Ok();
+            return Ok(string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl);
         }
 
 

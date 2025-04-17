@@ -12,10 +12,18 @@ namespace Booknix.Persistence.Data
 
         public DbSet<User> Users => Set<User>();
         public DbSet<Role> Roles => Set<Role>();
+        public DbSet<UserProfile> UserProfiles => Set<UserProfile>(); // 👈 eklendi
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // User - UserProfile birebir ilişki
+            modelBuilder.Entity<UserProfile>()
+                .HasOne(up => up.User)
+                .WithOne(u => u.Profile)
+                .HasForeignKey<UserProfile>(up => up.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // User silinince profili de silinir
 
             // Sabit GUID'lerle rollerin seed edilmesi
             modelBuilder.Entity<Role>().HasData(

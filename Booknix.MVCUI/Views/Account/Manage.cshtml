@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Hesabım";
+}
+
+<div class="max-w-4xl mx-auto mt-10 bg-white shadow rounded-lg flex">
+    <!-- Sol Menü -->
+    <div class="w-1/4 border-r">
+        <ul class="space-y-2 p-4 text-sm">
+            <li><a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/Profile">Profil Bilgileri</a></li>
+            <li><a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ProfileImage">Profil Fotoğrafı</a></li>
+            <li><a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ChangePassword">Şifre Değiştir</a></li>
+            <li><a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ChangeEmail">E-Posta Değiştir</a></li>
+            <li><a href="#" class="menu-link block py-2 px-3 hover:bg-red-50 text-red-600 font-semibold" data-url="/Account/DeleteAccount">Hesabı Sil</a></li>
+        </ul>
+    </div>
+
+    <!-- Sağ İçerik -->
+    <div id="content-panel" class="w-3/4 p-6">
+        <div class="text-sm text-gray-500">Yükleniyor...</div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Sayfa yüklendiğinde varsayılan olarak "Profil Bilgileri" kısmını getir
+            loadContent("/Account/Profile");
+
+            // Menü tıklamaları
+            $(".menu-link").click(function (e) {
+                e.preventDefault();
+                const url = $(this).data("url");
+                loadContent(url);
+            });
+
+            function loadContent(url) {
+                $("#content-panel").html("<div class='text-sm text-gray-400'>Yükleniyor...</div>");
+
+                $.get(url, function (html) {
+                    $("#content-panel").html(html);
+                }).fail(function () {
+                    $("#content-panel").html("<div class='text-red-500 text-sm'>İçerik yüklenemedi.</div>");
+                });
+            }
+        });
+    </script>
+}

@@ -112,16 +112,11 @@ namespace Booknix.Application.Services
                         "Booknix Account"
                     );
 
-                    return new AuthResponseDto
-                    {
-                        Email = user.Email,
-                        FullName = user.FullName,
-                        Role = "Unverified"
-                    };
                 }
 
                 return new AuthResponseDto
                 {
+                    Id = user.Id,
                     Email = user.Email,
                     FullName = user.FullName,
                     Role = "Unverified"
@@ -130,6 +125,7 @@ namespace Booknix.Application.Services
 
             return new AuthResponseDto
             {
+                Id = user.Id,
                 FullName = user.FullName,
                 Email = user.Email,
                 Role = user.Role?.Name ?? "Unknown"
