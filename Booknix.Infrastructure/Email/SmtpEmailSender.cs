@@ -7,10 +7,10 @@ namespace Booknix.Infrastructure.Email
 {
     public class SmtpEmailSender : IEmailSender
     {
-        public async Task SendEmailAsync(string to, string subject, string htmlBody)
+        public async Task SendEmailAsync(string to, string subject, string htmlBody, string from)
         {
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Booknix Doğrulama", Env.GetString("EMAIL_HOST_USER")));
+            message.From.Add(new MailboxAddress(from, Env.GetString("EMAIL_HOST_USER")));
             message.To.Add(MailboxAddress.Parse(to));
             message.Subject = subject;
 

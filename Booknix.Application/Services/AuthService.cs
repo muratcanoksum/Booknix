@@ -66,7 +66,8 @@ namespace Booknix.Application.Services
                 await _emailSender.SendEmailAsync(
                     user.Email,
                     "Booknix | Email Adresinizi Doğrulayın",
-                    htmlBody
+                    htmlBody,
+                    "Booknix Account"
                 );
             }
             catch (Exception)
@@ -107,8 +108,16 @@ namespace Booknix.Application.Services
                     await _emailSender.SendEmailAsync(
                         user.Email,
                         "Booknix | E-Posta Doğrulama Linkiniz Yenilendi",
-                        htmlBody
+                        htmlBody,
+                        "Booknix Account"
                     );
+
+                    return new AuthResponseDto
+                    {
+                        Email = user.Email,
+                        FullName = user.FullName,
+                        Role = "Unverified"
+                    };
                 }
 
                 return new AuthResponseDto
@@ -144,7 +153,7 @@ namespace Booknix.Application.Services
                 return new VerifyEmailResult
                 {
                     Success = false,
-                    Message = "Doğrulama bağlantısının süresi dolmuş. Lütfen giriş yaparak yeni bağlantı isteyin."
+                    Message = "Doğrulama bağlantısının süresi dolmuş. Lütfen giriş yaparak yeni bağlantı gönderilmesini sağlayın."
                 };
             }
 
@@ -183,7 +192,7 @@ namespace Booknix.Application.Services
         { "minutes", EmailVerificationHelper.TokenExpireMinutes.ToString() }
     });
 
-            await _emailSender.SendEmailAsync(user.Email, "Booknix | Şifre Sıfırlama", html);
+            await _emailSender.SendEmailAsync(user.Email, "Booknix | Şifre Sıfırlama", html,"Booknix Account");
             return true;
         }
 

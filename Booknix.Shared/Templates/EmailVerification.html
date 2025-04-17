@@ -2,46 +2,60 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <title>Email Doğrulama</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: #f9f9f9;
+            padding: 40px;
+        }
+
         .container {
             max-width: 600px;
-            margin: auto;
-            padding: 24px;
-            font-family: 'Segoe UI', sans-serif;
             background-color: #ffffff;
+            padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin: auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .logo img {
+            height: 150px;
         }
 
         .button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin-top: 20px;
-            background-color: #3b82f6;
-            color: white;
-            text-decoration: none;
+            background-color: #10b981;
+            color: #fff;
+            padding: 12px 24px;
             border-radius: 6px;
-            font-weight: 500;
-        }
-
-        .footer {
-            margin-top: 30px;
-            font-size: 12px;
-            color: #888;
-            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
         }
     </style>
 </head>
-<body style="background-color: #f9fafb;">
+<body>
     <div class="container">
-        <h2>Merhaba {{fullname}},</h2>
-        <p>Booknix hesabınızı etkinleştirmek için e-posta adresinizi doğrulamanız gerekiyor.</p>
-        <p>Lütfen aşağıdaki butona tıklayarak doğrulama işlemini tamamlayın:</p>
-        <a class="button" href="{{verifyLink}}">Email Adresini Doğrula</a>
-        <p class="footer">
-            Bu bağlantı sadece {{minutes}} dakika geçerlidir.
-            Eğer bu isteği siz yapmadıysanız, bu e-postayı dikkate almayabilirsiniz.
+        <div class="logo">
+            <img src="https://i.hizliresim.com/p4zveuo.png" alt="Booknix Logo" />
+        </div>
+        <hr />
+        <br />
+        <h2>Booknix'e Hoş Geldiniz!</h2>
+        <p>Merhaba {{fullname}},</p>
+        <p>Hesabınızı aktifleştirmek için aşağıdaki butona tıklayarak e-posta adresinizi doğrulayabilirsiniz. Bu bağlantı <strong>{{minutes}}</strong> dakika boyunca geçerlidir.</p>
+        <br />
+        <p>
+            <a href="{{verifyLink}}" class="button">Email'i Doğrula</a>
         </p>
+        <br />
+        <p>Bu işlemi siz yapmadıysanız, bu e-postayı göz ardı edebilirsiniz.</p>
+        <p>Sevgiler,<br>Booknix Ekibi</p>
     </div>
 </body>
 </html>

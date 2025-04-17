@@ -26,7 +26,7 @@ namespace Booknix.MVCUI.Controllers
                 return BadRequest("Email veya şifre hatalı.");
 
             if (result.Role == "Unverified")
-                return BadRequest("Email adresiniz doğrulanmamış. Yeni doğrulama linki gönderildi.");
+                return BadRequest("Email adresiniz doğrulanmamış. Lütfen gelen kutunuzu kontrol ediniz.");
 
             HttpContext.Session.SetString("FullName", result.FullName);
             HttpContext.Session.SetString("Role", result.Role);
