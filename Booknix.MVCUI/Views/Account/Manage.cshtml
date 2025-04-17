@@ -73,7 +73,7 @@
             console.log(token);
             $.ajax({
                 type: "POST",
-                url: "/Account/UpdateProfile",
+                url: "/Account/Profile",
                 data: $form.serialize(),
                 headers: {
                     "RequestVerificationToken": token

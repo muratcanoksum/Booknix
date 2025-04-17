@@ -14,7 +14,10 @@ using System.IO;
 var builder = WebApplication.CreateBuilder(args);
 
 // .env dosyas�n� y�kle
-Env.Load();
+//Env.Load();
+Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", ".env"));
+
+
 // PostgreSQL ba�lant� c�mlesini olu�tur
 var connectionString = $"Host={Env.GetString("DB_HOST")};" +
                        $"Port={Env.GetString("DB_PORT")};" +
