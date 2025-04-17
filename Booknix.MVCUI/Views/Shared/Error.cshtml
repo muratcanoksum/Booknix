@@ -1,6 +1,6 @@
 ﻿@model ErrorViewModel
 @{
-    ViewData["Title"] = "Error";
+    var title = ViewData["Title"]?.ToString() ?? "Hata";
 }
 
 <h1 class="text-danger">Error.</h1>

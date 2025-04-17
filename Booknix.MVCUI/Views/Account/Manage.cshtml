@@ -7,11 +7,12 @@
     <div class="w-1/4 border-r">
         <ul class="space-y-2 p-4 text-sm">
             <li><a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/Profile">Profil Bilgileri</a></li>
-            <li><a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ProfileImage">Profil Fotoğrafı</a></li>
+            <li><a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ProfilePhoto">Profil Fotoğrafı</a></li>
             <li><a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ChangePassword">Şifre Değiştir</a></li>
             <li><a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ChangeEmail">E-Posta Değiştir</a></li>
-            <li><a href="#" class="menu-link block py-2 px-3 hover:bg-red-50 text-red-600 font-semibold" data-url="/Account/DeleteAccount">Hesabı Sil</a></li>
+            <li><a href="#" class="menu-link block py-2 px-3 hover:bg-red-50 text-red-600 font-semibold" data-url="/Account/Delete">Hesabı Sil</a></li>
         </ul>
+
     </div>
 
     <!-- Sağ İçerik -->
@@ -21,27 +22,84 @@
 </div>
 
 @section Scripts {
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
-        $(document).ready(function () {
-            // Sayfa yüklendiğinde varsayılan olarak "Profil Bilgileri" kısmını getir
-            loadContent("/Account/Profile");
 
-            // Menü tıklamaları
-            $(".menu-link").click(function (e) {
+        // Menü tıklama olayını dinle
+        $(function () {
+            $(".menu-link").on("click", function (e) {
                 e.preventDefault();
-                const url = $(this).data("url");
-                loadContent(url);
-            });
+                const $link = $(this);
+                const url = $link.data("url");
 
-            function loadContent(url) {
-                $("#content-panel").html("<div class='text-sm text-gray-400'>Yükleniyor...</div>");
+                // Aktif sınıfı tüm menülerden kaldır
+                $(".menu-link").removeClass("bg-blue-100 text-blue-700 font-semibold");
 
+                // Tıklanan menüye aktif sınıfı ekle
+                $link.addClass("bg-blue-100 text-blue-700 font-semibold");
+
+                // İçeriği yükle
+                $("#content-panel").html("Yükleniyor...");
                 $.get(url, function (html) {
                     $("#content-panel").html(html);
-                }).fail(function () {
-                    $("#content-panel").html("<div class='text-red-500 text-sm'>İçerik yüklenemedi.</div>");
+                        }).fail(function () {
+                            $("#content-panel").html(`
+                                    <div class="flex flex-col items-center justify-center text-center space-y-4">
+                                        <img src="/images/logo.png" alt="Booknix Logo" class="w-24 h-24">
+                                        <h2 class="text-xl font-bold text-gray-700">404 - İçerik Bulunamadı</h2>
+                                        <p class="text-sm text-gray-500">İstediğiniz içerik yüklenemedi veya bulunamadı.</p
+                                    </div>
+                            `);
                 });
-            }
+            });
+
+            // Sayfa ilk açıldığında ilk menü seçili olsun
+            $(".menu-link").first().trigger("click");
         });
+
+        // Profil bilgilerini güncelleme
+            $(document).on("submit", "#profile-form", function (e) {
+            e.preventDefault();
+
+            const $form = $(this);
+            const $btn = $form.find("button[type='submit']");
+            const $alert = $("#profile-alert");
+            const token = $form.find('input[name="__RequestVerificationToken"]').val();
+
+            $btn.prop("disabled", true).text("Kaydediliyor...");
+            console.log($form.serialize());
+            console.log(token);
+            $.ajax({
+                type: "POST",
+                url: "/Account/UpdateProfile",
+                data: $form.serialize(),
+                headers: {
+                    "RequestVerificationToken": token
+                },
+                success: function (msg) {
+                    $alert
+                        .removeClass("hidden text-red-500 bg-red-100 border-red-300")
+                        .addClass("text-green-600 bg-green-100 border border-green-300")
+                        .text(msg);
+                },
+                error: function (xhr) {
+                    console.log(xhr);
+                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    $alert
+                        .removeClass("hidden text-green-600 bg-green-100 border-green-300")
+                        .addClass("text-red-500 bg-red-100 border border-red-300")
+                        .text(msg);
+                },
+                complete: function () {
+                    $btn.prop("disabled", false).text("Güncelle");
+                }
+            });
+        });
+
     </script>
+
 }
+
+

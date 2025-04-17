@@ -33,12 +33,18 @@ namespace Booknix.Application.Services
             if (profile == null) return false;
 
             profile.PhoneNumber = dto.PhoneNumber;
-            profile.BirthDate = dto.BirthDate;
+
+            // Uygun şekilde UTC olarak ayarla
+            profile.BirthDate = dto.BirthDate.HasValue
+                ? DateTime.SpecifyKind(dto.BirthDate.Value, DateTimeKind.Utc)
+                : null;
+
             profile.ProfileImagePath = dto.ProfileImagePath;
 
             await _profileRepo.UpdateAsync(profile);
             await _profileRepo.SaveChangesAsync();
             return true;
         }
+
     }
 }

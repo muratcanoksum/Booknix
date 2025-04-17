@@ -1,4 +1,5 @@
-﻿using Booknix.Application.Interfaces;
+﻿using Booknix.Application.DTOs;
+using Booknix.Application.Interfaces;
 using Booknix.Infrastructure.Filters;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,6 +30,21 @@ namespace Booknix.MVCUI.Controllers
             var profile = await _profileService.GetProfileAsync(userId);
             return PartialView("_ProfilePartial", profile);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Profile(ProfileViewModel dto)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+
+            var success = await _profileService.UpdateProfileAsync(userId, dto);
+            if (!success)
+                return BadRequest("Güncelleme başarısız.");
+
+            return Ok("Profil bilgileri başarıyla güncellendi.");
+        }
+
+
 
 
     }

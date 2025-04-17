@@ -14,12 +14,25 @@ namespace Booknix.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<UserProfile?> GetByUserIdAsync(Guid userId)
+        public async Task<UserProfile> GetByUserIdAsync(Guid userId)
         {
-            return await _context.UserProfiles
-                .Include(p => p.User)
-                .FirstOrDefaultAsync(p => p.UserId == userId);
+            var profile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+            if (profile == null)
+            {
+                profile = new UserProfile
+                {
+                    UserId = userId,
+                    BirthDate = null,
+                    PhoneNumber = null,
+                    ProfileImagePath = null
+                };
+                _context.UserProfiles.Add(profile);
+                await _context.SaveChangesAsync();
+            }
+
+            return profile;
         }
+
 
         public async Task AddAsync(UserProfile profile)
         {
