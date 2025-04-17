@@ -27,6 +27,9 @@ namespace Booknix.Persistence.Data
         public DbSet<Review> Reviews => Set<Review>();
         public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
         public DbSet<MediaFile> MediaFiles => Set<MediaFile>();
+        
+        public DbSet<TrustedIp> TrustedIps => Set<TrustedIp>();
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

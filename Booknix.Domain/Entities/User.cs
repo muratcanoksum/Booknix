@@ -33,6 +33,9 @@ namespace Booknix.Domain.Entities
         public ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
         public ICollection<ServiceEmployee> ServiceEmployees { get; set; } = new List<ServiceEmployee>();
         public ICollection<MediaFile> MediaFiles { get; set; } = new List<MediaFile>();
+        
+        public ICollection<TrustedIp> TrustedIps { get; set; } = new List<TrustedIp>();
+
 
 
 
