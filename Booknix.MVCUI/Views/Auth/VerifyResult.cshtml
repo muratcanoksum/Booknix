@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "E-Posta Doğrulama";
+    var status = ViewBag.Status as string;
+}
+
+<div class="p-8 text-center">
+    @if (status == "success")
+    {
+        <h2 class="text-green-600 text-xl font-bold">@ViewBag.Message</h2>
+    }
+    else
+    {
+        <h2 class="text-red-600 text-xl font-bold">@ViewBag.Message</h2>
+    }
+
+    <a href="/Auth/Login" class="mt-4 inline-block text-blue-600 hover:underline">Giriş Yap</a>
+</div>

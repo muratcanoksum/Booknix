@@ -18,6 +18,7 @@
     <ProjectReference Include="..\Booknix.Application\Booknix.Application.csproj" />
     <ProjectReference Include="..\Booknix.Infrastructure\Booknix.Infrastructure.csproj" />
     <ProjectReference Include="..\Booknix.Persistence\Booknix.Persistence.csproj" />
+    <ProjectReference Include="..\Booknix.Shared\Booknix.Shared.csproj" />
   </ItemGroup>
 
 </Project>

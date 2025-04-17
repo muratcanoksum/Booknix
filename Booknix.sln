@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booknix.MVCUI", "Booknix.MVCUI\Booknix.MVCUI.csproj", "{2BC7D69E-C92C-49EA-8F37-3262800D28BD}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booknix.Infrastructure", "Booknix.Infrastructure\Booknix.Infrastructure.csproj", "{81501A56-79B4-47A0-A490-0D3149A251C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booknix.Persistence", "Booknix.Persistence\Booknix.Persistence.csproj", "{F9181CD6-E335-4956-AB47-4FF32BDCEF49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booknix.Shared", "Booknix.Shared\Booknix.Shared.csproj", "{4540B67E-51F0-495F-9A9A-81E2702CDCBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{F9181CD6-E335-4956-AB47-4FF32BDCEF49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9181CD6-E335-4956-AB47-4FF32BDCEF49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9181CD6-E335-4956-AB47-4FF32BDCEF49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4540B67E-51F0-495F-9A9A-81E2702CDCBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4540B67E-51F0-495F-9A9A-81E2702CDCBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4540B67E-51F0-495F-9A9A-81E2702CDCBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4540B67E-51F0-495F-9A9A-81E2702CDCBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

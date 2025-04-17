@@ -3,6 +3,7 @@ using System;
 using Booknix.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Booknix.Persistence.Migrations
 {
     [DbContext(typeof(BooknixDbContext))]
-    partial class BooknixDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250416210808_ExtendUserForEmailVerification")]
+    partial class ExtendUserForEmailVerification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,12 +82,6 @@ namespace Booknix.Persistence.Migrations
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("PasswordResetRequestedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PasswordResetToken")
                         .HasColumnType("text");
 
                     b.Property<Guid>("RoleId")

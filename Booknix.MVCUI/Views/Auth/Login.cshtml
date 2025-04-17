@@ -10,6 +10,13 @@
 
         <div id="login-alert" class="hidden mb-4 px-4 py-2 text-sm rounded bg-red-100 text-red-700"></div>
 
+        @if (TempData["Success"] != null)
+        {
+            <div class="bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded mb-4 text-sm text-center">
+                @TempData["Success"]
+            </div>
+        }
+
         <form id="login-form" class="space-y-5">
             <div>
                 <label asp-for="Email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -38,6 +45,10 @@
         <div class="text-center mt-6 text-sm">
             <a href="/Auth/Register" class="text-blue-600 hover:underline">Hesabın yok mu? Kayıt ol</a>
         </div>
+
+        <div class="text-center mt-3 text-sm">
+            <a href="/Auth/ForgotPassword" class="text-sm text-blue-600 hover:underline">Şifreni mi unuttun?</a>
+        </div>
     </div>
 </div>
 
@@ -47,6 +58,9 @@
         $("#login-form").submit(function (e) {
             e.preventDefault();
 
+            const $btn = $(this).find("button[type='submit']");
+            $btn.prop("disabled", true).text("Yükleniyor...");
+
             $.ajax({
                 type: "POST",
                 url: "/Auth/Login",
@@ -54,12 +68,18 @@
                 success: function () {
                     window.location.href = "/";
                 },
-                error: function () {
+                error: function (xhr) {
+                    const errorMessage = xhr.responseText || "Bilinmeyen bir hata oluştu.";
                     $("#login-alert")
                         .removeClass("hidden")
-                        .text("Email veya şifre hatalı!");
+                        .addClass("alert-danger")
+                        .text(errorMessage);
+                },
+                complete: function () {
+                    $btn.prop("disabled", false).text("Giriş Yap");
                 }
             });
         });
     </script>
 }
+

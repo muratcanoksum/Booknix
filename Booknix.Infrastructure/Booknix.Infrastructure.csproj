@@ -7,7 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
+    <PackageReference Include="MailKit" Version="4.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Booknix.Domain\Booknix.Domain.csproj" />
+    <ProjectReference Include="..\Booknix.Shared\Booknix.Shared.csproj" />
   </ItemGroup>
 
 </Project>

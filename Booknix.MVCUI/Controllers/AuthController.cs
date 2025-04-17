@@ -13,6 +13,7 @@ namespace Booknix.MVCUI.Controllers
             _authService = authService;
         }
 
+        // LOGIN
         [HttpGet]
         public IActionResult Login() => View();
 
@@ -20,17 +21,19 @@ namespace Booknix.MVCUI.Controllers
         public async Task<IActionResult> Login(LoginRequestDto dto)
         {
             var result = await _authService.LoginAsync(dto);
+
             if (result == null)
-                return BadRequest("Hatalı giriş.");
+                return BadRequest("Email veya şifre hatalı.");
+
+            if (result.Role == "Unverified")
+                return BadRequest("Email adresiniz doğrulanmamış. Yeni doğrulama linki gönderildi.");
 
             HttpContext.Session.SetString("FullName", result.FullName);
             HttpContext.Session.SetString("Role", result.Role);
             HttpContext.Session.SetString("Email", result.Email);
 
-            // Süreyi cookie üzerinden belirleyeceğiz (Session süresi zaten tanımlı)
             if (dto.RememberMe)
             {
-                // 2 gün boyunca tarayıcıyı kapatsan bile session cookie silinmez
                 Response.Cookies.Append("RememberMe", "true", new CookieOptions
                 {
                     Expires = DateTimeOffset.Now.AddDays(1)
@@ -41,6 +44,7 @@ namespace Booknix.MVCUI.Controllers
         }
 
 
+        // REGISTER
         [HttpGet]
         public IActionResult Register() => View();
 
@@ -49,15 +53,14 @@ namespace Booknix.MVCUI.Controllers
         {
             var success = await _authService.RegisterAsync(dto, "Client");
             if (!success)
-            {
-                TempData["Error"] = "Email zaten kullanılıyor.";
-                return View();
-            }
+                return BadRequest("Email zaten kullanılıyor.");
 
-            TempData["Success"] = "Kayıt başarılı! Giriş yapabilirsiniz.";
-            return RedirectToAction("Login");
+
+            TempData["Success"] = "Kayıt başarılı! Lütfen email adresinizi kontrol edin ve doğrulama linkine tıklayın.";
+            return Ok(); // AJAX success
         }
 
+        // LOGOUT
         [HttpPost]
         public IActionResult Logout()
         {
@@ -66,5 +69,51 @@ namespace Booknix.MVCUI.Controllers
 
             return RedirectToAction("Login");
         }
+
+        // VERIFY EMAIL
+        [HttpGet]
+        public async Task<IActionResult> VerifyEmail(string token)
+        {
+            var result = await _authService.VerifyEmailAsync(token);
+
+            ViewBag.Status = result.Success ? "success" : "error";
+            ViewBag.Message = result.Message;
+
+            return View("VerifyResult"); // Basit bir sonuç sayfası gösterebiliriz
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPassword() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestDto dto)
+        {
+            var success = await _authService.SendPasswordResetTokenAsync(dto.Email);
+            if (!success)
+                return BadRequest("Geçersiz e-posta adresi veya doğrulanmamış kullanıcı.");
+
+            TempData["Success"] = "Eğer bu e-posta sistemde varsa, şifre sıfırlama bağlantısı gönderildi.";
+            return Ok();
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string token)
+        {
+            ViewBag.Token = token;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequestDto dto)
+        {
+            var success = await _authService.ResetPasswordAsync(dto.Token, dto.NewPassword);
+            if (!success)
+                return BadRequest("Geçersiz veya süresi dolmuş bağlantı.");
+
+            TempData["Success"] = "Şifreniz başarıyla güncellendi. Giriş yapabilirsiniz.";
+            return Ok();
+        }
+
+
     }
 }

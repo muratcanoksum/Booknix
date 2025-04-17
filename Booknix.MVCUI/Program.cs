@@ -5,6 +5,9 @@ using Booknix.Domain.Interfaces;
 using Booknix.Persistence.Repositories;
 using Booknix.Application.Interfaces;
 using Booknix.Application.Services;
+using Booknix.Infrastructure.Email;
+using Booknix.Shared.Configuration;
+using Booknix.Shared.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +29,9 @@ builder.Services.AddDbContext<BooknixDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();
 builder.Services.AddScoped<IRoleRepository, EfRoleRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+builder.Services.AddSingleton<IAppSettings, AppSettings>();
+
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();

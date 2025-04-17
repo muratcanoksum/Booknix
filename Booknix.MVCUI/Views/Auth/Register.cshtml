@@ -47,6 +47,9 @@
         $("#register-form").submit(function (e) {
             e.preventDefault();
 
+            const $btn = $(this).find("button[type='submit']");
+            $btn.prop("disabled", true).text("Yükleniyor...");
+
             $.ajax({
                 type: "POST",
                 url: "/Auth/Register",
@@ -54,12 +57,20 @@
                 success: function () {
                     window.location.href = "/Auth/Login";
                 },
-                error: function () {
+                error: function (xhr) {
+                    const errorMessage = xhr.responseText || "Kayıt başarısız! Bilgilerinizi kontrol edin.";
                     $("#register-alert")
                         .removeClass("hidden")
-                        .text("Kayıt başarısız! Email daha önce alınmış olabilir.");
+                        .addClass("alert-danger")
+                        .text(errorMessage);
+                },
+                complete: function () {
+                    $btn.prop("disabled", false).text("Kayıt Ol");
                 }
             });
         });
     </script>
+}
+
+
 }

@@ -14,6 +14,14 @@ namespace Booknix.Domain.Entities
         public string Email { get; set; } = null!;
         public string PasswordHash { get; set; } = null!;
         public Guid RoleId { get; set; }
+        public bool IsEmailConfirmed { get; set; } = false;
+        public string? EmailVerificationToken { get; set; }
+        public DateTime? TokenGeneratedAt { get; set; }
+        public DateTime? EmailVerifiedAt { get; set; } // Opsiyonel: ne zaman doğrulandı
+        public string? PasswordResetToken { get; set; }
+        public DateTime? PasswordResetRequestedAt { get; set; }
+
+
 
         // Navigation
         public Role? Role { get; set; }

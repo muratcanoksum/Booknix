@@ -13,5 +13,9 @@ namespace Booknix.Domain.Interfaces
         Task<User?> GetByIdAsync(Guid id);
         Task AddAsync(User user);
         Task<IEnumerable<User>> GetAllAsync();
+        Task<User?> GetByVerificationTokenAsync(string token);
+        Task UpdateAsync(User user);
+        Task<User?> GetByPasswordResetTokenAsync(string token);
+
     }
 }
