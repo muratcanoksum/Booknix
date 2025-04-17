@@ -1,14 +1,10 @@
 using System;
+using Booknix.Domain.Entities.Enums;
 
 
 namespace Booknix.Domain.Entities
 {
-
-    public enum LocationRole
-    {
-        LocationAdmin = 0,
-        LocationEmployee = 1
-    }
+    
 
     public class UserLocation
     {
