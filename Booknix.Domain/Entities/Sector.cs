@@ -9,5 +9,8 @@ namespace Booknix.Domain.Entities
         public string Name { get; set; } = null!;
 
         public ICollection<Location> Locations { get; set; } = new List<Location>();
+        
+        public ICollection<MediaFile> MediaFiles { get; set; } = new List<MediaFile>();
+
     }
 }

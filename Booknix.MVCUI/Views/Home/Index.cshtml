@@ -1,4 +1,6 @@
-﻿@{
+﻿@model List<Booknix.Domain.Entities.Sector>
+
+@{
     ViewData["Title"] = "Ana Sayfa";
 }
 
@@ -8,9 +10,23 @@
         <h2>Hoşgeldin, @ViewBag.FullName!</h2>
         <p>Rolün: @ViewBag.Role</p>
     }
-    else
-    {
-        <h2>Hoşgeldin ziyaretçi!</h2>
-        <p>Lütfen <a href="/Auth/Login">giriş yap</a>.</p>
-    }
+
+
+    <hr class="my-4" />
+    <h3 class="text-center mb-4">Hizmet Sektörleri</h3>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var sector in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="/images/sectors/@(sector.Name.ToLower()).jpg"
+                         class="card-img-top" alt="@sector.Name" style="object-fit: cover; height: 200px;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@sector.Name</h5>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>

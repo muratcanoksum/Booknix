@@ -64,6 +64,13 @@ namespace Booknix.Persistence.Data
                 .WithMany(s => s.MediaFiles)
                 .HasForeignKey(m => m.ServiceId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            
+            modelBuilder.Entity<MediaFile>()
+                .HasOne(m => m.Sector)
+                .WithMany(s => s.MediaFiles)
+                .HasForeignKey(m => m.SectorId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Seed veriler (Roller)
             modelBuilder.Entity<Role>().HasData(

@@ -21,5 +21,8 @@ namespace Booknix.Domain.Entities
         public Location? Location { get; set; }
         public User? User { get; set; }
         public Service? Service { get; set; }
+        
+        public Guid? SectorId { get; set; }  // yeni alan
+        public Sector? Sector { get; set; }
     }
 }

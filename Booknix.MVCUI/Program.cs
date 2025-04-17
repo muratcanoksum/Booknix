@@ -11,10 +11,9 @@ using Booknix.Shared.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// .env dosyasýný yükle
-Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", ".env"));
-
-// PostgreSQL baðlantý cümlesini oluþtur
+// .env dosyasï¿½nï¿½ yï¿½kle
+Env.Load();
+// PostgreSQL baï¿½lantï¿½ cï¿½mlesini oluï¿½tur
 var connectionString = $"Host={Env.GetString("DB_HOST")};" +
                        $"Port={Env.GetString("DB_PORT")};" +
                        $"Database={Env.GetString("DB_NAME")};" +
@@ -25,7 +24,7 @@ var connectionString = $"Host={Env.GetString("DB_HOST")};" +
 builder.Services.AddDbContext<BooknixDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Repository DI kayýtlarý
+// Repository DI kayï¿½tlarï¿½
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();
 builder.Services.AddScoped<IRoleRepository, EfRoleRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -37,9 +36,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Oturum zaman aþýmýný 30 dakika olarak ayarla
-    options.Cookie.HttpOnly = true; // Çerezlerin HttpOnly olmasýný saðla
-    options.Cookie.IsEssential = true; // Çerezlerin gerekli olduðunu belirt
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Oturum zaman aï¿½ï¿½mï¿½nï¿½ 30 dakika olarak ayarla
+    options.Cookie.HttpOnly = true; // ï¿½erezlerin HttpOnly olmasï¿½nï¿½ saï¿½la
+    options.Cookie.IsEssential = true; // ï¿½erezlerin gerekli olduï¿½unu belirt
 });
 
 
