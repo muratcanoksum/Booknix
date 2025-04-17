@@ -8,6 +8,8 @@ using Booknix.Application.Services;
 using Booknix.Infrastructure.Email;
 using Booknix.Shared.Configuration;
 using Booknix.Shared.Interfaces;
+using Booknix.Application.Helpers; // EmailHelper burada
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,30 +23,33 @@ var connectionString = $"Host={Env.GetString("DB_HOST")};" +
                        $"Username={Env.GetString("DB_USER")};" +
                        $"Password={Env.GetString("DB_PASSWORD")}";
 
-// DbContext'i servis olarak ekle
+// DbContext
 builder.Services.AddDbContext<BooknixDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Repository DI kayýtlarý
+// Dependency Injection
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();
 builder.Services.AddScoped<IRoleRepository, EfRoleRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 builder.Services.AddSingleton<IAppSettings, AppSettings>();
 
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Oturum zaman aþýmýný 30 dakika olarak ayarla
-    options.Cookie.HttpOnly = true; // Çerezlerin HttpOnly olmasýný saðla
-    options.Cookie.IsEssential = true; // Çerezlerin gerekli olduðunu belirt
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
-
 
 var app = builder.Build();
 
+// Token süresi yapýlandýrmasý (EmailHelper'a aktar)
+var appSettings = app.Services.GetRequiredService<IAppSettings>();
+EmailHelper.Configure(appSettings.TokenExpireMinutes);
+
+// Middleware
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

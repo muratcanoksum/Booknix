@@ -58,7 +58,7 @@ namespace Booknix.Application.Services
             {
                 { "fullname", user.FullName },
                 { "verifyLink", verifyLink },
-                { "minutes", EmailVerificationHelper.TokenExpireMinutes.ToString() }
+                { "minutes", EmailHelper.TokenExpireMinutes.ToString() }
             });
 
             try
@@ -88,7 +88,7 @@ namespace Booknix.Application.Services
 
             if (!user.IsEmailConfirmed)
             {
-                if (EmailVerificationHelper.IsTokenExpired(user.TokenGeneratedAt))
+                if (EmailHelper.IsTokenExpired(user.TokenGeneratedAt))
                 {
                     var newToken = Guid.NewGuid().ToString();
                     user.EmailVerificationToken = newToken;
@@ -102,7 +102,7 @@ namespace Booknix.Application.Services
                     {
                         { "fullname", user.FullName },
                         { "verifyLink", verifyLink },
-                        { "minutes", EmailVerificationHelper.TokenExpireMinutes.ToString() }
+                        { "minutes", EmailHelper.TokenExpireMinutes.ToString() }
                     });
 
                     await _emailSender.SendEmailAsync(
@@ -148,7 +148,7 @@ namespace Booknix.Application.Services
             if (user.IsEmailConfirmed)
                 return new VerifyEmailResult { Success = true, Message = "E-posta zaten doğrulanmış." };
 
-            if (EmailVerificationHelper.IsTokenExpired(user.TokenGeneratedAt))
+            if (EmailHelper.IsTokenExpired(user.TokenGeneratedAt))
             {
                 return new VerifyEmailResult
                 {
@@ -189,7 +189,7 @@ namespace Booknix.Application.Services
     {
         { "fullname", user.FullName },
         { "resetLink", resetLink },
-        { "minutes", EmailVerificationHelper.TokenExpireMinutes.ToString() }
+        { "minutes", EmailHelper.TokenExpireMinutes.ToString() }
     });
 
             await _emailSender.SendEmailAsync(user.Email, "Booknix | Şifre Sıfırlama", html,"Booknix Account");
@@ -202,7 +202,7 @@ namespace Booknix.Application.Services
             if (user == null)
                 return false;
 
-            if (EmailVerificationHelper.IsTokenExpired(user.PasswordResetRequestedAt))
+            if (EmailHelper.IsTokenExpired(user.PasswordResetRequestedAt))
                 return false;
 
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);

@@ -13,5 +13,9 @@ namespace Booknix.Shared.Configuration
         }
 
         public string BaseUrl => _configuration["App:BaseUrl"]!;
+
+        public int TokenExpireMinutes =>
+            int.Parse(_configuration["TokenOptions:TokenExpireMinutes"]!);
+
     }
 }

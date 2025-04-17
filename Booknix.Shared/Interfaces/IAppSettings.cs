@@ -3,5 +3,6 @@
     public interface IAppSettings
     {
         string BaseUrl { get; }
+        int TokenExpireMinutes { get; }
     }
 }
