@@ -357,6 +357,32 @@ namespace Booknix.Persistence.Migrations
                     b.ToTable("ServiceEmployees");
                 });
 
+            modelBuilder.Entity("Booknix.Domain.Entities.TrustedIp", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("IpAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TrustedIps");
+                });
+
             modelBuilder.Entity("Booknix.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -645,6 +671,17 @@ namespace Booknix.Persistence.Migrations
                     b.Navigation("Service");
                 });
 
+            modelBuilder.Entity("Booknix.Domain.Entities.TrustedIp", b =>
+                {
+                    b.HasOne("Booknix.Domain.Entities.User", "User")
+                        .WithMany("TrustedIps")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Booknix.Domain.Entities.User", b =>
                 {
                     b.HasOne("Booknix.Domain.Entities.Role", "Role")
@@ -751,6 +788,8 @@ namespace Booknix.Persistence.Migrations
                     b.Navigation("ServiceEmployees");
 
                     b.Navigation("Services");
+
+                    b.Navigation("TrustedIps");
 
                     b.Navigation("UserLocations");
                 });
