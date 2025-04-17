@@ -23,7 +23,8 @@ namespace Booknix.MVCUI.Controllers
             ViewBag.Role = HttpContext.Session.GetString("Role");
 
             var sectors = await _context.Sectors
-                .Include(s => s.Locations) // gerekirse
+                .Include(s => s.Locations) 
+                .Include(s => s.MediaFiles) 
                 .ToListAsync();
 
             return View(sectors);

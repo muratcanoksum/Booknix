@@ -1,32 +1,37 @@
-﻿@model List<Booknix.Domain.Entities.Sector>
+﻿@using Booknix.Application.Helpers
+@model List<Booknix.Domain.Entities.Sector>
 
 @{
     ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="container mt-5">
-    @if (ViewBag.FullName != null)
-    {
-        <h2>Hoşgeldin, @ViewBag.FullName!</h2>
-        <p>Rolün: @ViewBag.Role</p>
-    }
+<div class="bg-white py-10">
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- Hoş Geldin Mesajı -->
+        <h2 class="text-gray-800 text-2xl md:text-3xl font-semibold text-center mb-2">
+            Güzellikten sağlığa, tüm hizmetler tek bir platformda!
+        </h2>
+        <p class="text-gray-500 text-center max-w-2xl mx-auto mb-10 text-sm md:text-base">
+            Berberden dişçiye, kuaförden fizik tedaviye kadar birçok sektörde hizmet sağlayıcıları keşfedin.
+            Booknix ile kolayca randevu alın, zamanınızı verimli yönetin.
+        </p>
 
+        <!-- Sektör Kartları -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-items-center">
+            @foreach (var sector in Model)
+            {
+                <a href="/sektor/@StringHelper.ToUrlFriendly(sector.Name)">
+                    <div class="w-48 bg-gray-100 rounded-xl shadow hover:scale-105 transform transition duration-300">
+                        <img src="@sector.MediaFiles.FirstOrDefault()?.FilePath"
+                             alt="@sector.Name"
+                             class="w-full h-36 object-cover rounded-t-xl" />
 
-    <hr class="my-4" />
-    <h3 class="text-center mb-4">Hizmet Sektörleri</h3>
-
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach (var sector in Model)
-        {
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <img src="/images/sectors/@(sector.Name.ToLower()).jpg"
-                         class="card-img-top" alt="@sector.Name" style="object-fit: cover; height: 200px;">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">@sector.Name</h5>
+                        <div class="p-3 text-center">
+                            <p class="text-gray-800 font-semibold text-sm">@sector.Name</p>
+                        </div>
                     </div>
-                </div>
-            </div>
-        }
+                </a>
+            }
+        </div>
     </div>
 </div>
