@@ -46,6 +46,11 @@ namespace Booknix.MVCUI.Controllers
                     Expires = DateTimeOffset.Now.AddDays(1)
                 });
             }
+            
+            if (result.Role == "Admin")
+            {
+                return Ok("/Admin");
+            }
 
             return Ok(string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl);
         }
