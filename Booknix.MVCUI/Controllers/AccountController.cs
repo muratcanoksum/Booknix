@@ -114,13 +114,13 @@ namespace Booknix.MVCUI.Controllers
 
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
 
-            var success = await _authService.ResetPasswordWithPass(userId, oldPassword, newPassword);
-            if (!success)
+            var result = await _authService.ResetPasswordWithPass(userId, oldPassword, newPassword);
+            if (!result.Success)
             {
-                return BadRequest("Eski şifre yanlış veya şifre güncellenemedi.");
+                return BadRequest(result.Message);
             }
 
-            return Ok("Şifreniz başarıyla güncellendi.");
+            return Ok(result.Message);
         }
 
     }

@@ -132,21 +132,21 @@ namespace Booknix.Application.Services
             };
         }
 
-        public async Task<VerifyEmailResult> VerifyEmailAsync(string token)
+        public async Task<RequestResult> VerifyEmailAsync(string token)
         {
             if (string.IsNullOrEmpty(token))
-                return new VerifyEmailResult { Success = false, Message = "Token geçersiz." };
+                return new RequestResult { Success = false, Message = "Token geçersiz." };
 
             var user = await _userRepo.GetByVerificationTokenAsync(token);
             if (user == null)
-                return new VerifyEmailResult { Success = false, Message = "Kullanıcı bulunamadı." };
+                return new RequestResult { Success = false, Message = "Kullanıcı bulunamadı." };
 
             if (user.IsEmailConfirmed)
-                return new VerifyEmailResult { Success = true, Message = "E-posta zaten doğrulanmış." };
+                return new RequestResult { Success = true, Message = "E-posta zaten doğrulanmış." };
 
             if (EmailHelper.IsTokenExpired(user.TokenGeneratedAt))
             {
-                return new VerifyEmailResult
+                return new RequestResult
                 {
                     Success = false,
                     Message = "Doğrulama bağlantısının süresi dolmuş. Lütfen giriş yaparak yeni bağlantı gönderilmesini sağlayın."
@@ -160,7 +160,7 @@ namespace Booknix.Application.Services
 
             await _userRepo.UpdateAsync(user);
 
-            return new VerifyEmailResult
+            return new RequestResult
             {
                 Success = true,
                 Message = "E-posta başarıyla doğrulandı!"
@@ -192,38 +192,64 @@ namespace Booknix.Application.Services
             return true;
         }
 
-        public async Task<bool> ResetPasswordAsync(string token, string newPassword)
+        public async Task<bool> CheckTokenExpire(string token)
         {
             var user = await _userRepo.GetByPasswordResetTokenAsync(token);
             if (user == null)
                 return false;
-
             if (EmailHelper.IsTokenExpired(user.PasswordResetRequestedAt))
                 return false;
+            return true;
+        }
+
+        public async Task<RequestResult> ResetPasswordAsync(string token, string newPassword)
+        {
+            var user = await _userRepo.GetByPasswordResetTokenAsync(token);
+            if (user == null)
+                return new RequestResult { Success = false, Message = "Kullanıcı bulunamadı." };
+
+            if (EmailHelper.IsTokenExpired(user.PasswordResetRequestedAt))
+                return new RequestResult { Success = false, Message = "Token süresi dolmuş veya geçersiz." };
+
+            // Mevcut şifre ile yeni şifreyi karşılaştır
+            if (BCrypt.Net.BCrypt.Verify(newPassword, user.PasswordHash))
+                return new RequestResult { Success = false, Message = "Eski şifreniz ile yeni şifreniz aynı olamaz." };
 
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
             user.PasswordResetToken = null;
             user.PasswordResetRequestedAt = null;
 
             await _userRepo.UpdateAsync(user);
-            return true;
+            return new RequestResult
+            {
+                Success = true,
+                Message = "Şifreniz başarıyla güncellendi. Giriş yapabilirsiniz."
+            };
         }
 
-        public async Task<bool> ResetPasswordWithPass(Guid userId, string oldPassword, string newPassword)
+        public async Task<RequestResult> ResetPasswordWithPass(Guid userId, string oldPassword, string newPassword)
         {
             var user = await _userRepo.GetByIdAsync(userId);
-            if (user == null) return false;
+            if (user == null) return new RequestResult { Success = false, Message = "Kullanıcı bulunamadı." };
 
             // Eski şifreyi doğrulama
             var isOldPasswordValid = BCrypt.Net.BCrypt.Verify(oldPassword, user.PasswordHash);
-            if (!isOldPasswordValid) return false;
+            if (!isOldPasswordValid) return new RequestResult { Success = false, Message = "Mevcut şifreniz doğru değil." };
+
+            // Yeni şifre ile eski şifreyi karşılaştırma
+            if (BCrypt.Net.BCrypt.Verify(newPassword, user.PasswordHash))
+                return new RequestResult { Success = false, Message = "Eski şifreniz ile yeni şifreniz aynı olamaz." };
 
             // Yeni şifreyi hash'leyerek kaydetme
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
 
             await _userRepo.UpdateAsync(user);
 
-            return true;
+            return new RequestResult
+            {
+                Success = true,
+                Message = "Şifreniz başarıyla güncellendi."
+            };
         }
 
 

@@ -61,6 +61,17 @@
             }
         }
 
+        function setTimeoutAlert(id_name) {
+            setTimeout(() => {
+                const $success = $(id_name);
+                if ($success.length) {
+                    $success.fadeOut("slow", function () {
+                        $(this).remove();
+                    });
+                }
+            }, 4000);
+        }
+
 
         // Menü tıklama olayını dinle
         $(function () {
@@ -105,8 +116,6 @@
             const token = $form.find('input[name="__RequestVerificationToken"]').val();
 
             $btn.prop("disabled", true).text("Kaydediliyor...");
-            console.log($form.serialize());
-            console.log(token);
             $.ajax({
                 type: "POST",
                 url: "/Account/Profile",
@@ -119,6 +128,7 @@
                         .removeClass("hidden text-red-500 bg-red-100 border-red-300")
                         .addClass("text-green-600 bg-green-100 border border-green-300")
                         .text(msg);
+                    setTimeoutAlert("#profile-alert");
                 },
                 error: function (xhr) {
                     console.log(xhr);
@@ -162,8 +172,9 @@
                         .addClass("text-green-600 bg-green-100 border border-green-300")
                         .text("Profil fotoğrafınız başarıyla güncellendi.");
 
+                    setTimeoutAlert("#profile-photo-alert");
+
                     // Profil fotoğrafını hemen güncelle
-                    console.log(msg)
                     if (msg) {
                         $("img[alt='Profil Fotoğrafı']").attr("src", msg);
                     }
@@ -206,6 +217,7 @@
                         .removeClass("hidden text-red-500 bg-red-100 border-red-300")
                         .addClass("text-green-600 bg-green-100 border border-green-300")
                         .text(msg);
+                    setTimeoutAlert("#reset-password-alert");
                 },
                 error: function (xhr) {
                     const msg = xhr.responseText || "Bir hata oluştu.";

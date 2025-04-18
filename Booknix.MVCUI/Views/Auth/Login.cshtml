@@ -85,6 +85,16 @@
                 }
             });
         });
+
+        // ✅ 10 saniye sonra TempData Success mesajını gizle
+        setTimeout(() => {
+            const $success = $("#success-message");
+            if ($success.length) {
+                $success.fadeOut("slow", function () {
+                    $(this).remove();
+                });
+            }
+        }, 10000);
     </script>
 }
 
