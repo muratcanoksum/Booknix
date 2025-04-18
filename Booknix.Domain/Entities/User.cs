@@ -20,7 +20,9 @@ namespace Booknix.Domain.Entities
         public DateTime? EmailVerifiedAt { get; set; } // Opsiyonel: ne zaman doğrulandı
         public string? PasswordResetToken { get; set; }
         public DateTime? PasswordResetRequestedAt { get; set; }
-
+        public string? MailChangeVerifyToken { get; set; }
+        public DateTime? MailChangeRequestedAt { get; set; }
+        public string? PendingEmail { get; set; } // (Opsiyonel ama önerilir)
 
 
         // Navigation

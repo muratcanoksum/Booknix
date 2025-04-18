@@ -380,6 +380,12 @@ namespace Booknix.Persistence.Migrations
                     b.Property<bool>("IsEmailConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime?>("MailChangeRequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MailChangeVerifyToken")
+                        .HasColumnType("text");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -388,6 +394,9 @@ namespace Booknix.Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PasswordResetToken")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PendingEmail")
                         .HasColumnType("text");
 
                     b.Property<Guid>("RoleId")

@@ -10,6 +10,7 @@ namespace Booknix.Application.Interfaces
         Task<bool> SendPasswordResetTokenAsync(string email);
         Task<bool> CheckTokenExpire(string token);
         Task<RequestResult> ResetPasswordAsync(string token, string newPassword);
-        Task<RequestResult> ResetPasswordWithPass(Guid userId, string oldPassword, string newPassword);
+        Task<RequestResult> ChangePasswordAsync(Guid userId, string oldPassword, string newPassword);
+        Task<RequestResult> ChangeEmail(Guid userId, string newEmail);
     }
 }

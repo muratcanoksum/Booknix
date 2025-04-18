@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Booknix.Persistence.Migrations
 {
     [DbContext(typeof(BooknixDbContext))]
-    [Migration("20250417194848_FixBrokenSnapshot")]
-    partial class FixBrokenSnapshot
+    [Migration("20250418194852_AddMailChangeFieldsToUsers")]
+    partial class AddMailChangeFieldsToUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -383,6 +383,12 @@ namespace Booknix.Persistence.Migrations
                     b.Property<bool>("IsEmailConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime?>("MailChangeRequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MailChangeVerifyToken")
+                        .HasColumnType("text");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -391,6 +397,9 @@ namespace Booknix.Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PasswordResetToken")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PendingEmail")
                         .HasColumnType("text");
 
                     b.Property<Guid>("RoleId")

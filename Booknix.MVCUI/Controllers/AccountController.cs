@@ -114,7 +114,7 @@ namespace Booknix.MVCUI.Controllers
 
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
 
-            var result = await _authService.ResetPasswordWithPass(userId, oldPassword, newPassword);
+            var result = await _authService.ChangePasswordAsync(userId, oldPassword, newPassword);
             if (!result.Success)
             {
                 return BadRequest(result.Message);
@@ -122,6 +122,27 @@ namespace Booknix.MVCUI.Controllers
 
             return Ok(result.Message);
         }
+
+        [HttpGet]
+        public IActionResult ChangeEmail()
+        {
+            var userEmail = HttpContext.Session.GetString("Email")!;
+            return PartialView("_ChangeEmailPartial", userEmail);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeEmail(string newEmail)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var result = await _authService.ChangeEmail(userId, newEmail);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            return Ok(result.Message);
+        }
+
 
     }
 }

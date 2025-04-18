@@ -227,7 +227,7 @@ namespace Booknix.Application.Services
             };
         }
 
-        public async Task<RequestResult> ResetPasswordWithPass(Guid userId, string oldPassword, string newPassword)
+        public async Task<RequestResult> ChangePasswordAsync(Guid userId, string oldPassword, string newPassword)
         {
             var user = await _userRepo.GetByIdAsync(userId);
             if (user == null) return new RequestResult { Success = false, Message = "Kullanıcı bulunamadı." };
@@ -252,7 +252,42 @@ namespace Booknix.Application.Services
             };
         }
 
+        public async Task<RequestResult> ChangeEmail(Guid userId, string newEmail)
+        {
+            var user = await _userRepo.GetByIdAsync(userId);
 
+            if (user == null) return new RequestResult { Success = false, Message = "Kullanıcı bulunamadı." };
+
+            // E-posta adresinin daha önce kullanılıp kullanılmadığını kontrol et
+
+            var existingUser = await _userRepo.GetByEmailAsync(newEmail);
+
+            if (existingUser != null) return new RequestResult { Success = false, Message = "Bu e-posta adresi zaten kullanılıyor." };
+
+            var random = new Random();
+            var verifyCode = random.Next(100000, 999999).ToString();
+
+            user.MailChangeVerifyToken = verifyCode;
+            user.MailChangeRequestedAt = DateTime.UtcNow;
+            user.PendingEmail = newEmail;
+
+            await _userRepo.UpdateAsync(user);
+
+            var html = EmailTemplateHelper.LoadTemplate("EmailChangeVerify", new Dictionary<string, string>
+            {
+                { "fullname", user.FullName },
+                { "verifyCode", verifyCode },
+                { "minutes", EmailHelper.TokenExpireMinutes.ToString() }
+            });
+
+            await _emailSender.SendEmailAsync(user.Email, "Booknix | Email Değiştirme", html, "Booknix Account");
+
+            return new RequestResult
+            {
+                Success = true,
+                Message = "Mevcut e-posta adresinize gönderilen doğrulama kodunu aşağıdaki alana giriniz. Kod 15 dakika boyunca geçerlidir."
+            };
+        }
 
     }
 }

@@ -61,16 +61,16 @@
             }
         }
 
-        function setTimeoutAlert(id_name) {
+        function setTimeoutAlert(id_name, time = 4) {
+            Itime = time * 1000;
             setTimeout(() => {
                 const $success = $(id_name);
                 if ($success.length) {
-                    $success.fadeOut("slow", function () {
-                        $(this).remove();
-                    });
+                    $success.addClass("hidden");
                 }
-            }, 4000);
+            }, Itime);
         }
+
 
 
         // Menü tıklama olayını dinle
@@ -93,11 +93,11 @@
                     initCleavePhoneMask();
                 }).fail(function () {
                     $("#content-panel").html(`
-                   <div class="flex flex-col items-center justify-center text-center space-y-4">
-                    <img src="/images/logo.png" alt="Booknix Logo" class="w-24 h-24">
-                    <h2 class="text-xl font-bold text-gray-700">404 - İçerik Bulunamadı</h2>
-                    <p class="text-sm text-gray-500">İstediğiniz içerik yüklenemedi veya bulunamadı.</p
-                        </div>
+                       <div class="flex flex-col items-center justify-center text-center space-y-4">
+                        <img src="/images/logo.png" alt="Booknix Logo" class="w-24 h-24">
+                        <h2 class="text-xl font-bold text-gray-700">404 - İçerik Bulunamadı</h2>
+                        <p class="text-sm text-gray-500">İstediğiniz içerik yüklenemedi veya bulunamadı.</p
+                            </div>
 `);
                 });
             });
@@ -201,8 +201,6 @@
             const $alert = $("#reset-password-alert");
             const token = $form.find('input[name="__RequestVerificationToken"]').val();
 
-            console.log($form)
-
             $btn.prop("disabled", true).text("Kaydediliyor...");
 
             $.ajax({
@@ -232,7 +230,44 @@
             });
         });
 
+        //Hesap şifresi değiştirme
+        $(document).on("submit", "#change-email-form", function (e) {
+            e.preventDefault();
 
+            const $form = $(this);
+            const $btn = $form.find("button[type='submit']");
+            const $alert = $("#change-email-alert");
+            const token = $form.find('input[name="__RequestVerificationToken"]').val();
+
+            //$btn.prop("disabled", true).text("Yükleniyor...");
+
+            $.ajax({
+                type: "POST",
+                url: "/Account/ChangeEmail",  // POST işlemi yapılacak URL
+                data: $form.serialize(),
+                headers: {
+                    "RequestVerificationToken": token
+                },
+                success: function (msg) {
+                    $alert
+                        .removeClass("hidden text-red-500 bg-red-100 border-red-300")
+                        .addClass("text-green-600 bg-green-100 border border-green-300")
+                        .text(msg);
+                    setTimeoutAlert("#change-email-alert",60);
+                },
+                error: function (xhr) {
+                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    $alert
+                        .removeClass("hidden text-green-600 bg-green-100 border-green-300")
+                        .addClass("text-red-500 bg-red-100 border border-red-300")
+                        .text(msg);
+                    setTimeoutAlert("#change-email-alert",5);
+                },
+                complete: function () {
+                    $btn.prop("disabled", false).text("Email Güncelle");
+                }
+            });
+        });
     </script>
 
 }
