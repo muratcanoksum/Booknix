@@ -528,8 +528,8 @@ namespace Booknix.Application.Services
                 return new RequestResult { Success = false, Message = "Doğrulama kodunun süresi dolmuş." };
             }
 
-            await _userRepo.DeleteAsync(user);
             await _auditLogger.LogAsync(userId, "AccountDeleted", "User", userId.ToString(), null, "Kullanıcı hesabı başarıyla silindi.");
+            await _userRepo.DeleteAsync(user);
 
             return new RequestResult
             {
