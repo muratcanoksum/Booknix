@@ -61,6 +61,36 @@
             }
         }
 
+        const alertTimers = {}; // timer id'lerini tutan nesne
+
+        function setTimeoutAlert(id_name, time = 4) {
+            const Itime = time * 1000;
+
+            // Önceki zamanlayıcıyı iptal et
+            if (alertTimers[id_name]) {
+                clearTimeout(alertTimers[id_name]);
+            }
+
+            // Yeni zamanlayıcı oluştur
+            alertTimers[id_name] = setTimeout(() => {
+                const $el = $(id_name);
+                if ($el.length) {
+                    $el.fadeOut("slow", function () {
+                        $(this)
+                            .removeAttr("style")
+                            .addClass("hidden")
+                            .text("");
+                    });
+                }
+
+                // Temizle (çöp birikmesin)
+                delete alertTimers[id_name];
+
+            }, Itime);
+        }
+
+
+
 
         // Menü tıklama olayını dinle
         $(function () {
@@ -82,11 +112,11 @@
                     initCleavePhoneMask();
                 }).fail(function () {
                     $("#content-panel").html(`
-                   <div class="flex flex-col items-center justify-center text-center space-y-4">
-                    <img src="/images/logo.png" alt="Booknix Logo" class="w-24 h-24">
-                    <h2 class="text-xl font-bold text-gray-700">404 - İçerik Bulunamadı</h2>
-                    <p class="text-sm text-gray-500">İstediğiniz içerik yüklenemedi veya bulunamadı.</p
-                        </div>
+                                                                                               <div class="flex flex-col items-center justify-center text-center space-y-4">
+                                                                                                <img src="/images/logo.png" alt="Booknix Logo" class="w-24 h-24">
+                                                                                                <h2 class="text-xl font-bold text-gray-700">404 - İçerik Bulunamadı</h2>
+                                                                                                <p class="text-sm text-gray-500">İstediğiniz içerik yüklenemedi veya bulunamadı.</p
+                                                                                                    </div>
 `);
                 });
             });
@@ -105,8 +135,6 @@
             const token = $form.find('input[name="__RequestVerificationToken"]').val();
 
             $btn.prop("disabled", true).text("Kaydediliyor...");
-            console.log($form.serialize());
-            console.log(token);
             $.ajax({
                 type: "POST",
                 url: "/Account/Profile",
@@ -119,6 +147,7 @@
                         .removeClass("hidden text-red-500 bg-red-100 border-red-300")
                         .addClass("text-green-600 bg-green-100 border border-green-300")
                         .text(msg);
+                    setTimeoutAlert("#profile-alert");
                 },
                 error: function (xhr) {
                     console.log(xhr);
@@ -127,6 +156,8 @@
                         .removeClass("hidden text-green-600 bg-green-100 border-green-300")
                         .addClass("text-red-500 bg-red-100 border border-red-300")
                         .text(msg);
+                    setTimeoutAlert("#profile-alert");
+
                 },
                 complete: function () {
                     $btn.prop("disabled", false).text("Güncelle");
@@ -134,7 +165,7 @@
             });
         });
 
-        // Profil fotoğrafını güncelleme işlemi
+        // Profil fotoğrafını güncelleme işlemi    -- sorun var
         $(document).on("submit", "#profile-photo-form", function (e) {
             e.preventDefault();
 
@@ -162,8 +193,9 @@
                         .addClass("text-green-600 bg-green-100 border border-green-300")
                         .text("Profil fotoğrafınız başarıyla güncellendi.");
 
+                    setTimeoutAlert("#profile-photo-alert");
+
                     // Profil fotoğrafını hemen güncelle
-                    console.log(msg)
                     if (msg) {
                         $("img[alt='Profil Fotoğrafı']").attr("src", msg);
                     }
@@ -174,6 +206,8 @@
                         .removeClass("hidden text-green-600 bg-green-100 border-green-300")
                         .addClass("text-red-500 bg-red-100 border border-red-300")
                         .text(msg);
+                    setTimeoutAlert("#profile-photo-alert");
+
                 },
                 complete: function () {
                     $btn.prop("disabled", false).text("Güncelle");
@@ -190,8 +224,6 @@
             const $alert = $("#reset-password-alert");
             const token = $form.find('input[name="__RequestVerificationToken"]').val();
 
-            console.log($form)
-
             $btn.prop("disabled", true).text("Kaydediliyor...");
 
             $.ajax({
@@ -206,6 +238,7 @@
                         .removeClass("hidden text-red-500 bg-red-100 border-red-300")
                         .addClass("text-green-600 bg-green-100 border border-green-300")
                         .text(msg);
+                    setTimeoutAlert("#reset-password-alert");
                 },
                 error: function (xhr) {
                     const msg = xhr.responseText || "Bir hata oluştu.";
@@ -213,6 +246,7 @@
                         .removeClass("hidden text-green-600 bg-green-100 border-green-300")
                         .addClass("text-red-500 bg-red-100 border border-red-300")
                         .text(msg);
+                    setTimeoutAlert("#reset-password-alert");
                 },
                 complete: function () {
                     $btn.prop("disabled", false).text("Şifreyi Güncelle");
@@ -220,6 +254,281 @@
             });
         });
 
+        // E-posta güncelleme işlemi
+        $(document).on("submit", "#change-email-form", function (e) {
+            e.preventDefault();
+
+            const $form = $(this);
+            const $verifyForm = $("#change-email-verify-form");
+            const $btn = $form.find("button[type='submit']");
+            const $alert = $("#change-email-alert");
+            const token = $form.find('input[name="__RequestVerificationToken"]').val();
+
+            $btn.prop("disabled", true).text("Yükleniyor...");
+
+            $.ajax({
+                type: "POST",
+                url: "/Account/ChangeEmail",  // POST işlemi yapılacak URL
+                data: $form.serialize(),
+                headers: {
+                    "RequestVerificationToken": token
+                },
+                success: function (msg) {
+                    $alert
+                        .removeClass("hidden text-red-500 bg-red-100 border-red-300")
+                        .addClass("text-green-600 bg-green-100 border border-green-300")
+                        .text(msg);
+                    setTimeoutAlert("#change-email-alert", 900);
+                    $form.addClass("hidden");
+                    $verifyForm.removeClass("hidden");
+                },
+                error: function (xhr) {
+                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    $alert
+                        .removeClass("hidden text-green-600 bg-green-100 border-green-300")
+                        .addClass("text-red-500 bg-red-100 border border-red-300")
+                        .text(msg);
+                    setTimeoutAlert("#change-email-alert", 8);
+                },
+                complete: function () {
+                    $btn.prop("disabled", false).text("Email Güncelle");
+                }
+            });
+        });
+
+        // E-posta doğrulama kodunu verify
+        $(document).on("submit", "#change-email-verify-form", function (e) {
+            e.preventDefault();
+
+            const $form = $(this);
+            const $changeEmailForm = $("#change-email-form");
+            const $btn = $form.find("button[type='submit']");
+            const $alert = $("#change-email-verify-alert");
+            const $alertmain = $("#change-email-alert");
+            const token = $form.find('input[name="__RequestVerificationToken"]').val();
+
+            $btn.prop("disabled", true).text("Yükleniyor...");
+
+            $.ajax({
+                type: "POST",
+                url: "/Account/ChangeEmailVerify",  // POST işlemi yapılacak URL
+                data: $form.serialize(),
+                headers: {
+                    "RequestVerificationToken": token
+                },
+                success: function (msg) {
+                    // ✅ Aktif menü linkinin data-url'ini al
+                    const $activeLink = $(".menu-link.bg-blue-100");
+                    const url = $activeLink.data("url");
+
+                    if (url) {
+                        // AJAX ile yeniden yükle
+                        $("#content-panel").html("Yenileniyor...");
+
+                        $.get(url, function (html) {
+                            $("#content-panel").html(html);
+
+                            // ✅ Yeni DOM geldikten sonra alert'i tekrar bul
+                            const $alertmain = $("#change-email-alert");
+
+                            $alertmain
+                                .removeClass("hidden text-red-500 bg-red-100 border-red-300")
+                                .addClass("text-green-600 bg-green-100 border border-green-300")
+                                .text(msg);
+
+                            setTimeoutAlert("#change-email-alert", 10);
+                        });
+                    }
+
+                },
+                error: function (xhr) {
+                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    $alert
+                        .removeClass("hidden text-green-600 bg-green-100 border-green-300")
+                        .addClass("text-red-500 bg-red-100 border border-red-300")
+                        .text(msg);
+                    setTimeoutAlert("#change-email-verify-alert", 8);
+                },
+                complete: function () {
+                    $btn.prop("disabled", false).text("Email Güncelle");
+                }
+            });
+        });
+
+        // Hesabı doğrulama kodu gönderme işlemi
+        $(document).on("submit", "#start-delete-form", function (e) {
+            e.preventDefault();
+
+            const $form = $(this);
+            const $btn = $form.find("button[type='submit']");
+            const $alert = $("#delete-account-alert");
+            const token = $form.find('input[name="__RequestVerificationToken"]').val();
+
+            $btn.prop("disabled", true).text("Yükleniyor...");
+
+            $.ajax({
+                type: "POST",
+                url: "/Account/Delete",  // POST işlemi yapılacak URL
+                data: $form.serialize(),
+                headers: {
+                    "RequestVerificationToken": token
+                },
+                success: function (msg) {
+                    $alert
+                        .removeClass("hidden text-red-500 bg-red-100 border-red-300")
+                        .addClass("text-green-600 bg-green-100 border border-green-300")
+                        .text(msg);
+                    setTimeoutAlert("#delete-account-alert", 900)
+                    $("#delete-account-info").addClass("hidden");
+                    $("#delete-account-verify-form").removeClass("hidden");
+                },
+                error: function (xhr) {
+                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    $alert
+                        .removeClass("hidden text-green-600 bg-green-100 border-green-300")
+                        .addClass("text-red-500 bg-red-100 border border-red-300")
+                        .text(msg);
+                    setTimeoutAlert("#delete-account-alert", 8);
+                },
+                complete: function () {
+                    $btn.prop("disabled", false).text("Devam Et ve Kodu Gönder");
+                }
+            });
+        });
+
+        // Hesabı silme doğrulama 
+        $(document).on("submit", "#delete-account-verify-form", function (e) {
+            e.preventDefault();
+
+            const $form = $(this);
+            const $btn = $form.find("button[type='submit']");
+            const $alert = $("#delete-account-alert2");
+            const token = $form.find('input[name="__RequestVerificationToken"]').val();
+
+            $btn.prop("disabled", true).text("Yükleniyor...");
+
+            $.ajax({
+                type: "POST",
+                url: "/Account/DeleteVerify",  // POST işlemi yapılacak URL
+                data: $form.serialize(),
+                headers: {
+                    "RequestVerificationToken": token
+                },
+                success: function (msg) {
+                    window.location.href = "/Auth/Logout";
+                },
+                error: function (xhr) {
+                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    $alert
+                        .removeClass("hidden text-green-600 bg-green-100 border-green-300")
+                        .addClass("text-red-500 bg-red-100 border border-red-300")
+                        .text(msg);
+                    setTimeoutAlert("#delete-account-alert2", 8);
+                },
+                complete: function () {
+                    $btn.prop("disabled", false).text("Hesabı Kalıcı Olarak Sil");
+                }
+            });
+        });
+
+    </script>
+
+    @* Pin Input Script *@
+    <script>
+        // Pin input için gerekli olan sınıfları ekle
+        $(document).on('input', '.verify-input', function () {
+            const $inputs = $('.verify-input');
+            const $form = $("#change-email-verify-form");
+            const $form2 = $("#delete-account-verify-form");
+            const $btn2 = $form2.find("button[type='submit']");
+            const $btn = $form.find("button[type='submit']");
+            let code = '';
+
+            // Maksimum 1 karakter
+            if (this.value.length > 1) {
+                this.value = this.value.slice(0, 1);
+            }
+
+            // Sadece rakam ise sonraki inputa geç
+            if (/^\d$/.test(this.value)) {
+                const index = $inputs.index(this);
+                if (index < $inputs.length - 1) {
+                    $inputs.eq(index + 1).focus();
+                }
+            }
+
+            // Tüm inputlardaki değeri topla
+            $inputs.each(function () {
+                code += $(this).val();
+            });
+
+            // Gizli inputa yaz
+            $('#VerificationCode').val(code);
+
+            // 6 haneli değilse butonu kapat
+            if (code.length === 6 && /^\d{6}$/.test(code)) {
+                $btn.prop('disabled', false);
+                $btn2.prop('disabled', false);
+            } else {
+                $btn.prop('disabled', true);
+                $btn2.prop('disabled', true);
+            }
+        });
+
+        // Backspace ile önceki inputa geç
+        $(document).on('keydown', '.verify-input', function (e) {
+            const $inputs = $('.verify-input');
+            const index = $inputs.index(this);
+
+            // Enter tuşu
+            if (e.key === "Enter") {
+                if (code.length === 6 && /^\d{6}$/.test(code)) {
+                    $form.submit(); // ✅ Submit
+                    $form2.submit(); // ✅ Submit
+                } else {
+                    e.preventDefault(); // ⛔️ Kod eksikse enter'ı engelle
+                }
+            }
+
+            // Geri tuşu ile geri inputa git
+            if (e.key === "Backspace" && this.value === '' && index > 0) {
+                $inputs.eq(index - 1).focus();
+            }
+        });
+
+        // Paste işlemi
+        $(document).on('paste', '.verify-input', function (e) {
+            const pasteData = e.originalEvent.clipboardData.getData('text').trim();
+
+            if (/^\d{6}$/.test(pasteData)) {
+                const $inputs = $('.verify-input');
+                for (let i = 0; i < 6; i++) {
+                    const $input = $inputs.eq(i);
+                    $input.val(pasteData[i]);
+
+                    // 🎉 Bonus: geçici yeşil arka plan animasyonu
+                    $input.addClass('bg-green-100 ring-2 ring-green-400');
+
+                    // 500ms sonra geri eski haline getir
+                    setTimeout(() => {
+                        $input.removeClass('bg-green-100 ring-2 ring-green-400');
+                    }, 500);
+                }
+
+                // Kod gizli inputa yaz
+                $('#VerificationCode').val(pasteData);
+
+                // Submit butonunu aktif et
+                const $form = $("#change-email-verify-form");
+                const $form2 = $("#delete-account-verify-form");
+                const $btn = $form.find("button[type='submit']");
+                const $btn2 = $form2.find("button[type='submit']");
+                $btn.prop('disabled', false);
+                $btn2.prop('disabled', false);
+            }
+
+            e.preventDefault(); // Varsayılan yapıştırmayı engelle
+        });
 
     </script>
 

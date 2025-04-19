@@ -19,11 +19,10 @@
             </a>
         </li>
         <li>
-            <form asp-controller="Auth" asp-action="Logout" method="post">
-                <button class="px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition">
-                    Çıkış Yap
-                </button>
-            </form>
+            <a asp-controller="Auth" asp-action="Logout"
+               class="px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition">
+                Çıkış Yap
+            </a>
         </li>
     }
     else

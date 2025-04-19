@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Hesap Silme Doğrulama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: #f9f9f9;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 600px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            margin: auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+            .logo img {
+                height: 120px;
+            }
+
+        .verify-code {
+            display: inline-block;
+            background-color: #ef4444;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 24px;
+            letter-spacing: 4px;
+            font-weight: bold;
+            margin: 16px 0;
+        }
+
+        .warning {
+            background-color: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        .footer {
+            margin-top: 32px;
+            font-size: 13px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://i.hizliresim.com/p4zveuo.png" alt="Booknix Logo" />
+        </div>
+        <hr />
+        <br />
+        <h2>Hesap Silme Doğrulama</h2>
+        <p>Merhaba {{fullname}},</p>
+        <p>Booknix hesabınızı silmek üzere bir talep alındı.</p>
+        <p>Aşağıdaki doğrulama kodunu kullanarak işlemi onaylayabilirsiniz:</p>
+
+        <div class="verify-code">{{verifyCode}}</div>
+
+        <div class="warning">
+            ⚠️ Bu işlem geri alınamaz. Hesabınızla birlikte tüm verileriniz (randevular, yorumlar, medya dosyaları vb.) kalıcı olarak silinecektir.
+        </div>
+
+        <p>Bu kod <strong>{{minutes}}</strong> dakika boyunca geçerlidir.</p>
+        <p>Eğer bu işlemi siz yapmadıysanız, lütfen bu e-postayı görmezden gelin ve hesabınızı güvende tutmak için şifrenizi değiştirin.</p>
+
+        <div class="footer">
+            Sevgiler,<br />
+            Booknix Güvenlik Ekibi
+        </div>
+    </div>
+</body>
+</html>

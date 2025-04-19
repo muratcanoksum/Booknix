@@ -4,12 +4,8 @@ using Booknix.Domain.Entities.Enums;
 
 namespace Booknix.Persistence.Data
 {
-    public class BooknixDbContext : DbContext
+    public class BooknixDbContext(DbContextOptions<BooknixDbContext> options) : DbContext(options)
     {
-        public BooknixDbContext(DbContextOptions<BooknixDbContext> options)
-            : base(options)
-        {
-        }
 
         // DbSet'ler
         public DbSet<User> Users => Set<User>();
@@ -42,7 +38,48 @@ namespace Booknix.Persistence.Data
                 .HasForeignKey<UserProfile>(up => up.UserId)
                 .OnDelete(DeleteBehavior.Cascade); // User silinince profili de silinir
 
-            // Sabit GUID'lerle rollerin seed edilmesi
+            // User - MediaFile ilişkisi
+            modelBuilder.Entity<MediaFile>()
+                .HasOne(m => m.User)
+                .WithMany(u => u.MediaFiles)
+                .HasForeignKey(m => m.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // User - UserLocation ilişkisi
+            modelBuilder.Entity<UserLocation>()
+                .HasOne(ul => ul.User)
+                .WithMany(u => u.UserLocations)
+                .HasForeignKey(ul => ul.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // User - Notification ilişkisi
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // User - Review ilişkisi
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.Reviews)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // User - Appointment ilişkisi
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.User)
+                .WithMany(u => u.Appointments)
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // User - ServiceEmployee ilişkisi (Employee = User)
+            modelBuilder.Entity<ServiceEmployee>()
+                .HasOne(se => se.Employee)
+                .WithMany(u => u.ServiceEmployees)
+                .HasForeignKey(se => se.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // ENUM: LocationRole
             modelBuilder.Entity<UserLocation>()
                 .Property(u => u.RoleInLocation)
@@ -58,7 +95,7 @@ namespace Booknix.Persistence.Data
                 .Property(s => s.Status)
                 .HasConversion<int>();
 
-            // MediaFile ilişkileri
+            // MediaFile - Location/Service/Sector ilişkileri
             modelBuilder.Entity<MediaFile>()
                 .HasOne(m => m.Location)
                 .WithMany(l => l.MediaFiles)
@@ -66,30 +103,33 @@ namespace Booknix.Persistence.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<MediaFile>()
-                .HasOne(m => m.User)
-                .WithMany(u => u.MediaFiles)
-                .HasForeignKey(m => m.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<MediaFile>()
                 .HasOne(m => m.Service)
                 .WithMany(s => s.MediaFiles)
                 .HasForeignKey(m => m.ServiceId)
                 .OnDelete(DeleteBehavior.Cascade);
-            
-            
+
             modelBuilder.Entity<MediaFile>()
                 .HasOne(m => m.Sector)
                 .WithMany(s => s.MediaFiles)
                 .HasForeignKey(m => m.SectorId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Seed veriler (Roller)
+            modelBuilder.Entity<AuditLog>()
+                .HasOne(a => a.AdminUser)
+                .WithMany()
+                .HasForeignKey(a => a.AdminUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+
+
+
+            // Roller (Seed)
             modelBuilder.Entity<Role>().HasData(
                 new Role { Id = new Guid("00000000-0000-0000-0000-000000000001"), Name = "Admin" },
                 new Role { Id = new Guid("00000000-0000-0000-0000-000000000002"), Name = "Employee" },
                 new Role { Id = new Guid("00000000-0000-0000-0000-000000000003"), Name = "Client" }
             );
         }
+
     }
 }

@@ -114,14 +114,80 @@ namespace Booknix.MVCUI.Controllers
 
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
 
-            var success = await _authService.ResetPasswordWithPass(userId, oldPassword, newPassword);
-            if (!success)
+            var result = await _authService.ChangePasswordAsync(userId, oldPassword, newPassword);
+            if (!result.Success)
             {
-                return BadRequest("Eski şifre yanlış veya şifre güncellenemedi.");
+                return BadRequest(result.Message);
             }
 
-            return Ok("Şifreniz başarıyla güncellendi.");
+            return Ok(result.Message);
         }
 
+        [HttpGet]
+        public IActionResult ChangeEmail()
+        {
+            var userEmail = HttpContext.Session.GetString("Email")!;
+            return PartialView("_ChangeEmailPartial", userEmail);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeEmail(string newEmail)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var result = await _authService.ChangeEmail(userId, newEmail);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            return Ok(result.Message);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeEmailVerify(string VerificationCode)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var (result, email) = await _authService.ChangeEmailVerify(userId, VerificationCode);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            HttpContext.Session.SetString("Email", email!);
+            return Ok(result.Message);
+        }
+
+        [HttpGet]
+        public IActionResult Delete()
+        {
+            return PartialView("_DeletePartial");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string CurrentPassword)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var result = await _authService.DeleteAccount(userId, CurrentPassword);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            return Ok(result.Message);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteVerify(string VerificationCode)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var result = await _authService.DeleteAccountVerify(userId, VerificationCode);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            return Ok(result.Message);
+
+        }
     }
 }

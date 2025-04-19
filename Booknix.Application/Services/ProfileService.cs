@@ -55,6 +55,5 @@ namespace Booknix.Application.Services
             return true;
         }
 
-
     }
 }

@@ -103,6 +103,9 @@ namespace Booknix.Persistence.Migrations
                     b.Property<Guid?>("AdminUserId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
                     b.Property<string>("Entity")
                         .HasColumnType("text");
 
@@ -115,9 +118,14 @@ namespace Booknix.Persistence.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AdminUserId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("AuditLogs");
                 });
@@ -389,9 +397,18 @@ namespace Booknix.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("DeleteToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeleteTokenRequesAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("EmailChangedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("EmailVerificationToken")
                         .HasColumnType("text");
@@ -406,6 +423,12 @@ namespace Booknix.Persistence.Migrations
                     b.Property<bool>("IsEmailConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime?>("MailChangeRequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MailChangeVerifyToken")
+                        .HasColumnType("text");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -414,6 +437,12 @@ namespace Booknix.Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PasswordResetToken")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PendingEmail")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PreviousEmail")
                         .HasColumnType("text");
 
                     b.Property<Guid>("RoleId")
@@ -519,7 +548,7 @@ namespace Booknix.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("Booknix.Domain.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("Appointments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -559,8 +588,13 @@ namespace Booknix.Persistence.Migrations
             modelBuilder.Entity("Booknix.Domain.Entities.AuditLog", b =>
                 {
                     b.HasOne("Booknix.Domain.Entities.User", "AdminUser")
+                        .WithMany()
+                        .HasForeignKey("AdminUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Booknix.Domain.Entities.User", null)
                         .WithMany("AuditLogs")
-                        .HasForeignKey("AdminUserId");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("AdminUser");
                 });
@@ -775,6 +809,8 @@ namespace Booknix.Persistence.Migrations
 
             modelBuilder.Entity("Booknix.Domain.Entities.User", b =>
                 {
+                    b.Navigation("Appointments");
+
                     b.Navigation("AuditLogs");
 
                     b.Navigation("MediaFiles");

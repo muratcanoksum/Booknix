@@ -14,7 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Booknix.Application\Booknix.Application.csproj" />
     <ProjectReference Include="..\Booknix.Domain\Booknix.Domain.csproj" />
+    <ProjectReference Include="..\Booknix.Persistence\Booknix.Persistence.csproj" />
     <ProjectReference Include="..\Booknix.Shared\Booknix.Shared.csproj" />
   </ItemGroup>
 
