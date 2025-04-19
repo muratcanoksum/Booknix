@@ -143,6 +143,51 @@ namespace Booknix.MVCUI.Controllers
             return Ok(result.Message);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeEmailVerify(string VerificationCode)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var (result, email) = await _authService.ChangeEmailVerify(userId, VerificationCode);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            HttpContext.Session.SetString("Email", email!);
+            return Ok(result.Message);
+        }
 
+        [HttpGet]
+        public IActionResult Delete()
+        {
+            return PartialView("_DeletePartial");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string CurrentPassword)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var result = await _authService.DeleteAccount(userId, CurrentPassword);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            return Ok(result.Message);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteVerify(string VerificationCode)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var result = await _authService.DeleteAccountVerify(userId, VerificationCode);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            return Ok(result.Message);
+
+        }
     }
 }

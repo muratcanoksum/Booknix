@@ -25,13 +25,10 @@ namespace Booknix.MVCUI.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginRequestDto dto, string? returnUrl)
         {
-            var result = await _authService.LoginAsync(dto);
+            var (result, msg) = await _authService.LoginAsync(dto);
 
             if (result == null)
-                return BadRequest("Email veya şifre hatalı.");
-
-            if (result.Role == "Unverified")
-                return BadRequest("Email adresiniz doğrulanmamış. Lütfen gelen kutunuzu kontrol ediniz.");
+                return BadRequest(msg);
 
             HttpContext.Session.SetString("UserId", result.Id.ToString());
             HttpContext.Session.SetString("FullName", result.FullName);
@@ -68,7 +65,7 @@ namespace Booknix.MVCUI.Controllers
         }
 
         // LOGOUT
-        [HttpPost]
+        [HttpGet]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

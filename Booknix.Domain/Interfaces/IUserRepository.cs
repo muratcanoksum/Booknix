@@ -16,6 +16,7 @@ namespace Booknix.Domain.Interfaces
         Task<User?> GetByVerificationTokenAsync(string token);
         Task UpdateAsync(User user);
         Task<User?> GetByPasswordResetTokenAsync(string token);
+        Task DeleteAsync(User user); // 👈 yeni eklendi
 
     }
 }

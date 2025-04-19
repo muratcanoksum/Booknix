@@ -58,6 +58,11 @@ namespace Booknix.Persistence.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == token);
         }
 
+        public async Task DeleteAsync(User user)
+        {
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+        }
 
     }
 }

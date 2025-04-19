@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["Title"] = "Hesabı Sil";
+}
+
+<div id="delete-account-alert" class="hidden text-sm rounded px-4 py-2 mb-4"></div>
+<div id="delete-account-alert2" class="hidden text-sm rounded px-4 py-2 mb-4"></div>
+
+<!-- Aşama 1: Bilgilendirme + Şifre -->
+<div id="delete-account-info" class="space-y-4">
+    <h2 class="text-xl font-bold text-red-600">Hesabınızı Silmek Üzeresiniz</h2>
+    <p class="text-sm text-gray-700">
+        Bu işlem geri alınamaz. Tüm verileriniz sistemden kalıcı olarak silinecektir.
+        Devam etmek için önce şifrenizi girmeniz ve ardından size gönderilecek doğrulama kodunu girmeniz gerekmektedir.
+    </p>
+
+    <form id="start-delete-form" class="space-y-3" autocomplete="off">
+        @Html.AntiForgeryToken()
+
+        <label for="CurrentPassword" class="block text-sm font-medium text-gray-700">Şifreniz</label>
+
+        <div class="flex items-center border rounded relative !mb-5">
+            <!-- Sol kilit ikonu -->
+            <span class="px-3 text-gray-500 border-r">
+                <i class="fas fa-lock"></i>
+            </span>
+
+            <!-- Şifre input -->
+            <input type="password" name="CurrentPassword" id="CurrentPassword" required autocomplete="off"
+                   class="w-full px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500" />
+
+            <!-- Sağ göz ikonu -->
+            <!--<button type="button" id="toggle-password"
+                    class="absolute right-3 text-gray-400 hover:text-gray-600 focus:outline-none">
+                <i class="fas fa-eye"></i>
+            </button>-->
+        </div>
+
+
+
+        <div class="text-center">
+            <button type="submit"
+                    class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded text-sm font-medium">
+                Devam Et ve Kodu Gönder
+            </button>
+        </div>
+    </form>
+
+</div>
+
+<!-- Aşama 2: Kod Giriş Formu -->
+<form id="delete-account-verify-form" class="space-y-4 hidden mt-8">
+    @Html.AntiForgeryToken()
+
+    <div class="flex justify-center gap-3 my-4 !mb-6">
+        @for (int i = 0; i < 6; i++)
+        {
+            <input type="text" maxlength="1"
+                   inputmode="numeric" pattern="[0-9]*"
+                   class="verify-input w-12 h-12 text-center text-lg font-semibold border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   autocomplete="one-time-code" />
+        }
+    </div>
+
+    <input type="hidden" name="VerificationCode" id="VerificationCode" />
+
+    <div class="text-center">
+        <button type="submit"
+                class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded text-sm font-medium"
+                disabled>
+            Hesabı Kalıcı Olarak Sil
+        </button>
+    </div>
+</form>

@@ -3,6 +3,7 @@ using System;
 using Booknix.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Booknix.Persistence.Migrations
 {
     [DbContext(typeof(BooknixDbContext))]
-    partial class BooknixDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250419152612_PreviousEmailFieldsToUser")]
+    partial class PreviousEmailFieldsToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,9 +106,6 @@ namespace Booknix.Persistence.Migrations
                     b.Property<Guid?>("AdminUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
                     b.Property<string>("Entity")
                         .HasColumnType("text");
 
@@ -118,14 +118,9 @@ namespace Booknix.Persistence.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AdminUserId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("AuditLogs");
                 });
@@ -371,12 +366,6 @@ namespace Booknix.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("DeleteToken")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeleteTokenRequesAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
@@ -522,7 +511,7 @@ namespace Booknix.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("Booknix.Domain.Entities.User", "User")
-                        .WithMany("Appointments")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -562,13 +551,8 @@ namespace Booknix.Persistence.Migrations
             modelBuilder.Entity("Booknix.Domain.Entities.AuditLog", b =>
                 {
                     b.HasOne("Booknix.Domain.Entities.User", "AdminUser")
-                        .WithMany()
-                        .HasForeignKey("AdminUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Booknix.Domain.Entities.User", null)
                         .WithMany("AuditLogs")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("AdminUserId");
 
                     b.Navigation("AdminUser");
                 });
@@ -772,8 +756,6 @@ namespace Booknix.Persistence.Migrations
 
             modelBuilder.Entity("Booknix.Domain.Entities.User", b =>
                 {
-                    b.Navigation("Appointments");
-
                     b.Navigation("AuditLogs");
 
                     b.Navigation("MediaFiles");
