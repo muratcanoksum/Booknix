@@ -23,7 +23,8 @@ jobs:
 
     - name: 🚧 Add App_Offline.htm to stop app temporarily
       run: |
-        echo "<!DOCTYPE html><html><head><title>Maintenance</title></head><body><h1>Site is under maintenance. Please try again later.</h1></body></html>" > publish/App_Offline.htm
+        mkdir -p publish/booknix.ismailparlak.com
+        echo "<!DOCTYPE html><html><head><title>Maintenance</title></head><body><h1>Site is under maintenance. Please try again later.</h1></body></html>" > publish/booknix.ismailparlak.com/App_Offline.htm
 
     - name: 🚀 Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -33,6 +34,6 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: publish/
         server-dir: booknix.ismailparlak.com/
-
+    
     - name: ✅ Remove App_Offline.htm to bring app online
       run: curl -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} -Q "-DELE booknix.ismailparlak.com/App_Offline.htm" ftp://${{ secrets.FTP_SERVER }}
