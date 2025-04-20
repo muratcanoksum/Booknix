@@ -38,9 +38,10 @@ jobs:
         local-dir: publish/
         server-dir: booknix.ismailparlak.com/
 
-    - name: ✅ Remove App_Offline.htm to bring app online
+    - name: 🧹 Remove App_Offline.htm to bring app online
+      shell: bash
       run: |
-        curl -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} \
+        curl -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
              -Q "-DELE booknix.ismailparlak.com/App_Offline.htm" \
              ftp://${{ secrets.FTP_SERVER }} || exit 0
 
