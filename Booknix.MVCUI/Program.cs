@@ -37,6 +37,8 @@ builder.Services.AddDbContext<BooknixDbContext>(options =>
 // Dependency Injection
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();
 builder.Services.AddScoped<IRoleRepository, EfRoleRepository>();
+builder.Services.AddScoped<ITrustedIpRepository, EfTrustedIpRepository>();
+builder.Services.AddScoped<IUserProfileRepository, EfUserProfileRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 builder.Services.AddScoped<IUserProfileRepository, EfUserProfileRepository>();

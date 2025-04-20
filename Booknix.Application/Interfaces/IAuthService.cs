@@ -15,5 +15,6 @@ namespace Booknix.Application.Interfaces
         Task<(RequestResult, string? NewEmail)> ChangeEmailVerify(Guid userId, string token);
         Task<RequestResult> DeleteAccount(Guid userId, string password);
         Task<RequestResult> DeleteAccountVerify(Guid userId, string token);
+        Task<RequestResult> ApproveIpAsync(string token);
     }
 }

@@ -5,14 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Booknix.Persistence.Repositories
 {
-    public class EfUserRepository : IUserRepository
+    public class EfUserRepository(BooknixDbContext context) : IUserRepository
     {
-        private readonly BooknixDbContext _context;
-
-        public EfUserRepository(BooknixDbContext context)
-        {
-            _context = context;
-        }
+        private readonly BooknixDbContext _context = context;
 
         public async Task<User?> GetByEmailAsync(string email)
         {
@@ -62,6 +57,13 @@ namespace Booknix.Persistence.Repositories
         {
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<User>> GetUsersByRoleIdAsync(Guid roleId)
+        {
+            return await _context.Users
+                .Where(u => u.RoleId == roleId && u.IsEmailConfirmed)
+                .ToListAsync();
         }
 
     }

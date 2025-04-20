@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>IP Adresi Onayı</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            margin: auto;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+            .logo img {
+                height: 120px;
+            }
+
+        .approve-btn {
+            display: inline-block;
+            background-color: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .ip-info {
+            background-color: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+
+        .footer {
+            margin-top: 32px;
+            font-size: 13px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://i.hizliresim.com/p4zveuo.png" alt="Booknix Logo" />
+        </div>
+
+        <h2>Yeni IP Adresi Girişi</h2>
+        <p><strong>{{fullname}}</strong> adlı yönetici <strong>{{currentIp}}</strong> IP adresinden panele erişmek istedi.</p>
+
+        <a href="{{approvalUrl}}" class="approve-btn">IP Adresini Onayla</a>
+
+        <div class="ip-info">
+            📅 Zaman: <strong>{{timestamp}}</strong>
+        </div>
+
+
+        <div class="footer">
+            Güvenliğiniz için bu işlem kayıt altına alınmıştır.<br />
+            Booknix Güvenlik Ekibi
+        </div>
+    </div>
+</body>
+</html>

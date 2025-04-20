@@ -17,6 +17,7 @@ namespace Booknix.Domain.Interfaces
         Task UpdateAsync(User user);
         Task<User?> GetByPasswordResetTokenAsync(string token);
         Task DeleteAsync(User user); // 👈 yeni eklendi
+        Task<List<User>> GetUsersByRoleIdAsync(Guid roleId);
 
     }
 }

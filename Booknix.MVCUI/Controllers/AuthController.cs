@@ -9,21 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Booknix.MVCUI.Controllers
 {
-    public class AuthController : Controller
+    public class AuthController(
+        IAuthService authService,
+        BooknixDbContext context,
+        IEmailSender emailSender) : Controller
     {
-        private readonly IAuthService _authService;
-        private readonly BooknixDbContext _context;
-        private readonly IEmailSender _emailSender;
-
-        public AuthController(
-            IAuthService authService,
-            BooknixDbContext context,
-            IEmailSender emailSender)
-        {
-            _authService = authService;
-            _context = context;
-            _emailSender = emailSender;
-        }
+        private readonly IAuthService _authService = authService;
+        private readonly BooknixDbContext _context = context;
+        private readonly IEmailSender _emailSender = emailSender;
 
         // LOGIN
         [HttpGet]
@@ -37,15 +30,7 @@ namespace Booknix.MVCUI.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginRequestDto dto, string? returnUrl)
         {
-
             var (result, msg) = await _authService.LoginAsync(dto);
-            var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault()
-                            ?? HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString()
-                            ?? "0.0.0.0";
-
-
-
-
 
             if (result == null)
                 return BadRequest(msg);
@@ -64,75 +49,8 @@ namespace Booknix.MVCUI.Controllers
                 });
             }
 
-            if (result.Role == "Admin")
-            {
-                // Bu admin'e ait daha önce kayıtlı bir IP var mı?
-                var existingIp = await _context.TrustedIps
-                    .FirstOrDefaultAsync(x => x.UserId == result.Id && x.IpAddress == ipAddress);
-
-                // Eğer hiç kayıt yoksa bile IP'yi ekle
-                if (existingIp == null || !existingIp.IsApproved)
-                {
-                    if (existingIp == null)
-                    {
-                        _context.TrustedIps.Add(new TrustedIp
-                        {
-                            Id = Guid.NewGuid(),
-                            UserId = result.Id,
-                            IpAddress = ipAddress,
-                            IsApproved = false,
-                            RequestedAt = DateTime.UtcNow
-                        });
-
-                        await _context.SaveChangesAsync();
-                    }
-
-                    // Adminleri al (en azından bir tane olmalı: giriş yapan kişi)
-                    var admins = await _context.Users
-                        .Include(u => u.Role)
-                        .Where(u => u.Role!.Name == "Admin" && u.IsEmailConfirmed)
-                        .ToListAsync();
-
-                    // Eğer hiç admin yoksa bile kendisine mail gönderilsin
-                    if (!admins.Any())
-                    {
-                        admins.Add(new User
-                        {
-                            Email = result.Email,
-                            FullName = result.FullName
-                        });
-                    }
-
-                    // Mail hazırla ve gönder
-                    var protocol = Request.IsHttps ? "https" : "http";
-                    var approvalUrl = $"{protocol}://{Request.Host}/Auth/ApproveIp?userId={result.Id}&ip={ipAddress}";
-                    var subject = $"🚨 Güvenlik Uyarısı: {result.FullName} yeni bir IP'den giriş yapıyor";
-                    var htmlBody = $@"
-            <p><strong>{result.FullName}</strong> adlı yönetici <strong>{ipAddress}</strong> IP adresinden panele erişmek istedi.</p>
-            <p>Bu IP'yi onaylamak için <a href='{approvalUrl}'>buraya tıklayın</a>.</p>
-            <p><small>Zaman: {DateTime.UtcNow:dd MMM yyyy HH:mm}</small></p>";
-
-                    foreach (var admin in admins)
-                    {
-                        await _emailSender.SendEmailAsync(
-                            to: admin.Email,
-                            subject: subject,
-                            htmlBody: htmlBody,
-                            from: "Booknix Güvenlik Sistemi"
-                        );
-                    }
-
-                    return BadRequest("Yeni bir IP adresinden giriş algılandı. Onay maili gönderildi.");
-                }
-            }
-
             return Ok(string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl);
-
-
-
         }
-
-
 
         // REGISTER
         [HttpGet]
@@ -199,7 +117,6 @@ namespace Booknix.MVCUI.Controllers
             return View();
         }
 
-
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequestDto dto)
         {
@@ -211,6 +128,16 @@ namespace Booknix.MVCUI.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ApproveIp(string token)
+        {
+            var result = await _authService.ApproveIpAsync(token);
+
+            ViewBag.Status = result.Success ? "success" : "error";
+            ViewBag.Message = result.Message;
+
+            return View("VerifyResult"); // Basit bir sonuç sayfası gösterebiliriz
+        }
 
     }
 }

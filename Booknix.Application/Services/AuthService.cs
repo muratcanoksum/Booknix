@@ -5,30 +5,27 @@ using Booknix.Domain.Entities;
 using Booknix.Domain.Interfaces;
 using Booknix.Shared.Helpers;
 using Booknix.Shared.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace Booknix.Application.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService(
+        IUserRepository userRepo,
+        IRoleRepository roleRepo,
+        IEmailSender emailSender,
+        IAppSettings appSettings,
+        IAuditLogger auditLogger,
+        ITrustedIpRepository trustedIpRepo,
+        IHttpContextAccessor httpContextAccessor
+            ) : IAuthService
     {
-        private readonly IUserRepository _userRepo;
-        private readonly IRoleRepository _roleRepo;
-        private readonly IEmailSender _emailSender;
-        private readonly IAppSettings _appSettings;
-        private readonly IAuditLogger _auditLogger;
-
-        public AuthService(
-            IUserRepository userRepo,
-            IRoleRepository roleRepo,
-            IEmailSender emailSender,
-            IAppSettings appSettings,
-            IAuditLogger auditLogger)
-        {
-            _userRepo = userRepo;
-            _roleRepo = roleRepo;
-            _emailSender = emailSender;
-            _appSettings = appSettings;
-            _auditLogger = auditLogger;
-        }
+        private readonly IUserRepository _userRepo = userRepo;
+        private readonly IRoleRepository _roleRepo = roleRepo;
+        private readonly IEmailSender _emailSender = emailSender;
+        private readonly IAppSettings _appSettings = appSettings;
+        private readonly IAuditLogger _auditLogger = auditLogger;
+        private readonly ITrustedIpRepository _trustedIpRepo = trustedIpRepo;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public async Task<bool> RegisterAsync(RegisterRequestDto request, string roleName)
         {
@@ -95,57 +92,17 @@ namespace Booknix.Application.Services
 
         public async Task<(AuthResponseDto?, string? Message)> LoginAsync(LoginRequestDto request)
         {
-            var user = await _userRepo.GetByEmailAsync(request.Email);
+            var (user, validationMessage) = await ValidateUserCredentialsAsync(request);
+            if (validationMessage != null)
+                return (null, validationMessage);
 
-            // Kullanıcı yoksa
-            if (user == null)
+            if (user!.Role?.Name == "Admin")
             {
-                await _auditLogger.LogAsync(null, "FailedLogin", "User", null, null, $"Geçersiz e-posta: {request.Email}");
-                return (null, "Kullanıcı bulunamadı. Lütfen e-posta adresinizi kontrol ediniz.");
+                var ipCheckMessage = await HandleAdminIpCheckAsync(user);
+                if (ipCheckMessage != null)
+                    return (null, ipCheckMessage);
             }
 
-            // Şifre yanlışsa
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            {
-                await _auditLogger.LogAsync(user.Id, "FailedLogin", "User", user.Id.ToString(), null, "Yanlış şifre ile giriş denemesi");
-                return (null, "Şifreniz yanlış. Lütfen tekrar deneyin.");
-            }
-
-            // E-posta doğrulanmamışsa
-            if (!user.IsEmailConfirmed)
-            {
-                if (EmailHelper.IsTokenExpired(user.TokenGeneratedAt))
-                {
-                    var newToken = Guid.NewGuid().ToString();
-                    user.EmailVerificationToken = newToken;
-                    user.TokenGeneratedAt = DateTime.UtcNow;
-
-                    await _userRepo.UpdateAsync(user);
-
-                    var verifyLink = $"{_appSettings.BaseUrl}/Auth/VerifyEmail?token={newToken}";
-
-                    var htmlBody = EmailTemplateHelper.LoadTemplate("EmailVerification", new Dictionary<string, string>
-            {
-                { "fullname", user.FullName },
-                { "verifyLink", verifyLink },
-                { "minutes", EmailHelper.TokenExpireMinutes.ToString() }
-            });
-
-                    await _emailSender.SendEmailAsync(
-                        user.Email,
-                        "Booknix • E-Posta Doğrulama Linkiniz Yenilendi",
-                        htmlBody,
-                        "Booknix Doğrulama"
-                    );
-
-                }
-
-                await _auditLogger.LogAsync(user.Id, "UnverifiedLoginAttempt", "User", user.Id.ToString(), null, "Doğrulanmamış e-posta ile giriş denemesi");
-
-                return (null, "E-posta adresiniz henüz doğrulanmamış. Yeni doğrulama bağlantısı e-posta adresinize gönderildi.");
-            }
-
-            // Başarılı giriş
             await _auditLogger.LogAsync(user.Id, "Login", "User", user.Id.ToString(), null, "Kullanıcı başarılı şekilde giriş yaptı.");
 
             return (new AuthResponseDto
@@ -156,6 +113,104 @@ namespace Booknix.Application.Services
                 Role = user.Role?.Name ?? "Unknown"
             }, "");
         }
+
+        // Yardımcı Fonksiyonlar
+
+        private async Task<(User?, string?)> ValidateUserCredentialsAsync(LoginRequestDto request)
+        {
+            var user = await _userRepo.GetByEmailAsync(request.Email);
+            if (user == null)
+            {
+                await _auditLogger.LogAsync(null, "FailedLogin", "User", null, null, $"Geçersiz e-posta: {request.Email}");
+                return (null, "Kullanıcı bulunamadı. Lütfen e-posta adresinizi kontrol ediniz.");
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            {
+                await _auditLogger.LogAsync(user.Id, "FailedLogin", "User", user.Id.ToString(), null, "Yanlış şifre ile giriş denemesi");
+                return (null, "Şifreniz yanlış. Lütfen tekrar deneyin.");
+            }
+
+            if (!user.IsEmailConfirmed)
+            {
+                if (EmailHelper.IsTokenExpired(user.TokenGeneratedAt))
+                {
+                    var newToken = Guid.NewGuid().ToString();
+                    user.EmailVerificationToken = newToken;
+                    user.TokenGeneratedAt = DateTime.UtcNow;
+                    await _userRepo.UpdateAsync(user);
+
+                    var verifyLink = $"{_appSettings.BaseUrl}/Auth/VerifyEmail?token={newToken}";
+                    var htmlBody = EmailTemplateHelper.LoadTemplate("EmailVerification", new Dictionary<string, string>
+            {
+                { "fullname", user.FullName },
+                { "verifyLink", verifyLink },
+                { "minutes", EmailHelper.TokenExpireMinutes.ToString() }
+            });
+
+                    await _emailSender.SendEmailAsync(user.Email, "Booknix • E-Posta Doğrulama Linkiniz Yenilendi", htmlBody, "Booknix Doğrulama");
+                }
+
+                await _auditLogger.LogAsync(user.Id, "UnverifiedLoginAttempt", "User", user.Id.ToString(), null, "Doğrulanmamış e-posta ile giriş denemesi");
+                return (null, "E-posta adresiniz henüz doğrulanmamış. Yeni doğrulama bağlantısı gönderildi.");
+            }
+
+            return (user, null);
+        }
+
+        private async Task<string?> HandleAdminIpCheckAsync(User user)
+        {
+            var currentIp = IpHelper.GetCurrentIp(_httpContextAccessor);
+            var trustedIp = await _trustedIpRepo.GetByUserAndIpAsync(user.Id, currentIp);
+
+            if (trustedIp != null && trustedIp.IsApproved)
+                return null;
+
+            var token = Guid.NewGuid().ToString();
+
+            if (trustedIp == null)
+            {
+                await _trustedIpRepo.AddAsync(new TrustedIp
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = user.Id,
+                    IpAddress = currentIp,
+                    IsApproved = false,
+                    RequestedAt = DateTime.UtcNow,
+                    Token = token
+                });
+
+                await _auditLogger.LogAsync(user.Id, "UntrustedIpDetected", "TrustedIp", user.Id.ToString(), currentIp, "Yeni IP adresi güvenilir IP'lere eklendi ve onay bekliyor.");
+            }
+            else
+            {
+                await _auditLogger.LogAsync(user.Id, "UnapprovedIpLoginAttempt", "TrustedIp", user.Id.ToString(), currentIp, "Onaylanmamış IP adresinden giriş denemesi yapıldı.");
+            }
+
+            var role = await _roleRepo.GetByNameAsync("Admin");
+            var admins = role == null ? [user] : await _userRepo.GetUsersByRoleIdAsync(role.Id);
+            if (admins.Count == 0) admins.Add(user);
+
+            var approvalUrl = $"{_appSettings.BaseUrl}/Auth/ApproveIp?token={token}";
+            var html = EmailTemplateHelper.LoadTemplate("NewIpApproval", new Dictionary<string, string>
+            {
+                { "fullname", user.FullName },
+                { "currentIp", currentIp },
+                { "approvalUrl", approvalUrl },
+                { "timestamp", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") }
+            });
+
+            foreach (var admin in admins)
+            {
+                await _emailSender.SendEmailAsync(admin.Email, "Booknix • Yeni IP Girişi Tespiti", html, "Booknix Yönetim");
+            }
+
+            await _auditLogger.LogAsync(user.Id, "IpApprovalEmailSent", "TrustedIp", user.Id.ToString(), currentIp, "Yeni IP adresi için onay e-postası gönderildi.");
+
+            return "Yeni bir IP adresinden giriş algılandı. Onay maili gönderildi.";
+        }
+
+        // Yardımcı Fonksiyonlar
 
         public async Task<RequestResult> VerifyEmailAsync(string token)
         {
@@ -537,6 +592,42 @@ namespace Booknix.Application.Services
                 Message = "Hesabınız başarıyla silindi."
             };
         }
+
+        public async Task<RequestResult> ApproveIpAsync(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                await _auditLogger.LogAsync(null, "FailedIpApproval", "TrustedIp", null, null, "IP onay işlemi başarısız oldu: Token değeri boş.");
+                return new RequestResult { Success = false, Message = "Geçersiz doğrulama bağlantısı. Lütfen tekrar deneyin." };
+            }
+
+            var trustedIp = await _trustedIpRepo.GetByVerificationTokenAsync(token);
+            if (trustedIp == null)
+            {
+                await _auditLogger.LogAsync(null, "FailedIpApproval", "TrustedIp", null, null, "IP onay işlemi başarısız oldu: Token ile eşleşen kayıt bulunamadı.");
+                return new RequestResult { Success = false, Message = "IP adresi doğrulaması başarısız. Geçersiz veya süresi dolmuş bağlantı." };
+            }
+
+            if (trustedIp.IsApproved)
+            {
+                await _auditLogger.LogAsync(trustedIp.UserId, "RedundantIpApproval", "TrustedIp", trustedIp.Id.ToString(), trustedIp.IpAddress, "IP adresi zaten onaylıydı.");
+                return new RequestResult { Success = true, Message = "Bu IP adresi zaten daha önce onaylanmış." };
+            }
+
+            trustedIp.IsApproved = true;
+            trustedIp.ApprovedAt = DateTime.UtcNow;
+            trustedIp.Token = string.Empty;
+
+            await _trustedIpRepo.UpdateAsync(trustedIp);
+            await _auditLogger.LogAsync(trustedIp.UserId, "IpApproved", "TrustedIp", trustedIp.Id.ToString(), trustedIp.IpAddress, "Yeni IP adresi başarıyla onaylandı.");
+
+            return new RequestResult
+            {
+                Success = true,
+                Message = "IP adresi başarıyla onaylandı. Artık bu adres üzerinden yönetim paneline erişebilirsiniz."
+            };
+        }
+
 
     }
 }

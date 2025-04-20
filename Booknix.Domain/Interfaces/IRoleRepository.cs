@@ -11,5 +11,6 @@ namespace Booknix.Domain.Interfaces
     {
         Task<Role?> GetByNameAsync(string name);
         Task<IEnumerable<Role>> GetAllAsync();
+
     }
 }
