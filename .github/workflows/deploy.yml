@@ -37,7 +37,10 @@ jobs:
         local-dir: publish/
         server-dir: booknix.ismailparlak.com/
     
-    - name: ✅ Remove App_Offline.htm to bring app online
+    - name: ✅ Remove App_Offline.htm (fail-safe)
       run: |
-        curl -v --ftp-method nocwd -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} ftp://${{ secrets.FTP_SERVER }}/booknix.ismailparlak.com/App_Offline.htm -Q "-DELE App_Offline.htm"
-
+        curl -v --ftp-method nocwd \
+          -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} \
+          ftp://${{ secrets.FTP_SERVER }} \
+          -Q "CWD booknix.ismailparlak.com" \
+          -Q "DELE App_Offline.htm" || exit 0
