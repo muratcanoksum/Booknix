@@ -25,6 +25,9 @@ jobs:
       run: |
         echo "<!DOCTYPE html><html><head><title>Maintenance</title></head><body><h1>Site is under maintenance. Please try again later.</h1></body></html>" > publish/App_Offline.htm
     
+    - name: 🔍 Confirm App_Offline.htm exists
+      run: dir publish
+    
     - name: 🚀 Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
@@ -33,7 +36,8 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: publish/
         server-dir: booknix.ismailparlak.com/
-
+    
     - name: ✅ Remove App_Offline.htm to bring app online
       run: |
         curl -v --ftp-method nocwd -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} ftp://${{ secrets.FTP_SERVER }}/booknix.ismailparlak.com/App_Offline.htm -Q "-DELE App_Offline.htm"
+
