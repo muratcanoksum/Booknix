@@ -16,18 +16,17 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x' # Projeye göre değişebilir
+        dotnet-version: '8.0.x'
+
+    # 🛑 1. Uygulamayı durdur: App_Offline.htm dosyasını FTP ile gönder
+    - name: 🛑 Put App_Offline.htm to stop app
+      run: |
+        echo "<!DOCTYPE html><html lang='tr'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Bakımdayız - Booknix</title><style>body{background-color:#f3f4f6;color:#1f2937;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;flex-direction:column;height:100vh;margin:0;text-align:center}h1{font-size:2rem;margin-bottom:1rem}p{font-size:1rem;color:#4b5563;max-width:400px}</style></head><body><h1>Şu anda bakımdayız.</h1><p>Booknix hizmetlerini geliştirmek için kısa bir bakımdayız. Lütfen daha sonra tekrar deneyin. Anlayışınız için teşekkür ederiz.</p></body></html>" > App_Offline.htm
+        curl -T App_Offline.htm --ftp-method nocwd -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} ftp://${{ secrets.FTP_SERVER }}/booknix.ismailparlak.com/
 
     - name: Publish .NET project
       run: dotnet publish Booknix.MVCUI/Booknix.MVCUI.csproj -c Release -o publish
 
-    - name: 🚧 Add App_Offline.htm to stop app temporarily
-      run: |
-        echo "<!DOCTYPE html><html><head><title>Maintenance</title></head><body><h1>Site is under maintenance. Please try again later.</h1></body></html>" > publish/App_Offline.htm
-    
-    - name: 🔍 Confirm App_Offline.htm exists
-      run: dir publish
-    
     - name: 🚀 Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
@@ -36,11 +35,11 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: publish/
         server-dir: booknix.ismailparlak.com/
-    
-    - name: ✅ Remove App_Offline.htm (fail-safe)
+
+    # ✅ 4. App_Offline.htm sil: varsa silinsin, yoksa hata verme
+    - name: ✅ Remove App_Offline.htm to bring app online
       run: |
         curl -v --ftp-method nocwd \
           -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} \
           ftp://${{ secrets.FTP_SERVER }} \
-          -Q "CWD booknix.ismailparlak.com" \
-          -Q "DELE App_Offline.htm" || exit 0
+          -Q "-DELE booknix.ismailparlak.com/App_Offline.htm" || exit 0
