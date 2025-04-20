@@ -35,11 +35,3 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: publish/
         server-dir: booknix.ismailparlak.com/
-
-    # ✅ 4. App_Offline.htm sil: varsa silinsin, yoksa hata verme
-    - name: ✅ Remove App_Offline.htm to bring app online
-      run: |
-        curl -v --ftp-method nocwd \
-          -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} \
-          ftp://${{ secrets.FTP_SERVER }} \
-          -Q "-DELE booknix.ismailparlak.com/App_Offline.htm" || exit 0
