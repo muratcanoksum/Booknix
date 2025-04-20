@@ -53,6 +53,10 @@
     </div>
 </div>
 
+
+
+
+
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -75,10 +79,18 @@
                 },
                 error: function (xhr) {
                     const errorMessage = xhr.responseText || "Bilinmeyen bir hata oluştu.";
+
                     $alert
                         .removeClass("hidden")
-                        .addClass("alert-danger")
-                        .text(errorMessage);
+                        .removeClass("alert-danger")
+                        .html(`
+                            <div class="bg-red-100 border border-red-300 text-red-800 px-4 py-2 rounded text-sm">
+                                ${errorMessage}
+                                ${errorMessage.includes("IP adresinden giriş algılandı") 
+                                    ? "<br/><span class='text-xs text-gray-600'>Onay maili gönderildi. Lütfen kontrol edin.</span>" 
+                                    : ""}
+                            </div>
+                        `);
                 },
                 complete: function () {
                     $btn.prop("disabled", false).text("Giriş Yap");
@@ -97,4 +109,3 @@
         }, 10000);
     </script>
 }
-

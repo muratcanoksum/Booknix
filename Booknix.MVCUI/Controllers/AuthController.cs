@@ -1,16 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Booknix.Application.DTOs;
 using Booknix.Application.Interfaces;
+using Booknix.Domain.Entities;
+using Booknix.Infrastructure.Email;
+using Booknix.Persistence.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Booknix.MVCUI.Controllers
 {
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
+        private readonly BooknixDbContext _context;
+        private readonly IEmailSender _emailSender;
 
-        public AuthController(IAuthService authService)
+        public AuthController(
+            IAuthService authService,
+            BooknixDbContext context,
+            IEmailSender emailSender)
         {
             _authService = authService;
+            _context = context;
+            _emailSender = emailSender;
         }
 
         // LOGIN
@@ -25,7 +37,16 @@ namespace Booknix.MVCUI.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginRequestDto dto, string? returnUrl)
         {
+
+            var result = await _authService.LoginAsync(dto);
+            var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault()
+                            ?? HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString()
+                            ?? "0.0.0.0";
+
+
+
             var (result, msg) = await _authService.LoginAsync(dto);
+
 
             if (result == null)
                 return BadRequest(msg);
@@ -43,14 +64,75 @@ namespace Booknix.MVCUI.Controllers
                     Expires = DateTimeOffset.Now.AddDays(1)
                 });
             }
-            
-            if (result.Role == "Admin")
-            {
-                return Ok("/Admin");
-            }
 
-            return Ok(string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl);
+if (result.Role == "Admin")
+{
+    // Bu admin'e ait daha önce kayıtlı bir IP var mı?
+    var existingIp = await _context.TrustedIps
+        .FirstOrDefaultAsync(x => x.UserId == result.Id && x.IpAddress == ipAddress);
+
+    // Eğer hiç kayıt yoksa bile IP'yi ekle
+    if (existingIp == null || !existingIp.IsApproved)
+    {
+        if (existingIp == null)
+        {
+            _context.TrustedIps.Add(new TrustedIp
+            {
+                Id = Guid.NewGuid(),
+                UserId = result.Id,
+                IpAddress = ipAddress,
+                IsApproved = false,
+                RequestedAt = DateTime.UtcNow
+            });
+
+            await _context.SaveChangesAsync();
         }
+
+        // Adminleri al (en azından bir tane olmalı: giriş yapan kişi)
+        var admins = await _context.Users
+            .Include(u => u.Role)
+            .Where(u => u.Role!.Name == "Admin" && u.IsEmailConfirmed)
+            .ToListAsync();
+
+        // Eğer hiç admin yoksa bile kendisine mail gönderilsin
+        if (!admins.Any())
+        {
+            admins.Add(new User
+            {
+                Email = result.Email,
+                FullName = result.FullName
+            });
+        }
+
+        // Mail hazırla ve gönder
+        var protocol = Request.IsHttps ? "https" : "http";
+        var approvalUrl = $"{protocol}://{Request.Host}/Auth/ApproveIp?userId={result.Id}&ip={ipAddress}";
+        var subject = $"🚨 Güvenlik Uyarısı: {result.FullName} yeni bir IP'den giriş yapıyor";
+        var htmlBody = $@"
+            <p><strong>{result.FullName}</strong> adlı yönetici <strong>{ipAddress}</strong> IP adresinden panele erişmek istedi.</p>
+            <p>Bu IP'yi onaylamak için <a href='{approvalUrl}'>buraya tıklayın</a>.</p>
+            <p><small>Zaman: {DateTime.UtcNow:dd MMM yyyy HH:mm}</small></p>";
+
+        foreach (var admin in admins)
+        {
+            await _emailSender.SendEmailAsync(
+                to: admin.Email,
+                subject: subject,
+                htmlBody: htmlBody,
+                from: "Booknix Güvenlik Sistemi"
+            );
+        }
+
+        return BadRequest("Yeni bir IP adresinden giriş algılandı. Onay maili gönderildi.");
+    }
+}
+            
+            return Ok(string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl);
+
+            
+            
+        }
+
 
 
         // REGISTER
