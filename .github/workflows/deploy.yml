@@ -38,14 +38,11 @@ jobs:
         local-dir: publish/
         server-dir: booknix.ismailparlak.com/
 
-    - name: 🧹 Remove App_Offline.htm manually
+    - name: ✅ Remove App_Offline.htm to bring app online
       run: |
-        echo "::group::🧹 Siliniyor: App_Offline.htm"
-        curl -v --ftp-method nocwd \
-          -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} \
-          ftp://${{ secrets.FTP_SERVER }} \
-          -Q "-DELE booknix.ismailparlak.com/App_Offline.htm" || exit 0
-        echo "::endgroup::"
+        curl -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} \
+             -Q "-DELE booknix.ismailparlak.com/App_Offline.htm" \
+             ftp://${{ secrets.FTP_SERVER }} || exit 0
 
-    - name: ✅ Done! Booknix is live again.
+    - name: ✅ Yayın Tamamlandı
       run: echo "::notice title=Yayınlandı::Booknix başarıyla yayınlandı ve çevrimiçi! 🎉"
