@@ -21,19 +21,15 @@ jobs:
     - name: 🛑 Put App_Offline.htm (stop site)
       run: |
         echo "::group::🛑 Creating App_Offline.htm and uploading..."
-        echo "::notice title=Bakım Başlatılıyor::Uygulama geçici olarak durduruluyor..."
         echo "<!DOCTYPE html><html lang='tr'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Bakımdayız - Booknix</title><style>body{background-color:#f3f4f6;color:#1f2937;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;flex-direction:column;height:100vh;margin:0;text-align:center}h1{font-size:2rem;margin-bottom:1rem}p{font-size:1rem;color:#4b5563;max-width:400px}</style></head><body><h1>Şu anda bakımdayız.</h1><p>Booknix hizmetlerini geliştirmek için kısa bir bakımdayız. Lütfen daha sonra tekrar deneyin. Anlayışınız için teşekkür ederiz.</p></body></html>" > App_Offline.htm
         curl -T App_Offline.htm --ftp-method nocwd -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} ftp://${{ secrets.FTP_SERVER }}/booknix.ismailparlak.com/
         echo "::endgroup::"
 
     - name: 🏗️ Publish .NET project
       run: |
-        echo "::group::📦 Publishing project..."
         dotnet publish Booknix.MVCUI/Booknix.MVCUI.csproj -c Release -o publish
-        echo "<!-- dummy -->" > publish/App_Offline.htm
-        echo "::endgroup::"
 
-    - name: 🚀 Deploy via FTP (excluding App_Offline.htm)
+    - name: 🚀 Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: ${{ secrets.FTP_SERVER }}
@@ -41,9 +37,15 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: publish/
         server-dir: booknix.ismailparlak.com/
-        exclude: |
-          App_Offline.htm
 
-    - name: ✅ Done! App is now live.
+    - name: 🧹 Remove App_Offline.htm manually
       run: |
-        echo "::notice title=Yayın Tamamlandı::Booknix başarıyla yayına alındı! 🎉"
+        echo "::group::🧹 Siliniyor: App_Offline.htm"
+        curl -v --ftp-method nocwd \
+          -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} \
+          ftp://${{ secrets.FTP_SERVER }} \
+          -Q "-DELE booknix.ismailparlak.com/App_Offline.htm" || exit 0
+        echo "::endgroup::"
+
+    - name: ✅ Done! Booknix is live again.
+      run: echo "::notice title=Yayınlandı::Booknix başarıyla yayınlandı ve çevrimiçi! 🎉"
