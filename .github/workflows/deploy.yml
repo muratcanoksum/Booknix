@@ -10,20 +10,24 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout code
+    - name: 📥 Checkout source code
       uses: actions/checkout@v4
 
-    - name: Setup .NET
+    - name: ⚙️ Setup .NET SDK
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x' # Projeye göre değişebilir
+        dotnet-version: '8.0.x'
 
-    - name: Publish .NET project
-      run: dotnet publish Booknix.MVCUI/Booknix.MVCUI.csproj -c Release -o publish
-
-    - name: 🚧 Add App_Offline.htm to stop app temporarily
+    - name: 🛑 Put App_Offline.htm (stop site)
       run: |
-        echo "<!DOCTYPE html><html><head><title>Maintenance</title></head><body><h1>Site is under maintenance. Please try again later.</h1></body></html>" > publish/App_Offline.htm
+        echo "::group::🛑 Creating App_Offline.htm and uploading..."
+        echo "<!DOCTYPE html><html lang='tr'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Bakımdayız - Booknix</title><style>body{background-color:#f3f4f6;color:#1f2937;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;flex-direction:column;height:100vh;margin:0;text-align:center}h1{font-size:2rem;margin-bottom:1rem}p{font-size:1rem;color:#4b5563;max-width:400px}</style></head><body><h1>Şu anda bakımdayız.</h1><p>Booknix hizmetlerini geliştirmek için kısa bir bakımdayız. Lütfen daha sonra tekrar deneyin. Anlayışınız için teşekkür ederiz.</p></body></html>" > App_Offline.htm
+        curl -T App_Offline.htm --ftp-method nocwd -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} ftp://${{ secrets.FTP_SERVER }}/booknix.ismailparlak.com/
+        echo "::endgroup::"
+
+    - name: 🏗️ Publish .NET project
+      run: |
+        dotnet publish Booknix.MVCUI/Booknix.MVCUI.csproj -c Release -o publish
 
     - name: 🚀 Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -34,5 +38,12 @@ jobs:
         local-dir: publish/
         server-dir: booknix.ismailparlak.com/
 
-    - name: ✅ Remove App_Offline.htm to bring app online
-      run: curl -u ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }} -Q "-DELE booknix.ismailparlak.com/App_Offline.htm" ftp://${{ secrets.FTP_SERVER }}
+    - name: 🧹 Remove App_Offline.htm to bring app online
+      shell: bash
+      run: |
+        curl -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+             -Q "-DELE booknix.ismailparlak.com/App_Offline.htm" \
+             ftp://${{ secrets.FTP_SERVER }} || exit 0
+
+    - name: ✅ Yayın Tamamlandı
+      run: echo "::notice title=Yayınlandı::Booknix başarıyla yayınlandı ve çevrimiçi! 🎉"
