@@ -9,18 +9,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="96c8b308-4f34-45ec-85e1-130b97399079" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Booknix.Application/Helpers/StringHelper.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AppointmentsController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/LocationsController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/SectorsController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/ServicesController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Appointments/Book.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Appointments/Success.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Locations/Details.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Sectors/Details.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Services/Details.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/HomeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/HomeController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Home/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Home/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AuthController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AuthController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Auth/Login.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Auth/Login.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,22 +20,22 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "ismail036"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;ismail036&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/muratcanoksum/Booknix.git",
-    "accountId": "7c0aa045-0910-446e-bf4c-c146e7fdc944"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/muratcanoksum/Booknix.git&quot;,
+    &quot;accountId&quot;: &quot;7c0aa045-0910-446e-bf4c-c146e7fdc944&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 8
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2vrL0eBnfdo2eyC6f8TX4xc46jK" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -56,7 +46,7 @@
     ".NET Launch Settings Profile.Booknix.MVCUI: http.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "v2.0.1",
+    "git-widget-placeholder": "v3.0.1",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
