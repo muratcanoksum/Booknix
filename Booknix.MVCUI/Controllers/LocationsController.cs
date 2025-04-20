@@ -2,7 +2,6 @@ using Booknix.Application.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 using Booknix.Persistence.Data;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Booknix.MVCUI.Controllers;

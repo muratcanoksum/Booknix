@@ -1,0 +1,4 @@
+Þifre sýfýrlama  -  Booknix Güvenlik
+E-posta doðrulama  -  Booknix Doðrulama
+Genel bilgilendirme  -  Booknix Destek
+Admin / manuel iþlem  -  Booknix Yönetim

@@ -2,6 +2,7 @@
 using MailKit.Net.Smtp;
 using MimeKit;
 using System.Net.Mail;
+using Booknix.Application.Interfaces;
 
 namespace Booknix.Infrastructure.Email
 {

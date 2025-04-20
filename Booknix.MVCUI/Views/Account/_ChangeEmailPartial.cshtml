@@ -1,0 +1,64 @@
+﻿@model string
+
+<h3 class="text-lg font-semibold mb-4">Email Adresinizi Değiştirin</h3>
+
+<div id="change-email-alert" class="hidden text-sm mb-3 rounded px-3 py-2"></div>
+<div id="change-email-verify-alert" class="hidden text-sm mb-3 rounded px-3 py-2"></div>
+
+<form id="change-email-form">
+    @Html.AntiForgeryToken()
+
+    <!-- Eski Mail -->
+    <div class="mb-4">
+        <label class="block text-sm text-gray-600 mb-1">Mevcut Email</label>
+        <div class="flex items-center border rounded">
+            <span class="px-3 text-gray-500 border-r">
+                <i class="fas fa-envelope"></i>
+            </span>
+            <input type="email" name="oldEmail" class="w-full border px-3 py-2 rounded text-sm" disabled value="@Model" />
+        </div>
+    </div>
+
+    <!-- Yeni Mail -->
+    <div class="mb-4">
+        <label class="block text-sm text-gray-600 mb-1">Yeni Email</label>
+        <div class="flex items-center border rounded">
+            <span class="px-3 text-gray-500 border-r">
+                <i class="fas fa-envelope"></i>
+            </span>
+            <input type="email" name="newEmail" class="w-full border px-3 py-2 rounded text-sm" required />
+        </div>
+    </div>
+
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-sm">
+        Email Güncelle
+    </button>
+</form>
+
+<form id="change-email-verify-form" class="space-y-4 hidden">
+
+    <div class="flex justify-center gap-3 my-20">
+        @Html.AntiForgeryToken()
+
+        @for (int i = 0; i < 6; i++)
+        {
+            <input type="text" maxlength="1"
+                   inputmode="numeric"
+                   pattern="[0-9]*"
+                   class="verify-input w-12 h-12 text-center text-lg font-semibold border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   autocomplete="new-password"
+                   aria-hidden="true"
+                   tabindex="0" />
+
+        }
+    </div>
+
+    <input type="hidden" name="VerificationCode" id="VerificationCode" />
+
+    <div class="text-center">
+        <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded text-sm font-medium" disabled>
+            Doğrula
+        </button>
+    </div>
+</form>

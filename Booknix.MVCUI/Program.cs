@@ -10,6 +10,8 @@ using Booknix.Shared.Configuration;
 using Booknix.Shared.Interfaces;
 using Booknix.Application.Helpers; // EmailHelper burada
 using System.IO;
+using Booknix.Infrastructure.Logging;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +29,10 @@ var connectionString = $"Host={Env.GetString("DB_HOST")};" +
 
 // DbContext
 builder.Services.AddDbContext<BooknixDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options
+    .UseNpgsql(connectionString)
+    .ConfigureWarnings(w => w.Ignore(RelationalEventId.MultipleCollectionIncludeWarning))
+);
 
 // Dependency Injection
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();
@@ -36,6 +41,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 builder.Services.AddScoped<IUserProfileRepository, EfUserProfileRepository>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IAuditLogger, AuditLogger>();
 
 builder.Services.AddSingleton<IAppSettings, AppSettings>();
 
@@ -60,6 +66,9 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.UseSession();
+
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
+app.UseExceptionHandler("/Error/500");
 
 
 app.MapControllerRoute(

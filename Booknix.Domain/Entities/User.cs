@@ -20,12 +20,20 @@ namespace Booknix.Domain.Entities
         public DateTime? EmailVerifiedAt { get; set; } // Opsiyonel: ne zaman doğrulandı
         public string? PasswordResetToken { get; set; }
         public DateTime? PasswordResetRequestedAt { get; set; }
+        public string? MailChangeVerifyToken { get; set; }
+        public DateTime? MailChangeRequestedAt { get; set; }
+        public string? PendingEmail { get; set; } // (Opsiyonel ama önerilir)
+        public DateTime? EmailChangedAt { get; set; }
+        public string? PreviousEmail { get; set; }
+        public DateTime? DeleteTokenRequesAt { get; set; }
+        public string? DeleteToken { get; set; }
 
 
 
         // Navigation
         public Role? Role { get; set; }
         public UserProfile? Profile { get; set; }
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
         public ICollection<UserLocation> UserLocations { get; set; } = new List<UserLocation>();
         public ICollection<Service> Services { get; set; } = new List<Service>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();

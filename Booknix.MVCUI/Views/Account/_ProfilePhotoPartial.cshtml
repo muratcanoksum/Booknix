@@ -1,0 +1,30 @@
+﻿@model Booknix.Application.DTOs.ProfileViewModel
+
+<h3 class="text-lg font-semibold mb-4">Profil Fotoğrafı</h3>
+
+<form id="profile-photo-form" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div id="profile-photo-alert" class="hidden text-sm mb-3 rounded px-3 py-2"></div>
+
+    <!-- Profil Fotoğrafı Görseli -->
+    <div class="mb-4 flex justify-center">
+        @if (!string.IsNullOrEmpty(Model.ProfileImagePath))
+        {
+            <img src="@Model.ProfileImagePath" class="rounded-full w-32 h-32 object-cover" alt="Profil Fotoğrafı" />
+        }
+        else
+        {
+            <img src="/images/default-avatar.png" class="rounded-full w-32 h-32 object-cover" alt="Profil Fotoğrafı" />
+        }
+    </div>
+
+    <!-- Profil Fotoğrafı Yükle -->
+    <div class="mb-4">
+        <label class="block text-sm text-gray-600 mb-1">Yeni Profil Fotoğrafı Yükle</label>
+        <input type="file" name="profileImage" class="w-full border px-3 py-2 rounded text-sm" />
+    </div>
+
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-sm">
+        Güncelle
+    </button>
+</form>

@@ -37,6 +37,7 @@ namespace Booknix.MVCUI.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginRequestDto dto, string? returnUrl)
         {
+
             var result = await _authService.LoginAsync(dto);
             var ipAddress = Request.Headers["X-Forwarded-For"].FirstOrDefault()
                             ?? HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString()
@@ -44,11 +45,11 @@ namespace Booknix.MVCUI.Controllers
 
 
 
-            if (result == null)
-                return BadRequest("Email veya şifre hatalı.");
+            var (result, msg) = await _authService.LoginAsync(dto);
 
-            if (result.Role == "Unverified")
-                return BadRequest("Email adresiniz doğrulanmamış. Lütfen gelen kutunuzu kontrol ediniz.");
+
+            if (result == null)
+                return BadRequest(msg);
 
             HttpContext.Session.SetString("UserId", result.Id.ToString());
             HttpContext.Session.SetString("FullName", result.FullName);
@@ -151,7 +152,7 @@ if (result.Role == "Admin")
         }
 
         // LOGOUT
-        [HttpPost]
+        [HttpGet]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
@@ -187,20 +188,27 @@ if (result.Role == "Admin")
         }
 
         [HttpGet]
-        public IActionResult ResetPassword(string token)
+        public async Task<IActionResult> ResetPassword(string token)
         {
+            var expired = await _authService.CheckTokenExpire(token);
+            if (!expired)
+            {
+                ViewBag.Error = "Geçersiz veya süresi dolmuş bağlantı.";
+                return View("Error");
+            }
             ViewBag.Token = token;
             return View();
         }
 
+
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequestDto dto)
         {
-            var success = await _authService.ResetPasswordAsync(dto.Token, dto.NewPassword);
-            if (!success)
-                return BadRequest("Geçersiz veya süresi dolmuş bağlantı.");
+            var result = await _authService.ResetPasswordAsync(dto.Token, dto.NewPassword);
+            if (!result.Success)
+                return BadRequest(result.Message);
 
-            TempData["Success"] = "Şifreniz başarıyla güncellendi. Giriş yapabilirsiniz.";
+            TempData["Success"] = result.Message;
             return Ok();
         }
 
