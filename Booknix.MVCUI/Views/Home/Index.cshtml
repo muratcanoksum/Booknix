@@ -16,22 +16,6 @@
             Booknix ile kolayca randevu alın, zamanınızı verimli yönetin.
         </p>
 
-        <!-- Sektör Kartları -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-items-center">
-            @foreach (var sector in Model)
-            {
-                <a href="/sektor/@StringHelper.ToUrlFriendly(sector.Name)">
-                    <div class="w-48 bg-gray-100 rounded-xl shadow hover:scale-105 transform transition duration-300">
-                        <img src="@sector.MediaFiles.FirstOrDefault()?.FilePath"
-                             alt="@sector.Name"
-                             class="w-full h-36 object-cover rounded-t-xl" />
-
-                        <div class="p-3 text-center">
-                            <p class="text-gray-800 font-semibold text-sm">@sector.Name</p>
-                        </div>
-                    </div>
-                </a>
-            }
-        </div>
+    
     </div>
 </div>

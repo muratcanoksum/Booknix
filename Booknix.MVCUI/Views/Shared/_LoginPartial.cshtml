@@ -4,23 +4,36 @@
     var session = HttpContextAccessor.HttpContext?.Session;
     var fullName = session?.GetString("FullName");
     var firstName = fullName?.Split(" ").FirstOrDefault();
+    var role = session?.GetString("Role");
 }
 
-<ul class="flex items-center space-x-3">
+<ul class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
     @if (!string.IsNullOrEmpty(firstName))
     {
-        <li class="text-gray-700 font-medium hidden sm:block">
+        <li class="text-gray-700 font-medium sm:block">
             Merhaba, @firstName
         </li>
+
+        @* Admin Paneli sadece Admin rolü için gösterilir *@
+        if (role == "Admin")
+        {
+            <li>
+                <a asp-controller="Admin" asp-action="Index"
+                   class="block px-4 py-1.5 border border-yellow-500 text-yellow-600 text-sm rounded hover:bg-yellow-500 hover:text-white transition">
+                    Admin Paneli
+                </a>
+            </li>
+        }
+
         <li>
             <a asp-controller="Account" asp-action="Manage"
-               class="px-4 py-1.5 border border-indigo-500 text-indigo-500 text-sm rounded hover:bg-indigo-500 hover:text-white transition">
+               class="block px-4 py-1.5 border border-indigo-500 text-indigo-500 text-sm rounded hover:bg-indigo-500 hover:text-white transition">
                 Hesabım
             </a>
         </li>
         <li>
             <a asp-controller="Auth" asp-action="Logout"
-               class="px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition">
+               class="block px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition">
                 Çıkış Yap
             </a>
         </li>
@@ -29,13 +42,13 @@
     {
         <li>
             <a asp-controller="Auth" asp-action="Login"
-               class="px-4 py-1.5 border border-blue-500 text-blue-500 text-sm rounded hover:bg-blue-500 hover:text-white transition">
+               class="block px-4 py-1.5 border border-blue-500 text-blue-500 text-sm rounded hover:bg-blue-500 hover:text-white transition">
                 Giriş Yap
             </a>
         </li>
         <li>
             <a asp-controller="Auth" asp-action="Register"
-               class="px-4 py-1.5 border border-green-500 text-green-500 text-sm rounded hover:bg-green-500 hover:text-white transition">
+               class="block px-4 py-1.5 border border-green-500 text-green-500 text-sm rounded hover:bg-green-500 hover:text-white transition">
                 Kayıt Ol
             </a>
         </li>

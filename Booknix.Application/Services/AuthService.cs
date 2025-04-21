@@ -184,6 +184,10 @@ namespace Booknix.Application.Services
             }
             else
             {
+                trustedIp.Token = token;
+
+                await _trustedIpRepo.UpdateAsync(trustedIp);
+
                 await _auditLogger.LogAsync(user.Id, "UnapprovedIpLoginAttempt", "TrustedIp", user.Id.ToString(), currentIp, "Onaylanmamış IP adresinden giriş denemesi yapıldı.");
             }
 

@@ -11,6 +11,8 @@
         <div id="register-alert" class="hidden mb-4 px-4 py-2 text-sm rounded bg-red-100 text-red-700"></div>
 
         <form id="register-form" class="space-y-5">
+            @Html.AntiForgeryToken()
+
             <div>
                 <label asp-for="FullName" class="block text-sm font-medium text-gray-700 mb-1">Ad Soyad</label>
                 <input asp-for="FullName"
@@ -58,7 +60,7 @@
                     window.location.href = "/Auth/Login";
                 },
                 error: function (xhr) {
-                    const errorMessage = xhr.responseText || "Kayıt başarısız! Bilgilerinizi kontrol edin.";
+                    const errorMessage = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz.";
                     $("#register-alert")
                         .removeClass("hidden")
                         .addClass("alert-danger")

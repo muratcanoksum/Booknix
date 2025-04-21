@@ -1,18 +1,20 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
 namespace Booknix.Infrastructure.Filters;
 
-public class AdminAttribute : Attribute, IAuthorizationFilter
+public class AdminAttribute : BaseAuthorizationFilter
 {
-    public void OnAuthorization(AuthorizationFilterContext context)
+    protected override bool IsAuthorized(HttpContext context)
     {
-        var role = context.HttpContext.Session.GetString("Role");
-        var userId = context.HttpContext.Session.GetString("UserId");
-
-        if (string.IsNullOrEmpty(role) || string.IsNullOrEmpty(userId) || role != "Admin")
-        {
-            context.Result = new RedirectToActionResult("Login", "Auth", null);
-        }
+        var userId = context.Session.GetString("UserId");
+        var role = context.Session.GetString("Role");
+        return !string.IsNullOrEmpty(userId) && role == "Admin";
     }
+
+    protected override IActionResult GetUnauthorizedResult(HttpContext context)
+    {
+        return new RedirectToActionResult("AccessDenied", "Error", null);
+    }
+
 }

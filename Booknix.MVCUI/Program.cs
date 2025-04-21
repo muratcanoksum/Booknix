@@ -15,9 +15,11 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseUrls("http://0.0.0.0:5122");
+
 // .env dosyas�n� y�kle
-Env.Load();
-//Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", ".env"));
+//Env.Load();
+Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", ".env"));
 
 
 // PostgreSQL ba�lant� c�mlesini olu�tur
@@ -35,15 +37,31 @@ builder.Services.AddDbContext<BooknixDbContext>(options =>
 );
 
 // Dependency Injection
+
+// Repositories
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();
 builder.Services.AddScoped<IRoleRepository, EfRoleRepository>();
 builder.Services.AddScoped<ITrustedIpRepository, EfTrustedIpRepository>();
 builder.Services.AddScoped<IUserProfileRepository, EfUserProfileRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+builder.Services.AddScoped<ISectorRepository, EfSectorRepository>();
 builder.Services.AddScoped<IUserProfileRepository, EfUserProfileRepository>();
-builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IMediaFileRepository, EfMediaFileRepository>();
+builder.Services.AddScoped<INotificationRepository, EfNotificationRepository>();
+builder.Services.AddScoped<IReviewRepository, EfReviewRepository>();
+builder.Services.AddScoped<IServiceEmployeeRepository, EfServiceEmployeeRepository>();
+builder.Services.AddScoped<IUserLocationRepository, EfUserLocationRepository>();
+builder.Services.AddScoped<IWorkingHourRepository, EfWorkingHourRepository>();
+
+
+// Unit of Work
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 builder.Services.AddScoped<IAuditLogger, AuditLogger>();
+
+// Services
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<ISectorService, SectorService>();
+
 
 builder.Services.AddSingleton<IAppSettings, AppSettings>();
 
@@ -69,8 +87,22 @@ app.UseRouting();
 app.UseAuthorization();
 app.UseSession();
 
-app.UseStatusCodePagesWithReExecute("/Error/{0}");
-app.UseExceptionHandler("/Error/500");
+app.UseExceptionHandler("/Error/500"); // sunucu hataları (500+)
+app.UseStatusCodePages(context =>
+{
+    var request = context.HttpContext.Request;
+
+    if (HttpMethods.IsGet(request.Method) &&
+        !request.Headers.Accept.ToString().Contains("application/json"))
+    {
+        var statusCode = context.HttpContext.Response.StatusCode;
+        context.HttpContext.Response.Redirect($"/Error/{statusCode}");
+    }
+
+    return Task.CompletedTask; // artık return Task gerekiyor
+});
+
+
 
 
 app.MapControllerRoute(

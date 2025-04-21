@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Booknix.Application.Interfaces;
 using Booknix.MVCUI.Models;
 using Booknix.Persistence.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -8,26 +9,19 @@ namespace Booknix.MVCUI.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly BooknixDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger, BooknixDbContext context)
+        public HomeController()
         {
-            _logger = logger;
-            _context = context;
+
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             ViewBag.FullName = HttpContext.Session.GetString("FullName");
             ViewBag.Role = HttpContext.Session.GetString("Role");
 
-            var sectors = await _context.Sectors
-                .Include(s => s.Locations) 
-                .Include(s => s.MediaFiles) 
-                .ToListAsync();
-
-            return View(sectors);
+            //var sectors = await _homeService.GetSectorsAsync();
+            return View();
         }
 
         public IActionResult Privacy() => View();

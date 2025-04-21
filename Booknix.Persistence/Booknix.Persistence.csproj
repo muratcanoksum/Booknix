@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Booknix.Application\Booknix.Application.csproj" />
     <ProjectReference Include="..\Booknix.Domain\Booknix.Domain.csproj" />
   </ItemGroup>
 

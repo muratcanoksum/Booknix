@@ -89,9 +89,6 @@
             }, Itime);
         }
 
-
-
-
         // Menü tıklama olayını dinle
         $(function () {
             $(".menu-link").on("click", function (e) {
@@ -151,7 +148,7 @@
                 },
                 error: function (xhr) {
                     console.log(xhr);
-                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz.";
                     $alert
                         .removeClass("hidden text-green-600 bg-green-100 border-green-300")
                         .addClass("text-red-500 bg-red-100 border border-red-300")
@@ -201,7 +198,7 @@
                     }
                 },
                 error: function (xhr) {
-                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz..";
                     $alert
                         .removeClass("hidden text-green-600 bg-green-100 border-green-300")
                         .addClass("text-red-500 bg-red-100 border border-red-300")
@@ -241,7 +238,7 @@
                     setTimeoutAlert("#reset-password-alert");
                 },
                 error: function (xhr) {
-                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz..";
                     $alert
                         .removeClass("hidden text-green-600 bg-green-100 border-green-300")
                         .addClass("text-red-500 bg-red-100 border border-red-300")
@@ -283,7 +280,7 @@
                     $verifyForm.removeClass("hidden");
                 },
                 error: function (xhr) {
-                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz..";
                     $alert
                         .removeClass("hidden text-green-600 bg-green-100 border-green-300")
                         .addClass("text-red-500 bg-red-100 border border-red-300")
@@ -342,7 +339,7 @@
 
                 },
                 error: function (xhr) {
-                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz..";
                     $alert
                         .removeClass("hidden text-green-600 bg-green-100 border-green-300")
                         .addClass("text-red-500 bg-red-100 border border-red-300")
@@ -383,7 +380,7 @@
                     $("#delete-account-verify-form").removeClass("hidden");
                 },
                 error: function (xhr) {
-                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz..";
                     $alert
                         .removeClass("hidden text-green-600 bg-green-100 border-green-300")
                         .addClass("text-red-500 bg-red-100 border border-red-300")
@@ -418,7 +415,7 @@
                     window.location.href = "/Auth/Logout";
                 },
                 error: function (xhr) {
-                    const msg = xhr.responseText || "Bir hata oluştu.";
+                    const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz..";
                     $alert
                         .removeClass("hidden text-green-600 bg-green-100 border-green-300")
                         .addClass("text-red-500 bg-red-100 border border-red-300")

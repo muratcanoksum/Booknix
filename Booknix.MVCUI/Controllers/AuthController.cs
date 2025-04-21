@@ -28,6 +28,7 @@ namespace Booknix.MVCUI.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginRequestDto dto, string? returnUrl)
         {
             var (result, msg) = await _authService.LoginAsync(dto);
@@ -57,6 +58,7 @@ namespace Booknix.MVCUI.Controllers
         public IActionResult Register() => View();
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterRequestDto dto)
         {
             var success = await _authService.RegisterAsync(dto, "Client");
@@ -94,6 +96,7 @@ namespace Booknix.MVCUI.Controllers
         public IActionResult ForgotPassword() => View();
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestDto dto)
         {
             var success = await _authService.SendPasswordResetTokenAsync(dto.Email);

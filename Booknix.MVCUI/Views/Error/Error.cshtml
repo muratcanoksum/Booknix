@@ -1,0 +1,65 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    Layout = null;
+    var errorMessage = ViewBag.Error ?? "Bir hata oluştu.";
+    var errorDetails = ViewBag.Details as string;
+    var role = Context.Session.GetString("Role");
+    var isAdmin = role == "Admin";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif']
+                    },
+                    colors: {
+                        primary: "#3B82F6",
+                        error: "#EF4444"
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans flex items-center justify-center min-h-screen px-4">
+
+    <div class="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full text-center space-y-6 border border-gray-100">
+        <img src="/images/logo.png" alt="Booknix Logo" class="w-20 h-20 mx-auto" />
+
+        <div class="space-y-2">
+            <h1 class="text-2xl font-semibold text-gray-800">
+                <span class="block text-4xl font-extrabold text-red-600">@ViewData["Title"]</span>
+            </h1>
+            <p class="text-sm text-gray-600 leading-relaxed">
+                @errorMessage
+            </p>
+        </div>
+
+        @if (isAdmin && !string.IsNullOrEmpty(errorDetails))
+        {
+            <div class="text-left">
+                <button type="button" onclick="document.getElementById('errorDetails').classList.toggle('hidden')" class="text-sm text-blue-600 hover:underline mt-2">
+                    🔍 Hata detaylarını göster / gizle
+                </button>
+                <pre id="errorDetails" class="hidden mt-2 p-3 text-xs bg-gray-100 rounded overflow-auto max-h-64 text-left text-red-600 whitespace-pre-wrap">@errorDetails</pre>
+            </div>
+        }
+
+        <a href="/" class="inline-block mt-4 bg-primary hover:bg-blue-700 text-white font-medium text-sm px-5 py-2.5 rounded-lg transition duration-200">
+            Ana Sayfaya Dön
+        </a>
+    </div>
+
+</body>
+</html>
