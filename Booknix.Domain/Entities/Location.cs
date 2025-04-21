@@ -9,6 +9,7 @@ namespace Booknix.Domain.Entities
         public string Name { get; set; } = null!;
         public string Address { get; set; } = null!;
         public Guid SectorId { get; set; }
+        public string PhoneNumber { get; set; } = null!;
 
         // Navigation
         public Sector? Sector { get; set; }

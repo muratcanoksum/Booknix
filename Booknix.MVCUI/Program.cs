@@ -58,6 +58,7 @@ builder.Services.AddScoped<IReviewRepository, EfReviewRepository>();
 builder.Services.AddScoped<IServiceEmployeeRepository, EfServiceEmployeeRepository>();
 builder.Services.AddScoped<IWorkerRepository, EfWorkerRepository>();
 builder.Services.AddScoped<IWorkingHourRepository, EfWorkingHourRepository>();
+builder.Services.AddScoped<ILocationRepository, EfLocationRepository>();
 
 
 // Unit of Work
@@ -67,7 +68,7 @@ builder.Services.AddScoped<IAuditLogger, AuditLogger>();
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
-builder.Services.AddScoped<ISectorService, SectorService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 
 builder.Services.AddSingleton<IAppSettings, AppSettings>();

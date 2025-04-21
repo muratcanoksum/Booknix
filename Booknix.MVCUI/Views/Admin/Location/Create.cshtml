@@ -1,0 +1,146 @@
+﻿@model Booknix.Application.DTOs.LocationCreateDto
+@{
+    ViewData["Title"] = "Yeni Lokasyon";
+}
+
+<a asp-controller="Admin" asp-action="Location"
+   class="inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 transition mb-4">
+    <i class="fas fa-arrow-left mr-2"></i>
+    Geri Dön
+</a>
+
+<h3 class="text-lg font-semibold mb-4">Lokasyon Bilgisi</h3>
+
+<div id="location-create-form-alert" class="hidden text-sm mb-3 rounded px-3 py-2"></div>
+
+<form id="location-create-form" class="space-y-4">
+    @Html.AntiForgeryToken()
+
+    <!-- Lokasyon Adı -->
+    <div>
+        <label class="block text-sm text-gray-600 mb-1">Lokasyon Adı</label>
+        <div class="flex items-center border rounded">
+            <span class="px-3 text-gray-500 border-r">
+                <i class="fas fa-building"></i>
+            </span>
+            <input asp-for="Name" class="w-full border px-3 py-2 rounded text-sm" placeholder="Örn: Booknix Kuaför Şubesi" required />
+        </div>
+    </div>
+
+    <!-- Adres -->
+    <div>
+        <label class="block text-sm text-gray-600 mb-1">Adres</label>
+        <div class="flex items-center border rounded">
+            <span class="px-3 text-gray-500 border-r">
+                <i class="fas fa-map-marker-alt"></i>
+            </span>
+            <input asp-for="Address" class="w-full border px-3 py-2 rounded text-sm" placeholder="Örn: Bağdat Cad. No:22 Kadıköy / İstanbul" required />
+        </div>
+    </div>
+
+    <!-- Telefon Numarası -->
+    <div>
+        <label class="block text-sm text-gray-600 mb-1">Telefon Numarası</label>
+        <div class="flex items-center border rounded">
+            <span class="px-3 text-gray-500 border-r">
+                <i class="fas fa-phone-alt"></i>
+            </span>
+            <input asp-for="PhoneNumber"
+                   id="phone-input"
+                   value="@Model.PhoneNumber"
+                   class="w-full border px-3 py-2 rounded text-sm"
+                   required
+                   placeholder="(5__) ___ __ __" />
+        </div>
+    </div>
+
+    <!-- Sektör Seçimi -->
+    <div>
+        <label class="block text-sm text-gray-600 mb-1">Bağlı Olduğu Sektör</label>
+        <select asp-for="SectorId" asp-items="Model.Sectors" class="w-full border px-3 py-2 rounded text-sm bg-white" required>
+            <option value="">Sektör Seçiniz</option>
+        </select>
+    </div>
+
+
+
+    <button type="submit"
+            class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-sm">
+        Kaydet
+    </button>
+</form>
+
+@section Scripts {
+    <script>
+        const alertTimers = {};
+
+        function setTimeoutAlert(id_name, time = 4) {
+            const Itime = time * 1000;
+            if (alertTimers[id_name]) clearTimeout(alertTimers[id_name]);
+            alertTimers[id_name] = setTimeout(() => {
+                const $el = $(id_name);
+                if ($el.length) {
+                    $el.fadeOut("slow", function () {
+                        $(this).removeAttr("style").addClass("hidden").text("");
+                    });
+                }
+                delete alertTimers[id_name];
+            }, Itime);
+        }
+
+        $("#location-create-form").submit(function (e) {
+            e.preventDefault();
+
+            const $form = $(this);
+            const $btn = $form.find("button[type='submit']");
+            const $alert = $("#location-create-form-alert");
+            const token = $form.find('input[name="__RequestVerificationToken"]').val();
+
+            $btn.prop("disabled", true).text("Kaydediliyor...");
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/CreateLocation",
+                data: $form.serialize(),
+                headers: {
+                    "RequestVerificationToken": token
+                },
+                success: function () {
+                    window.location.href = "/Admin/Location";
+                },
+                error: function (xhr) {
+                    const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.";
+                    $alert
+                        .removeClass("hidden text-green-600 bg-green-100 border-green-300")
+                        .addClass("text-red-500 bg-red-100 border border-red-300")
+                        .text(msg);
+                    setTimeoutAlert("#location-create-form-alert");
+                },
+                complete: function () {
+                    $btn.prop("disabled", false).text("Kaydet");
+                }
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
+
+    <script>
+        function initCleavePhoneMask() {
+            const $input = $('#phone-input');
+            if ($input.length && !$input.data('cleave-applied')) {
+                new Cleave('#phone-input', {
+                    delimiters: ['(', ') ', ' ', ' '],
+                    blocks: [0, 3, 3, 2, 2],
+                    numericOnly: true
+                });
+                $input.data('cleave-applied', true);
+            }
+        }
+
+        // Sayfa yüklendiğinde otomatik başlat
+        $(document).ready(function () {
+            initCleavePhoneMask();
+        });
+    </script>
+}

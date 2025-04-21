@@ -1,0 +1,98 @@
+﻿@model Booknix.Domain.Entities.Sector
+
+@{
+    ViewData["Title"] = "Sektör Düzenle";
+}
+
+<a asp-controller="Admin" asp-action="Sector"
+   class="inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 transition mb-4">
+    <i class="fas fa-arrow-left mr-2"></i>
+    Geri Dön
+</a>
+
+<h3 class="text-lg font-semibold mb-4">Sektör Düzenle</h3>
+
+<div id="sector-edit-form-alert" class="hidden text-sm mb-3 rounded px-3 py-2"></div>
+
+<form id="sector-edit-form" class="space-y-4">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+
+    <!-- Sektör Adı -->
+    <div>
+        <label class="block text-sm text-gray-600 mb-1">Sektör Adı</label>
+        <div class="flex items-center border rounded">
+            <span class="px-3 text-gray-500 border-r">
+                <i class="fas fa-briefcase"></i>
+            </span>
+            <input asp-for="Name" class="w-full border px-3 py-2 rounded text-sm" required />
+        </div>
+    </div>
+
+    <button type="submit"
+            class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-sm">
+        Güncelle
+    </button>
+</form>
+
+@section Scripts {
+    <script>
+        const alertTimers = {};
+
+        function setTimeoutAlert(id_name, time = 4) {
+            const Itime = time * 1000;
+
+            if (alertTimers[id_name]) {
+                clearTimeout(alertTimers[id_name]);
+            }
+
+            alertTimers[id_name] = setTimeout(() => {
+                const $el = $(id_name);
+                if ($el.length) {
+                    $el.fadeOut("slow", function () {
+                        $(this)
+                            .removeAttr("style")
+                            .addClass("hidden")
+                            .text("");
+                    });
+                }
+
+                delete alertTimers[id_name];
+            }, Itime);
+        }
+
+        $("#sector-edit-form").submit(function (e) {
+            e.preventDefault();
+
+            const $form = $(this);
+            const $btn = $form.find("button[type='submit']");
+            const $alert = $("#sector-edit-form-alert");
+            const token = $form.find('input[name="__RequestVerificationToken"]').val();
+
+            $btn.prop("disabled", true).text("Güncelleniyor...");
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/EditSector",
+                data: $form.serialize(),
+                headers: {
+                    "RequestVerificationToken": token
+                },
+                success: function () {
+                    window.location.href = "/Admin/Sector";
+                },
+                error: function (xhr) {
+                    const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.";
+                    $alert
+                        .removeClass("hidden text-green-600 bg-green-100 border-green-300")
+                        .addClass("text-red-500 bg-red-100 border border-red-300")
+                        .text(msg);
+                    setTimeoutAlert("#sector-edit-form-alert");
+                },
+                complete: function () {
+                    $btn.prop("disabled", false).text("Güncelle");
+                }
+            });
+        });
+    </script>
+}

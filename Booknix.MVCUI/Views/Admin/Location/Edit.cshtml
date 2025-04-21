@@ -1,0 +1,161 @@
+@model Booknix.Domain.Entities.Location
+
+@{
+    ViewData["Title"] = "Lokasyon Düzenle";
+}
+
+<a asp-controller="Admin" asp-action="Location"
+   class="inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 transition mb-4">
+    <i class="fas fa-arrow-left mr-2"></i>
+    Geri Dön
+</a>
+
+<h3 class="text-lg font-semibold mb-4">Lokasyon Düzenle</h3>
+
+<div id="location-edit-alert" class="hidden text-sm mb-3 rounded px-3 py-2"></div>
+
+<form id="location-edit-form" class="space-y-4">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+
+    <!-- Lokasyon Adý -->
+    <div>
+        <label class="block text-sm text-gray-600 mb-1">Lokasyon Adý</label>
+        <div class="flex items-center border rounded">
+            <span class="px-3 text-gray-500 border-r">
+                <i class="fas fa-map-marker-alt"></i>
+            </span>
+            <input name="Name" value="@Model.Name" class="w-full border px-3 py-2 rounded text-sm" required />
+        </div>
+    </div>
+
+    <!-- Adres -->
+    <div>
+        <label class="block text-sm text-gray-600 mb-1">Adres</label>
+        <div class="flex items-center border rounded">
+            <span class="px-3 text-gray-500 border-r">
+                <i class="fas fa-location-arrow"></i>
+            </span>
+            <input name="Address" value="@Model.Address" class="w-full border px-3 py-2 rounded text-sm" required />
+        </div>
+    </div>
+
+    <!-- Telefon Numarasý -->
+    <div>
+        <label class="block text-sm text-gray-600 mb-1">Telefon Numarasý</label>
+        <div class="flex items-center border rounded">
+            <span class="px-3 text-gray-500 border-r">
+                <i class="fas fa-phone-alt"></i>
+            </span>
+            <input asp-for="PhoneNumber"
+                   id="phone-input"
+                   value="@Model.PhoneNumber"
+                   class="w-full border px-3 py-2 rounded text-sm"
+                   required
+                   placeholder="(5__) ___ __ __" />
+        </div>
+    </div>
+
+    <!-- Sektör Seçimi -->
+    <div>
+        <label class="block text-sm text-gray-600 mb-1">Sektör</label>
+        <select name="SectorId" class="w-full border px-3 py-2 rounded text-sm" required>
+            @foreach (var sector in ViewBag.Sectors as List<Booknix.Domain.Entities.Sector>)
+            {
+            <option value="@sector.Id" selected="@(sector.Id == Model.SectorId)">
+                @sector.Name
+            </option>
+            }
+        </select>
+    </div>
+
+
+
+    <button type="submit"
+            class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-sm">
+        Güncelle
+    </button>
+</form>
+
+@section Scripts {
+    <script>
+        const alertTimers = {};
+
+        function setTimeoutAlert(id_name, time = 4) {
+            const Itime = time * 1000;
+
+            if (alertTimers[id_name]) {
+                clearTimeout(alertTimers[id_name]);
+            }
+
+            alertTimers[id_name] = setTimeout(() => {
+                const $el = $(id_name);
+                if ($el.length) {
+                    $el.fadeOut("slow", function () {
+                        $(this)
+                            .removeAttr("style")
+                            .addClass("hidden")
+                            .text("");
+                    });
+                }
+
+                delete alertTimers[id_name];
+            }, Itime);
+        }
+
+        $("#location-edit-form").submit(function (e) {
+            e.preventDefault();
+
+            const $form = $(this);
+            const $btn = $form.find("button[type='submit']");
+            const $alert = $("#location-edit-alert");
+            const token = $form.find('input[name="__RequestVerificationToken"]').val();
+
+            $btn.prop("disabled", true).text("Güncelleniyor...");
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/EditLocation",
+                data: $form.serialize(),
+                headers: {
+                    "RequestVerificationToken": token
+                },
+                success: function () {
+                    window.location.href = "/Admin/Location";
+                },
+                error: function (xhr) {
+                    const msg = xhr.responseText || "Beklenmeyen bir hata oluþtu. Lütfen tekrar deneyiniz.";
+                    $alert
+                        .removeClass("hidden text-green-600 bg-green-100 border-green-300")
+                        .addClass("text-red-500 bg-red-100 border border-red-300")
+                        .text(msg);
+                    setTimeoutAlert("#location-edit-alert");
+                },
+                complete: function () {
+                    $btn.prop("disabled", false).text("Güncelle");
+                }
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
+
+    <script>
+        function initCleavePhoneMask() {
+            const $input = $('#phone-input');
+            if ($input.length && !$input.data('cleave-applied')) {
+                new Cleave('#phone-input', {
+                    delimiters: ['(', ') ', ' ', ' '],
+                    blocks: [0, 3, 3, 2, 2],
+                    numericOnly: true
+                });
+                $input.data('cleave-applied', true);
+            }
+        }
+
+        // Sayfa yüklendiðinde otomatik baþlat
+        $(document).ready(function () {
+            initCleavePhoneMask();
+        });
+    </script>
+}

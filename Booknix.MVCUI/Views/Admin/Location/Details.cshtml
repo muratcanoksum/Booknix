@@ -1,0 +1,46 @@
+@model Booknix.Domain.Entities.Location
+
+@{
+    ViewData["Title"] = "Lokasyon Detay";
+}
+
+<a asp-controller="Admin" asp-action="Location"
+   class="inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 transition mb-4">
+    <i class="fas fa-arrow-left mr-2"></i>
+    Geri Dön
+</a>
+
+<h2 class="text-2xl font-bold text-gray-800 mb-4">
+    <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
+    Lokasyon Bilgileri
+</h2>
+
+<div class="bg-white shadow rounded-lg p-6 space-y-4 text-sm">
+    <div>
+        <strong class="text-gray-600 block">Adý:</strong>
+        <span class="text-gray-800">@Model.Name</span>
+    </div>
+
+    <div>
+        <strong class="text-gray-600 block">Adres:</strong>
+        <span class="text-gray-800">@Model.Address</span>
+    </div>
+
+    <div>
+        <strong class="text-gray-600 block">Telefon:</strong>
+        <span class="text-gray-800">@Model.PhoneNumber</span>
+    </div>
+
+    <div>
+        <strong class="text-gray-600 block">Sektör:</strong>
+        <span class="text-gray-800">@Model.Sector?.Name</span>
+    </div>
+</div>
+
+<!-- Geniþletilebilir Bölüm -->
+<div class="mt-6">
+    <h3 class="text-lg font-semibold text-gray-700 mb-2">?? Lokasyona Ait Ýþlemler</h3>
+    <p class="text-sm text-gray-500">Bu alanda ilgili çalýþanlar, randevular veya medyalar listelenebilir.</p>
+
+    <!-- Ýlgili partiallar/tablolar burada AJAX veya include ile yüklenebilir -->
+</div>
