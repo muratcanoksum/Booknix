@@ -15,12 +15,19 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseUrls("http://0.0.0.0:5122");
+var env = builder.Environment;
 
-// .env dosyas�n� y�kle
-//Env.Load();
-Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", ".env"));
-
+// Geliştirme ortamında UseUrls ve özel .env yolu kullan
+if (env.IsDevelopment())
+{
+    builder.WebHost.UseUrls("http://0.0.0.0:5122");
+    Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", ".env"));
+}
+else
+{
+    // Yayın modunda .env bulunduğu dizinden yüklenir
+    Env.Load();
+}
 
 // PostgreSQL ba�lant� c�mlesini olu�tur
 var connectionString = $"Host={Env.GetString("DB_HOST")};" +
@@ -49,7 +56,7 @@ builder.Services.AddScoped<IMediaFileRepository, EfMediaFileRepository>();
 builder.Services.AddScoped<INotificationRepository, EfNotificationRepository>();
 builder.Services.AddScoped<IReviewRepository, EfReviewRepository>();
 builder.Services.AddScoped<IServiceEmployeeRepository, EfServiceEmployeeRepository>();
-builder.Services.AddScoped<IUserLocationRepository, EfUserLocationRepository>();
+builder.Services.AddScoped<IWorkerRepository, EfWorkerRepository>();
 builder.Services.AddScoped<IWorkingHourRepository, EfWorkingHourRepository>();
 
 

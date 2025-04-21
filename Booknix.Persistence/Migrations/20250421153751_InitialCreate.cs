@@ -3,14 +3,94 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Booknix.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AppointmentSystemInitial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sectors",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sectors", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    FullName = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsEmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    EmailVerificationToken = table.Column<string>(type: "text", nullable: true),
+                    TokenGeneratedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    EmailVerifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    PasswordResetToken = table.Column<string>(type: "text", nullable: true),
+                    PasswordResetRequestedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    MailChangeVerifyToken = table.Column<string>(type: "text", nullable: true),
+                    MailChangeRequestedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    PendingEmail = table.Column<string>(type: "text", nullable: true),
+                    EmailChangedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    PreviousEmail = table.Column<string>(type: "text", nullable: true),
+                    DeleteTokenRequesAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeleteToken = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Locations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    SectorId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Locations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Locations_Sectors_SectorId",
+                        column: x => x.SectorId,
+                        principalTable: "Sectors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AuditLogs",
                 columns: table => new
@@ -21,7 +101,9 @@ namespace Booknix.Persistence.Migrations
                     Entity = table.Column<string>(type: "text", nullable: true),
                     EntityId = table.Column<string>(type: "text", nullable: true),
                     Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IPAddress = table.Column<string>(type: "text", nullable: true)
+                    IPAddress = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -29,6 +111,12 @@ namespace Booknix.Persistence.Migrations
                     table.ForeignKey(
                         name: "FK_AuditLogs_Users_AdminUserId",
                         column: x => x.AdminUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_AuditLogs_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -56,33 +144,45 @@ namespace Booknix.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sectors",
+                name: "TrustedIps",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IpAddress = table.Column<string>(type: "text", nullable: false),
+                    IsApproved = table.Column<bool>(type: "boolean", nullable: false),
+                    RequestedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Token = table.Column<string>(type: "text", nullable: false),
+                    ApprovedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sectors", x => x.Id);
+                    table.PrimaryKey("PK_TrustedIps", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrustedIps_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Locations",
+                name: "UserProfiles",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Address = table.Column<string>(type: "text", nullable: false),
-                    SectorId = table.Column<Guid>(type: "uuid", nullable: false)
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    BirthDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ProfileImagePath = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Locations", x => x.Id);
+                    table.PrimaryKey("PK_UserProfiles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Locations_Sectors_SectorId",
-                        column: x => x.SectorId,
-                        principalTable: "Sectors",
+                        name: "FK_UserProfiles_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -116,7 +216,7 @@ namespace Booknix.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserLocations",
+                name: "Workers",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -126,15 +226,15 @@ namespace Booknix.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserLocations", x => x.Id);
+                    table.PrimaryKey("PK_Workers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserLocations_Locations_LocationId",
+                        name: "FK_Workers_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserLocations_Users_UserId",
+                        name: "FK_Workers_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -208,7 +308,8 @@ namespace Booknix.Persistence.Migrations
                     UploadedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     LocationId = table.Column<Guid>(type: "uuid", nullable: true),
                     UserId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ServiceId = table.Column<Guid>(type: "uuid", nullable: true)
+                    ServiceId = table.Column<Guid>(type: "uuid", nullable: true),
+                    SectorId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -217,6 +318,12 @@ namespace Booknix.Persistence.Migrations
                         name: "FK_MediaFiles_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MediaFiles_Sectors_SectorId",
+                        column: x => x.SectorId,
+                        principalTable: "Sectors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -267,7 +374,8 @@ namespace Booknix.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ServiceId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EmployeeId = table.Column<Guid>(type: "uuid", nullable: false)
+                    EmployeeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -279,9 +387,14 @@ namespace Booknix.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ServiceEmployees_Users_EmployeeId",
-                        column: x => x.EmployeeId,
+                        name: "FK_ServiceEmployees_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ServiceEmployees_Workers_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Workers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -318,6 +431,16 @@ namespace Booknix.Persistence.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { new Guid("00000000-0000-0000-0000-000000000001"), "Admin" },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), "Employee" },
+                    { new Guid("00000000-0000-0000-0000-000000000003"), "Client" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -357,6 +480,11 @@ namespace Booknix.Persistence.Migrations
                 column: "AdminUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AuditLogs_UserId",
+                table: "AuditLogs",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Locations_SectorId",
                 table: "Locations",
                 column: "SectorId");
@@ -365,6 +493,11 @@ namespace Booknix.Persistence.Migrations
                 name: "IX_MediaFiles_LocationId",
                 table: "MediaFiles",
                 column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MediaFiles_SectorId",
+                table: "MediaFiles",
+                column: "SectorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MediaFiles_ServiceId",
@@ -402,6 +535,11 @@ namespace Booknix.Persistence.Migrations
                 column: "ServiceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ServiceEmployees_UserId",
+                table: "ServiceEmployees",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Services_LocationId",
                 table: "Services",
                 column: "LocationId");
@@ -412,14 +550,31 @@ namespace Booknix.Persistence.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserLocations_LocationId",
-                table: "UserLocations",
+                name: "IX_TrustedIps_UserId",
+                table: "TrustedIps",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserProfiles_UserId",
+                table: "UserProfiles",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_RoleId",
+                table: "Users",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Workers_LocationId",
+                table: "Workers",
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserLocations_UserId",
-                table: "UserLocations",
-                column: "UserId");
+                name: "IX_Workers_UserId",
+                table: "Workers",
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_WorkingHours_LocationId",
@@ -449,7 +604,10 @@ namespace Booknix.Persistence.Migrations
                 name: "ServiceEmployees");
 
             migrationBuilder.DropTable(
-                name: "UserLocations");
+                name: "TrustedIps");
+
+            migrationBuilder.DropTable(
+                name: "UserProfiles");
 
             migrationBuilder.DropTable(
                 name: "WorkingHours");
@@ -458,13 +616,22 @@ namespace Booknix.Persistence.Migrations
                 name: "AppointmentSlots");
 
             migrationBuilder.DropTable(
+                name: "Workers");
+
+            migrationBuilder.DropTable(
                 name: "Services");
 
             migrationBuilder.DropTable(
                 name: "Locations");
 
             migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
                 name: "Sectors");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
         }
     }
 }

@@ -11,6 +11,6 @@ namespace Booknix.Domain.Entities
 
         // Navigation
         public Service? Service { get; set; }
-        public User? Employee { get; set; }
+        public Worker? Employee { get; set; }
     }
 }

@@ -6,14 +6,13 @@ namespace Booknix.Persistence.Data
 {
     public class BooknixDbContext(DbContextOptions<BooknixDbContext> options) : DbContext(options)
     {
-
         // DbSet'ler
         public DbSet<User> Users => Set<User>();
         public DbSet<Role> Roles => Set<Role>();
-        public DbSet<UserProfile> UserProfiles => Set<UserProfile>(); // 👈 eklendi
+        public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
         public DbSet<Sector> Sectors => Set<Sector>();
         public DbSet<Location> Locations => Set<Location>();
-        public DbSet<UserLocation> UserLocations => Set<UserLocation>();
+        public DbSet<Worker> Workers => Set<Worker>();
         public DbSet<Service> Services => Set<Service>();
         public DbSet<ServiceEmployee> ServiceEmployees => Set<ServiceEmployee>();
         public DbSet<WorkingHour> WorkingHours => Set<WorkingHour>();
@@ -23,79 +22,90 @@ namespace Booknix.Persistence.Data
         public DbSet<Review> Reviews => Set<Review>();
         public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
         public DbSet<MediaFile> MediaFiles => Set<MediaFile>();
-        
         public DbSet<TrustedIp> TrustedIps => Set<TrustedIp>();
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // User - UserProfile birebir ilişki
+            // User - UserProfile (1-1)
             modelBuilder.Entity<UserProfile>()
                 .HasOne(up => up.User)
                 .WithOne(u => u.Profile)
                 .HasForeignKey<UserProfile>(up => up.UserId)
-                .OnDelete(DeleteBehavior.Cascade); // User silinince profili de silinir
-
-            // User - MediaFile ilişkisi
-            modelBuilder.Entity<MediaFile>()
-                .HasOne(m => m.User)
-                .WithMany(u => u.MediaFiles)
-                .HasForeignKey(m => m.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // User - UserLocation ilişkisi
-            modelBuilder.Entity<UserLocation>()
-                .HasOne(ul => ul.User)
-                .WithMany(u => u.UserLocations)
-                .HasForeignKey(ul => ul.UserId)
+            // User - Worker (1-1)
+            modelBuilder.Entity<Worker>()
+                .HasOne(w => w.User)
+                .WithOne() // çünkü User navigation yok
+                .HasForeignKey<Worker>(w => w.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // User - Notification ilişkisi
+
+            // Worker - Location (N-1)
+            modelBuilder.Entity<Worker>()
+                .HasOne(w => w.Location)
+                .WithMany(l => l.Workers)
+                .HasForeignKey(w => w.LocationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // ENUM: Worker.LocationRole
+            modelBuilder.Entity<Worker>()
+                .Property(w => w.RoleInLocation)
+                .HasConversion<int>();
+
+            // User - Notification (1-N)
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.User)
                 .WithMany(u => u.Notifications)
                 .HasForeignKey(n => n.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // User - Review ilişkisi
+            // User - Review (1-N)
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.Reviews)
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // User - Appointment ilişkisi
+            // User - Appointment (1-N)
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.User)
                 .WithMany(u => u.Appointments)
                 .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // User - ServiceEmployee ilişkisi (Employee = User)
+            // ServiceEmployee: Service ↔ Worker
+            modelBuilder.Entity<ServiceEmployee>()
+                .HasOne(se => se.Service)
+                .WithMany(s => s.ServiceEmployees)
+                .HasForeignKey(se => se.ServiceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<ServiceEmployee>()
                 .HasOne(se => se.Employee)
-                .WithMany(u => u.ServiceEmployees)
+                .WithMany() // Worker'da koleksiyon yoksa bu yeterli
                 .HasForeignKey(se => se.EmployeeId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // ENUM: LocationRole
-            modelBuilder.Entity<UserLocation>()
-                .Property(u => u.RoleInLocation)
-                .HasConversion<int>();
-
-            // ENUM: AppointmentStatus
+            // ENUM: Appointment.Status
             modelBuilder.Entity<Appointment>()
                 .Property(a => a.Status)
                 .HasConversion<int>();
 
-            // ENUM: SlotStatus
+            // ENUM: AppointmentSlot.Status
             modelBuilder.Entity<AppointmentSlot>()
                 .Property(s => s.Status)
                 .HasConversion<int>();
 
-            // MediaFile - Location/Service/Sector ilişkileri
+            // MediaFile ilişkileri
+            modelBuilder.Entity<MediaFile>()
+                .HasOne(m => m.User)
+                .WithMany(u => u.MediaFiles)
+                .HasForeignKey(m => m.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<MediaFile>()
                 .HasOne(m => m.Location)
                 .WithMany(l => l.MediaFiles)
@@ -120,16 +130,12 @@ namespace Booknix.Persistence.Data
                 .HasForeignKey(a => a.AdminUserId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-
-
-
-            // Roller (Seed)
+            // Seed roller
             modelBuilder.Entity<Role>().HasData(
                 new Role { Id = new Guid("00000000-0000-0000-0000-000000000001"), Name = "Admin" },
                 new Role { Id = new Guid("00000000-0000-0000-0000-000000000002"), Name = "Employee" },
                 new Role { Id = new Guid("00000000-0000-0000-0000-000000000003"), Name = "Client" }
             );
         }
-
     }
 }

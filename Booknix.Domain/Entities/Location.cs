@@ -12,7 +12,7 @@ namespace Booknix.Domain.Entities
 
         // Navigation
         public Sector? Sector { get; set; }
-        public ICollection<UserLocation> UserLocations { get; set; } = new List<UserLocation>();
+        public ICollection<Worker> Workers { get; set; } = new List<Worker>();
         public ICollection<Service> Services { get; set; } = new List<Service>();
         public ICollection<WorkingHour> WorkingHours { get; set; } = new List<WorkingHour>();
         public ICollection<MediaFile> MediaFiles { get; set; } = new List<MediaFile>();

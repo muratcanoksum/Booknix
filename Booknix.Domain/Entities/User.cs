@@ -34,14 +34,13 @@ namespace Booknix.Domain.Entities
         public Role? Role { get; set; }
         public UserProfile? Profile { get; set; }
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
-        public ICollection<UserLocation> UserLocations { get; set; } = new List<UserLocation>();
         public ICollection<Service> Services { get; set; } = new List<Service>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         public ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
         public ICollection<ServiceEmployee> ServiceEmployees { get; set; } = new List<ServiceEmployee>();
         public ICollection<MediaFile> MediaFiles { get; set; } = new List<MediaFile>();
-        
+
         public ICollection<TrustedIp> TrustedIps { get; set; } = new List<TrustedIp>();
 
 

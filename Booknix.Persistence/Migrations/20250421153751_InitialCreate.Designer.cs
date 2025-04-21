@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Booknix.Persistence.Migrations
 {
     [DbContext(typeof(BooknixDbContext))]
-    [Migration("20250420165726_IpApprovedTimeField")]
-    partial class IpApprovedTimeField
+    [Migration("20250421153751_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -359,11 +359,16 @@ namespace Booknix.Persistence.Migrations
                     b.Property<Guid>("ServiceId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
                     b.HasIndex("ServiceId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ServiceEmployees");
                 });
@@ -468,30 +473,6 @@ namespace Booknix.Persistence.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Booknix.Domain.Entities.UserLocation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("LocationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("RoleInLocation")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserLocations");
-                });
-
             modelBuilder.Entity("Booknix.Domain.Entities.UserProfile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -541,6 +522,31 @@ namespace Booknix.Persistence.Migrations
                     b.HasIndex("LocationId");
 
                     b.ToTable("WorkingHours");
+                });
+
+            modelBuilder.Entity("Worker", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("LocationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RoleInLocation")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Workers");
                 });
 
             modelBuilder.Entity("Booknix.Domain.Entities.Appointment", b =>
@@ -698,8 +704,8 @@ namespace Booknix.Persistence.Migrations
 
             modelBuilder.Entity("Booknix.Domain.Entities.ServiceEmployee", b =>
                 {
-                    b.HasOne("Booknix.Domain.Entities.User", "Employee")
-                        .WithMany("ServiceEmployees")
+                    b.HasOne("Worker", "Employee")
+                        .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -709,6 +715,10 @@ namespace Booknix.Persistence.Migrations
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Booknix.Domain.Entities.User", null)
+                        .WithMany("ServiceEmployees")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Employee");
 
@@ -737,25 +747,6 @@ namespace Booknix.Persistence.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("Booknix.Domain.Entities.UserLocation", b =>
-                {
-                    b.HasOne("Booknix.Domain.Entities.Location", "Location")
-                        .WithMany("UserLocations")
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Booknix.Domain.Entities.User", "User")
-                        .WithMany("UserLocations")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Location");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Booknix.Domain.Entities.UserProfile", b =>
                 {
                     b.HasOne("Booknix.Domain.Entities.User", "User")
@@ -778,6 +769,25 @@ namespace Booknix.Persistence.Migrations
                     b.Navigation("Location");
                 });
 
+            modelBuilder.Entity("Worker", b =>
+                {
+                    b.HasOne("Booknix.Domain.Entities.Location", "Location")
+                        .WithMany("Workers")
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Booknix.Domain.Entities.User", "User")
+                        .WithOne()
+                        .HasForeignKey("Worker", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Booknix.Domain.Entities.AppointmentSlot", b =>
                 {
                     b.Navigation("Appointment");
@@ -789,7 +799,7 @@ namespace Booknix.Persistence.Migrations
 
                     b.Navigation("Services");
 
-                    b.Navigation("UserLocations");
+                    b.Navigation("Workers");
 
                     b.Navigation("WorkingHours");
                 });
@@ -836,8 +846,6 @@ namespace Booknix.Persistence.Migrations
                     b.Navigation("Services");
 
                     b.Navigation("TrustedIps");
-
-                    b.Navigation("UserLocations");
                 });
 #pragma warning restore 612, 618
         }
