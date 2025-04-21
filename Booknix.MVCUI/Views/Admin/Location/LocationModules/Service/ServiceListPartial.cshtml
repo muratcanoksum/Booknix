@@ -1,0 +1,169 @@
+@model List<Booknix.Domain.Entities.Service>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+@Html.AntiForgeryToken()
+
+<!-- Bu sadece JS içindir -->
+<input type="hidden" id="location-id" value="@ViewBag.LocationId" />
+
+<h3 class="text-lg font-semibold mb-4">
+    <i class="fa-solid fa-list text-indigo-600 mr-2"></i> Kayýtlý Servisler
+</h3>
+
+<!-- Ekle Butonu -->
+<div class="mb-4">
+    <button id="toggle-add-form"
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm inline-flex items-center gap-2">
+        <i class="fa-solid fa-plus"></i> Servis Ekle
+    </button>
+</div>
+
+<!-- Ekleme Formu -->
+<div id="service-add-wrapper" class="hidden border p-4 rounded bg-gray-50 mb-6">
+    <h4 class="text-md font-semibold mb-2">
+        <i class="fa-solid fa-circle-plus text-blue-600 mr-1"></i> Yeni Servis Ekle
+    </h4>
+
+    <form id="service-add-form" class="space-y-4">
+        <!-- Bu input formdan sunucuya LocationId göndermek için gerekli -->
+        <input type="hidden" name="LocationId" value="@ViewBag.LocationId" />
+
+        <div>
+            <label class="block text-sm mb-1">Adý</label>
+            <input type="text" name="Name" class="w-full border rounded px-3 py-2" required />
+        </div>
+
+        <div>
+            <label class="block text-sm mb-1">Açýklama</label>
+            <input type="text" name="Description" class="w-full border rounded px-3 py-2" />
+        </div>
+
+        <div>
+            <label class="block text-sm mb-1">Fiyat (?)</label>
+            <input type="number" name="Price" step="0.01" class="w-full border rounded px-3 py-2" required />
+        </div>
+
+        <div>
+            <label class="block text-sm mb-1">Süre</label>
+            <div class="flex gap-2">
+                <select id="hour" class="w-1/2 border rounded px-3 py-2">
+                    @for (int h = 0; h <= 10; h++)
+                    {
+                        <option value="@h">@h saat</option>
+                    }
+                </select>
+                <select id="minute" class="w-1/2 border rounded px-3 py-2">
+                    @for (int m = 0; m < 60; m += 5)
+                    {
+                        <option value="@m">@m dakika</option>
+                    }
+                </select>
+            </div>
+            <input type="hidden" name="Duration" id="duration-input" required />
+        </div>
+
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-flex items-center gap-2">
+            <i class="fa-solid fa-floppy-disk"></i> Kaydet
+        </button>
+    </form>
+</div>
+
+<!-- Servis Listesi -->
+<div id="service-list-container">
+    @if (!Model.Any())
+    {
+        <div class="text-sm text-gray-500">
+            <i class="fa-solid fa-circle-info mr-1 text-gray-400"></i>
+            Bu lokasyona ait henüz bir servis eklenmemiþ.
+        </div>
+    }
+    else
+    {
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm border rounded shadow-sm">
+                <thead class="bg-gray-50 text-gray-700">
+                    <tr>
+                        <th class="px-4 py-2 text-left">Adý</th>
+                        <th class="px-4 py-2 text-left">Açýklama</th>
+                        <th class="px-4 py-2 text-left">Fiyat</th>
+                        <th class="px-4 py-2 text-left">Süre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var service in Model)
+                    {
+                        <tr class="border-t hover:bg-gray-50">
+                            <td class="px-4 py-2">@service.Name</td>
+                            <td class="px-4 py-2">@service.Description</td>
+                            <td class="px-4 py-2">@($"{service.Price:C2}")</td>
+                            <td class="px-4 py-2">@service.Duration.ToString(@"hh\:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<script>
+    $(document).on("click", "#toggle-add-form", function () {
+        $("#service-add-wrapper").slideToggle("fast");
+    });
+
+    $(document).on("submit", "#service-add-form", function (e) {
+        e.preventDefault();
+
+        const hour = $("#hour").val().toString().padStart(2, '0');
+        const minute = $("#minute").val().toString().padStart(2, '0');
+        $("#duration-input").val(`${hour}:${minute}`);
+
+        const $form = $(this);
+        const $btn = $form.find("button[type='submit']");
+        const token = $('input[name="__RequestVerificationToken"]').val();
+        const locationId = $("#location-id").val(); // sadece JS için
+
+        $btn.prop("disabled", true).html('<i class="fa fa-spinner fa-spin"></i> Kaydediliyor...');
+
+        $.ajax({
+            type: "POST",
+            url: "/Admin/AddServiceToLocation",
+            data: $form.serialize(),
+            headers: {
+                "RequestVerificationToken": token
+            },
+            success: function () {
+                $form[0].reset();
+                loadServices(locationId);
+                $("#service-add-wrapper").slideUp();
+            },
+            error: function (xhr) {
+                alert(xhr.responseText || "Servis eklenemedi.");
+            },
+            complete: function () {
+                $btn.prop("disabled", false).html('<i class="fa-solid fa-floppy-disk"></i> Kaydet');
+            }
+        });
+    });
+
+    function loadServices(locationId) {
+        const $target = $("#location-operation-panel");
+        $target.html(`
+            <div class="text-sm text-gray-500 flex items-center gap-2">
+                <i class="fa-solid fa-spinner fa-spin text-indigo-600"></i> Yükleniyor...
+            </div>
+        `);
+
+        $.get(`/Admin/GetServicesByLocation?locationId=${locationId}`, function (html) {
+            $target.html(html);
+        }).fail(function () {
+            $target.html(`
+                <div class="text-sm text-red-600 mt-2">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                    Servis bilgileri yüklenemedi.
+                </div>
+            `);
+        });
+    }
+</script>

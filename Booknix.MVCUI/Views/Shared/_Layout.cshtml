@@ -89,5 +89,26 @@
             menu.classList.toggle("hidden");
         }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
+
+    <script>
+        function initCleavePhoneMask() {
+            const $input = $('#phone-input');
+            if ($input.length && !$input.data('cleave-applied')) {
+                new Cleave('#phone-input', {
+                    delimiters: [' (', ') ', ' ', ' '],
+                    blocks: [1, 3, 3, 2, 2],
+                    numericOnly: true
+                });
+                $input.data('cleave-applied', true);
+            }
+        }
+
+        // Sayfa yüklendiğinde otomatik başlat
+        $(document).ready(function () {
+            initCleavePhoneMask();
+        });
+    </script>
 </body>
 </html>

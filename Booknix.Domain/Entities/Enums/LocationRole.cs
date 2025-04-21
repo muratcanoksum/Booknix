@@ -1,8 +1,13 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Booknix.Domain.Entities.Enums
 {
     public enum LocationRole
     {
-        LocationAdmin = 0,    // Mekan yöneticisi
-        LocationEmployee = 1  // Çalışan
+        [Display(Name = "Yönetici")]
+        LocationAdmin = 0,
+
+        [Display(Name = "Çalışan")]
+        LocationEmployee = 1
     }
 }

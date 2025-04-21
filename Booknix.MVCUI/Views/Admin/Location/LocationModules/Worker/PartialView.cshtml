@@ -1,0 +1,210 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+
+@functions {
+    public static string GetDisplayName(Enum value)
+    {
+        var field = value.GetType().GetField(value.ToString());
+        var attr = field?.GetCustomAttribute<DisplayAttribute>();
+        return attr?.Name ?? value.ToString();
+    }
+}
+
+@model List<Booknix.Domain.Entities.Worker>
+
+@Html.AntiForgeryToken()
+<input type="hidden" id="location-id" value="@ViewBag.LocationId" />
+
+<div class="flex justify-between items-center mb-4">
+    <h3 class="text-lg font-semibold text-gray-800">
+        <i class="fa-solid fa-users text-indigo-600 mr-1"></i> Çalışan Listesi
+    </h3>
+    <button id="show-add-worker-modal"
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm inline-flex items-center gap-2">
+        <i class="fa-solid fa-plus"></i> Yeni Çalışan
+    </button>
+</div>
+
+<!-- Uyarı kutuları -->
+<div id="worker-alert-success" class="hidden mb-4 px-4 py-3 rounded border border-green-300 bg-green-50 text-green-700 text-sm shadow-sm">
+    <i class="fas fa-check-circle mr-2"></i> <span id="worker-alert-success-text"></span>
+</div>
+
+<div id="worker-alert-error" class="hidden mb-4 px-4 py-3 rounded border border-red-300 bg-red-50 text-red-700 text-sm shadow-sm">
+    <i class="fas fa-exclamation-circle mr-2"></i> <span id="worker-alert-error-text"></span>
+</div>
+
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left font-semibold text-gray-600">Ad Soyad</th>
+                <th class="px-6 py-3 text-left font-semibold text-gray-600">E-Posta</th>
+                <th class="px-6 py-3 text-left font-semibold text-gray-600">Pozisyon</th>
+                <th class="px-6 py-3 text-right font-semibold text-gray-600">İşlemler</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var worker in Model)
+                {
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-gray-800">@worker.User.FullName</td>
+                        <td class="px-6 py-4 text-gray-800">@worker.User.Email</td>
+                        <td class="px-6 py-4 text-gray-800">
+                            @GetDisplayName(worker.RoleInLocation)
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="deleteWorker('@worker.Id')"
+                                    class="px-3 py-1 bg-red-100 text-red-800 rounded hover:bg-red-200 transition">
+                                Sil
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" class="px-6 py-4 text-center text-gray-500">Bu lokasyona ait çalışan bulunmamaktadır.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div id="add-worker-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 text-center">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Yeni Çalışan Ekle</h2>
+
+        <form id="worker-add-form" class="space-y-4">
+            <input type="hidden" name="LocationId" value="@ViewBag.LocationId" />
+
+            <div class="text-left">
+                <label class="block text-sm mb-1">Ad Soyad</label>
+                <input type="text" name="FullName" class="w-full border rounded px-3 py-2" required />
+            </div>
+
+            <div class="text-left">
+                <label class="block text-sm mb-1">E-Posta</label>
+                <input type="email" name="Email" class="w-full border rounded px-3 py-2" required />
+            </div>
+
+            <div class="text-left">
+                <label class="block text-sm mb-1">Pozisyon</label>
+                <select name="RoleInLocation" class="w-full border rounded px-3 py-2" required>
+                    <option value="" disabled selected>Bir pozisyon seçin</option>
+                    <option value="LocationAdmin">Yönetici</option>
+                    <option value="LocationEmployee">Çalışan</option>
+                </select>
+            </div>
+
+            <div class="flex justify-center gap-3 mt-4">
+                <button type="button" onclick="hideAddWorkerModal()"
+                        class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded">
+                    Vazgeç
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded">
+                    Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function deleteWorker(workerId) {
+        if (!confirm("Bu çalışanı silmek istediğinize emin misiniz?")) return;
+
+        const token = $('input[name="__RequestVerificationToken"]').val();
+        const locationId = $("#location-id").val();
+
+        $.ajax({
+            type: "POST",
+            url: `/Admin/Worker/Delete`,
+            data: { id: workerId },
+            headers: {
+                "RequestVerificationToken": token
+            },
+            success: function () {
+                loadWorkers(locationId);
+            },
+            error: function () {
+                alert("Çalışan silinemedi.");
+            }
+        });
+    }
+
+    function showAddWorkerModal() {
+        $("#add-worker-modal").removeClass("hidden").addClass("flex");
+    }
+
+    function hideAddWorkerModal() {
+        $("#add-worker-modal").addClass("hidden").removeClass("flex");
+    }
+
+    function loadWorkers(locationId) {
+        const $target = $("#location-operation-panel");
+        const $loader = $("#location-operation-loader");
+
+        $loader.text("Çalışanlar yükleniyor...");
+        $target.empty();
+
+        $.get(`/Admin/GetWorkersByLocation/${locationId}`, function (html) {
+            $target.html(html);
+            $loader.text("");
+        }).fail(function () {
+            $loader.text("Çalışanlar yüklenemedi.");
+        });
+    }
+
+
+    $("#show-add-worker-modal").on("click", showAddWorkerModal);
+
+    $(document).on("submit", "#worker-add-form", function (e) {
+        e.preventDefault();
+
+        const $form = $(this);
+        const token = $('input[name="__RequestVerificationToken"]').val();
+        const locationId = $("#location-id").val();
+
+        $.ajax({
+            type: "POST",
+            url: "/Admin/Worker/Create",
+            data: $form.serialize(),
+            headers: {
+                "RequestVerificationToken": token
+            },
+            success: function () {
+                hideAddWorkerModal();
+                $form[0].reset();
+                loadWorkers(locationId);
+
+                $("#worker-alert-success-text").text("Çalışan başarıyla eklendi.");
+                $("#worker-alert-success").removeClass("hidden");
+                setTimeout(() => {
+                    $("#worker-alert-success").fadeOut("slow", function () {
+                        $(this).addClass("hidden").show();
+                    });
+                }, 5000);
+            },
+
+            error: function (xhr) {
+                const message = xhr.responseText || "Çalışan eklenemedi.";
+                hideAddWorkerModal();
+                $("#worker-alert-error-text").text(message);
+                $("#worker-alert-error").removeClass("hidden");
+                setTimeout(() => {
+                    $("#worker-alert-error").fadeOut("slow", function () {
+                        $(this).addClass("hidden").show();
+                    });
+                }, 7000);
+            }
+
+        });
+    });
+</script>

@@ -1,6 +1,8 @@
 using Booknix.Domain.Entities.Enums;
 using Booknix.Domain.Entities;
 
+namespace Booknix.Domain.Entities;
+
 public class Worker
 {
     public Guid Id { get; set; }

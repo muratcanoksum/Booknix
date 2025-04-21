@@ -1,4 +1,4 @@
-@model Booknix.Domain.Entities.Location
+﻿@model Booknix.Domain.Entities.Location
 
 @{
     ViewData["Title"] = "Lokasyon Detay";
@@ -7,7 +7,7 @@
 <a asp-controller="Admin" asp-action="Location"
    class="inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 transition mb-4">
     <i class="fas fa-arrow-left mr-2"></i>
-    Geri D�n
+    Geri Dön
 </a>
 
 <h2 class="text-2xl font-bold text-gray-800 mb-4">
@@ -17,7 +17,7 @@
 
 <div class="bg-white shadow rounded-lg p-6 space-y-4 text-sm">
     <div>
-        <strong class="text-gray-600 block">Ad�:</strong>
+        <strong class="text-gray-600 block">Adı:</strong>
         <span class="text-gray-800">@Model.Name</span>
     </div>
 
@@ -32,15 +32,79 @@
     </div>
 
     <div>
-        <strong class="text-gray-600 block">Sekt�r:</strong>
+        <strong class="text-gray-600 block">Sektör:</strong>
         <span class="text-gray-800">@Model.Sector?.Name</span>
     </div>
 </div>
 
-<!-- Geni�letilebilir B�l�m -->
-<div class="mt-6">
-    <h3 class="text-lg font-semibold text-gray-700 mb-2">?? Lokasyona Ait ��lemler</h3>
-    <p class="text-sm text-gray-500">Bu alanda ilgili �al��anlar, randevular veya medyalar listelenebilir.</p>
 
-    <!-- �lgili partiallar/tablolar burada AJAX veya include ile y�klenebilir -->
+<!-- Genişletilebilir Bölüm -->
+<div class="mt-6">
+    <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+        <i class="fas fa-tools text-gray-600 mr-2"></i>
+        Lokasyona Ait İşlemler
+    </h3>
+
+
+
+    <div class="flex flex-wrap gap-2 mb-4">
+        <button data-url="/Admin/GetServicesByLocation/@Model.Id"
+                class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
+            Servisleri Göster
+        </button>
+        <button data-url="/Admin/GetWorkersByLocation/@Model.Id"
+                class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
+            Çalışanları Göster
+        </button>
+        <button data-url="/Admin/GetWorkingHours/@Model.Id"
+                class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
+            Çalışma Saatleri
+        </button>
+    </div>
+
+    <!-- Görsel Ayraç -->
+    <div class="flex items-center my-8">
+        <div class="flex-grow border-t border-gray-300"></div>
+        <span class="mx-4 text-gray-400 text-sm uppercase">İşlem Modülleri</span>
+        <div class="flex-grow border-t border-gray-300"></div>
+    </div>
+
+    <div id="location-operation-loader" class="text-sm text-gray-500 mb-2">Lütfen bir işlem seçin...</div>
+    <div id="location-operation-panel"></div>
 </div>
+
+@section Scripts {
+<script>
+    $(function () {
+    $(document).on("click", ".operation-tab", function () {
+    const url = $(this).data("url");
+
+    console.log(url);
+
+    $(".operation-tab").removeClass("bg-indigo-600 text-white font-semibold")
+    .addClass("bg-gray-100 text-gray-800");
+
+    $(this).removeClass("bg-gray-100 text-gray-800")
+    .addClass("bg-indigo-600 text-white font-semibold");
+
+    $("#location-operation-loader").text("Yükleniyor...");
+    $("#location-operation-panel").empty();
+
+    $.get(url, function (html) {
+    $("#location-operation-panel").html(html);
+    $("#location-operation-loader").text(""); // temizle
+    }).fail(function () {
+    $("#location-operation-loader").html(`
+    <div class="text-center space-y-2">
+    <img src="/images/logo.png" class="w-16 h-16 mx-auto">
+    <p class="text-sm text-gray-500">İçerik yüklenemedi.</p>
+    </div>
+    `);
+    });
+    });
+    });
+
+
+
+</script>
+}

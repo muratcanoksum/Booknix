@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Booknix.Infrastructure.Filters;
 using Booknix.Application.Interfaces;
 using Booknix.Application.DTOs;
+using Booknix.Domain.Entities;
 
 namespace Booknix.MVCUI.Controllers;
 
@@ -201,6 +202,70 @@ public class AdminController(IAdminService adminService) : Controller
     }
 
 
+    // SERVICE OPERATIONS
+
+    [HttpGet("/Admin/GetServicesByLocation/{locationId}")]
+    public async Task<IActionResult> GetServicesByLocation(Guid locationId)
+    {
+        var services = await _adminService.GetServicesByLocationAsync(locationId);
+        ViewBag.LocationId = locationId;
+        return PartialView("Location/LocationModules/Service/ServiceListPartial", services);
+    }
+
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddServiceToLocation(ServiceCreateDto dto)
+    {
+        if (!await _adminService.LocationExistsAsync(dto.LocationId))
+        {
+            return BadRequest("Lokasyon bulunamadý. Lütfen geçerli bir lokasyon seçiniz.");
+        }
+
+        var result = await _adminService.AddServiceToLocationAsync(dto);
+
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok(result.Message);
+    }
+
+
+    // WORKER OPERATIONS
+
+    [HttpGet("/Admin/GetWorkersByLocation/{locationId}")]
+    public async Task<IActionResult> GetWorkersByLocation(Guid LocationId)
+    {
+        var workers = await _adminService.GetAllWorkersAsync(LocationId);
+        ViewBag.LocationId = LocationId;
+        return PartialView("Location/LocationModules/Worker/PartialView", workers);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("Admin/Worker/Create")]
+    public async Task<IActionResult> AddWorkerToLocation(WorkerAddDto dto)
+    {
+        var result = await _adminService.AddWorkerToLocationAsync(dto);
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok();
+
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("Admin/Worker/Delete")]
+    public async Task<IActionResult> DeleteWorker(Guid id)
+    {
+        var result = await _adminService.DeleteWorkerAsync(id);
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok();
+    }
 
 
 

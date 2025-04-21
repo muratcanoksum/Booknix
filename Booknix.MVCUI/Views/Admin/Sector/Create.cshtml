@@ -1,50 +1,31 @@
-﻿@model Booknix.Application.DTOs.LocationCreateDto
+﻿@model Booknix.Domain.Entities.Sector
 
 @{
-    ViewData["Title"] = "Yeni Lokasyon";
+    ViewData["Title"] = "Yeni Sektör";
 }
 
-<a asp-controller="Admin" asp-action="Location"
+<a asp-controller="Admin" asp-action="Sector"
    class="inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 transition mb-4">
     <i class="fas fa-arrow-left mr-2"></i>
     Geri Dön
 </a>
 
-<h3 class="text-lg font-semibold mb-4">➕ Lokasyon Ekle</h3>
+<h3 class="text-lg font-semibold mb-4">➕ Sektör Ekle</h3>
 
-<div id="location-create-form-alert" class="hidden text-sm mb-3 rounded px-3 py-2"></div>
+<div id="sector-create-form-alert" class="hidden text-sm mb-3 rounded px-3 py-2"></div>
 
-<form id="location-create-form" class="space-y-4">
+<form id="sector-create-form" class="space-y-4">
     @Html.AntiForgeryToken()
 
-    <!-- Lokasyon Adı -->
+    <!-- Sektör Adı -->
     <div>
-        <label class="block text-sm text-gray-600 mb-1">Lokasyon Adı</label>
+        <label class="block text-sm text-gray-600 mb-1">Sektör Adı</label>
         <div class="flex items-center border rounded">
             <span class="px-3 text-gray-500 border-r">
-                <i class="fas fa-building"></i>
+                <i class="fas fa-briefcase"></i>
             </span>
-            <input asp-for="Name" class="w-full border px-3 py-2 rounded text-sm" placeholder="Örn: Booknix Kuaför" required />
+            <input asp-for="Name" class="w-full border px-3 py-2 rounded text-sm" placeholder="Örn: Kuaför" required />
         </div>
-    </div>
-
-    <!-- Adres -->
-    <div>
-        <label class="block text-sm text-gray-600 mb-1">Adres</label>
-        <div class="flex items-center border rounded">
-            <span class="px-3 text-gray-500 border-r">
-                <i class="fas fa-map-marker-alt"></i>
-            </span>
-            <input asp-for="Address" class="w-full border px-3 py-2 rounded text-sm" placeholder="Örn: Bağdat Cad. No:22 Kadıköy / İstanbul" required />
-        </div>
-    </div>
-
-    <!-- Sektör Seçimi -->
-    <div>
-        <label class="block text-sm text-gray-600 mb-1">Sektör</label>
-        <select asp-for="SectorId" asp-items="Model.Sectors" class="w-full border px-3 py-2 rounded text-sm bg-white" required>
-            <option value="">Sektör Seçiniz</option>
-        </select>
     </div>
 
     <button type="submit"
@@ -72,25 +53,25 @@
             }, Itime);
         }
 
-        $("#location-create-form").submit(function (e) {
+        $("#sector-create-form").submit(function (e) {
             e.preventDefault();
 
             const $form = $(this);
             const $btn = $form.find("button[type='submit']");
-            const $alert = $("#location-create-form-alert");
+            const $alert = $("#sector-create-form-alert");
             const token = $form.find('input[name="__RequestVerificationToken"]').val();
 
             $btn.prop("disabled", true).text("Kaydediliyor...");
 
             $.ajax({
                 type: "POST",
-                url: "/Admin/CreateLocation",
+                url: "/Admin/CreateSector",
                 data: $form.serialize(),
                 headers: {
                     "RequestVerificationToken": token
                 },
                 success: function () {
-                    window.location.href = "/Admin/Location";
+                    window.location.href = "/Admin/Sector";
                 },
                 error: function (xhr) {
                     const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.";
@@ -98,7 +79,7 @@
                         .removeClass("hidden text-green-600 bg-green-100 border-green-300")
                         .addClass("text-red-500 bg-red-100 border border-red-300")
                         .text(msg);
-                    setTimeoutAlert("#location-create-form-alert");
+                    setTimeoutAlert("#sector-create-form-alert");
                 },
                 complete: function () {
                     $btn.prop("disabled", false).text("Kaydet");

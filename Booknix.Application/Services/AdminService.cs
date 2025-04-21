@@ -10,11 +10,19 @@ namespace Booknix.Application.Services
     {
         private readonly ISectorRepository _sectorRepo;
         private readonly ILocationRepository _locationRepo;
+        private readonly IServiceRepository _serviceRepo;
+        private readonly IWorkerRepository _workerRepo;
+        private readonly IUserRepository _userRepo;
+        private readonly IRoleRepository _roleRepo;
 
-        public AdminService(ISectorRepository sectorRepo, ILocationRepository locationRepo)
+        public AdminService(ISectorRepository sectorRepo, ILocationRepository locationRepo, IServiceRepository serviceRepo, IWorkerRepository workerRepo, IUserRepository userRepo, IRoleRepository roleRepo)
         {
             _sectorRepo = sectorRepo;
             _locationRepo = locationRepo;
+            _serviceRepo = serviceRepo;
+            _workerRepo = workerRepo;
+            _userRepo = userRepo;
+            _roleRepo = roleRepo;
         }
 
         // Sectors
@@ -273,6 +281,175 @@ namespace Booknix.Application.Services
             };
         }
 
+
+
+
+        // Services
+
+        public async Task<IEnumerable<Service>> GetServicesByLocationAsync(Guid locationId)
+        {
+            return await _serviceRepo.GetByLocationIdAsync(locationId);
+        }
+
+        public async Task<RequestResult> AddServiceToLocationAsync(ServiceCreateDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Name))
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Servis adı boş olamaz."
+                };
+            }
+
+            var service = new Service
+            {
+                Id = Guid.NewGuid(),
+                Name = dto.Name.Trim(),
+                Description = dto.Description?.Trim(),
+                Price = dto.Price,
+                Duration = dto.Duration,
+                LocationId = dto.LocationId
+            };
+
+            await _serviceRepo.AddAsync(service);
+
+            return new RequestResult
+            {
+                Success = true,
+                Message = "Servis başarıyla eklendi."
+            };
+        }
+
+        public async Task<RequestResult> DeleteServiceAsync(Guid id)
+        {
+            await _serviceRepo.DeleteAsync(id);
+
+            return new RequestResult
+            {
+                Success = true,
+                Message = "Servis başarıyla silindi."
+            };
+        }
+
+        public async Task<bool> LocationExistsAsync(Guid locationId)
+        {
+            return false;
+        }
+
+
+        // Workers
+
+        public async Task<IEnumerable<Worker>> GetAllWorkersAsync(Guid locationId)
+        {
+            return await _workerRepo.GetByLocationIdAsync(locationId);
+        }
+
+        public async Task<RequestResult> AddWorkerToLocationAsync(WorkerAddDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.FullName) || string.IsNullOrWhiteSpace(dto.Email))
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Ad, soyad ve e-posta adresi boş olamaz."
+                };
+
+            var existingUser = await _userRepo.GetByEmailAsync(dto.Email);
+
+            Guid userId;
+
+            if (existingUser != null)
+            {
+                // Kullanıcı zaten varsa
+                userId = existingUser.Id;
+
+                // Bu kullanıcı başka bir lokasyonda zaten çalışıyor mu?
+                var alreadyWorker = await _workerRepo.GetByUserIdAsync(userId);
+                if (alreadyWorker != null)
+                    return new RequestResult
+                    {
+                        Success = false,
+                        Message = "Bu kullanıcı zaten başka bir lokasyonda çalışıyor."
+                    };
+            }
+            else
+            {
+                // Yeni kullanıcı oluşturulacak
+                var randomPassword = Guid.NewGuid().ToString("N")[..8]; // 8 karakterlik şifre
+                Console.WriteLine($"[Yeni Kullanıcı Şifresi] {randomPassword}");
+
+                var role = await _roleRepo.GetByNameAsync("Client");
+
+                var newUser = new User
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = dto.FullName,
+                    Email = dto.Email,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(randomPassword),
+                    IsEmailConfirmed = false,
+                    RoleId = role!.Id,
+                };
+
+                await _userRepo.AddAsync(newUser);
+
+                userId = newUser.Id;
+            }
+
+            // Worker kaydı oluşturuluyor
+            var newWorker = new Worker
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                LocationId = dto.LocationId,
+                RoleInLocation = dto.RoleInLocation
+            };
+
+            await _workerRepo.AddAsync(newWorker);
+
+            return new RequestResult { Success = true, Message = "Çalışan başarıyla eklendi." };
+        }
+
+
+        //BUNDA KALDIN ÜSTTEKİNDEDE HATALAR VAR
+        public async Task<RequestResult> DeleteWorkerAsync(Guid id)
+        {
+            // 1. Çalışan var mı kontrol et
+            var worker = await _workerRepo.GetByIdAsync(id);
+            if (worker == null)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Çalışan bulunamadı."
+                };
+            }
+
+            // 2. Silme işlemi
+            await _workerRepo.DeleteAsync(id);
+
+            return new RequestResult
+            {
+                Success = true,
+                Message = "Çalışan başarıyla silindi."
+            };
+        }
+
+
+        public async Task<RequestResult> UpdateWorkerAsync(Guid id, string fullName, string email, int role, Guid locationId)
+        {
+            await Task.Delay(1000); // Simulate some delay
+            return new RequestResult
+            {
+                Success = false,
+                Message = "Bu özellik henüz geliştirilmedi."
+            };
+        }
+
+        public async Task<Worker?> GetWorkerByIdAsync(Guid id)
+        {
+            await Task.Delay(1000); // Simulate some delay
+            return null; // Simulate not found
+        }
 
     }
 }

@@ -138,24 +138,5 @@
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
 
-    <script>
-        function initCleavePhoneMask() {
-            const $input = $('#phone-input');
-            if ($input.length && !$input.data('cleave-applied')) {
-                new Cleave('#phone-input', {
-                    delimiters: ['(', ') ', ' ', ' '],
-                    blocks: [0, 3, 3, 2, 2],
-                    numericOnly: true
-                });
-                $input.data('cleave-applied', true);
-            }
-        }
-
-        // Sayfa yüklendiðinde otomatik baþlat
-        $(document).ready(function () {
-            initCleavePhoneMask();
-        });
-    </script>
 }
