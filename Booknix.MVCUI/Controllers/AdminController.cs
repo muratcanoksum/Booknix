@@ -55,7 +55,7 @@ public class AdminController(IAdminService adminService) : Controller
 
         if (sector == null)
         {
-            return NotFound("Sektör bulunamadý.");
+            return NotFound("SektÃ¶r bulunamadÄ±.");
         }
 
         return View("Sector/Edit", sector);
@@ -121,7 +121,7 @@ public class AdminController(IAdminService adminService) : Controller
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest("Tüm alanlarýn eksiksiz doldurulduðundan emin olun.");
+            return BadRequest("TÃ¼m alanlarÄ±n eksiksiz doldurulduÄŸundan emin olun.");
         }
 
         var result = await _adminService.AddLocationAsync(dto.Name, dto.Address, dto.PhoneNumber, dto.SectorId);
@@ -143,10 +143,10 @@ public class AdminController(IAdminService adminService) : Controller
         var location = await _adminService.GetLocationByIdAsync(id);
         if (location == null)
         {
-            return NotFound("Lokasyon bulunamadý.");
+            return NotFound("Lokasyon bulunamadÄ±.");
         }
 
-        var sectors = await _adminService.GetAllSectorsAsync(); // Drop-down için
+        var sectors = await _adminService.GetAllSectorsAsync(); // Drop-down iÃ§in
         ViewBag.Sectors = sectors.ToList();
 
         return View("Location/Edit", location);
@@ -184,7 +184,7 @@ public class AdminController(IAdminService adminService) : Controller
     }
 
 
-    // LOCATION DETAÝLS OPERATIONS
+    // LOCATION DETAÄ°LS OPERATIONS
 
 
 
@@ -193,9 +193,9 @@ public class AdminController(IAdminService adminService) : Controller
     {
         var location = await _adminService.GetLocationByIdAsync(id);
         if (location == null)
-            return NotFound("Lokasyon bulunamadý.");
+            return NotFound("Lokasyon bulunamadÄ±.");
 
-        // Ýlgili diðer veriler varsa burada alýnabilir (örneðin çalýþanlar)
+        // Ä°lgili diÄŸer veriler varsa burada alÄ±nabilir (Ã–rneÄŸin Ã‡alÄ±ÅŸanlar)
         // var employees = await _employeeService.GetByLocationIdAsync(id);
 
         return View("Location/Details", location);
@@ -216,11 +216,12 @@ public class AdminController(IAdminService adminService) : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Route("Admin/AddServiceToLocation")]
     public async Task<IActionResult> AddServiceToLocation(ServiceCreateDto dto)
     {
         if (!await _adminService.LocationExistsAsync(dto.LocationId))
         {
-            return BadRequest("Lokasyon bulunamadý. Lütfen geçerli bir lokasyon seçiniz.");
+            return BadRequest("Lokasyon bulunamadÄ±. LÃ¼tfen geÃ§erli bir lokasyon seÃ§iniz.");
         }
 
         var result = await _adminService.AddServiceToLocationAsync(dto);

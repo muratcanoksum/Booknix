@@ -339,7 +339,8 @@ namespace Booknix.Application.Services
 
         public async Task<bool> LocationExistsAsync(Guid locationId)
         {
-            return false;
+            var location = await _locationRepo.GetByIdAsync(locationId);
+            return location != null;
         }
 
 

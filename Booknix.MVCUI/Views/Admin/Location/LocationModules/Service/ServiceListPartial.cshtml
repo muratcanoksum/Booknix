@@ -5,11 +5,11 @@
 
 @Html.AntiForgeryToken()
 
-<!-- Bu sadece JS içindir -->
+<!-- Bu sadece JS iï¿½indir -->
 <input type="hidden" id="location-id" value="@ViewBag.LocationId" />
 
 <h3 class="text-lg font-semibold mb-4">
-    <i class="fa-solid fa-list text-indigo-600 mr-2"></i> Kayýtlý Servisler
+    <i class="fa-solid fa-list text-indigo-600 mr-2"></i> Kayï¿½tlï¿½ Servisler
 </h3>
 
 <!-- Ekle Butonu -->
@@ -27,16 +27,16 @@
     </h4>
 
     <form id="service-add-form" class="space-y-4">
-        <!-- Bu input formdan sunucuya LocationId göndermek için gerekli -->
+        <!-- Bu input formdan sunucuya LocationId gï¿½ndermek iï¿½in gerekli -->
         <input type="hidden" name="LocationId" value="@ViewBag.LocationId" />
 
         <div>
-            <label class="block text-sm mb-1">Adý</label>
+            <label class="block text-sm mb-1">Adï¿½</label>
             <input type="text" name="Name" class="w-full border rounded px-3 py-2" required />
         </div>
 
         <div>
-            <label class="block text-sm mb-1">Açýklama</label>
+            <label class="block text-sm mb-1">Aï¿½ï¿½klama</label>
             <input type="text" name="Description" class="w-full border rounded px-3 py-2" />
         </div>
 
@@ -46,7 +46,7 @@
         </div>
 
         <div>
-            <label class="block text-sm mb-1">Süre</label>
+            <label class="block text-sm mb-1">Sï¿½re</label>
             <div class="flex gap-2">
                 <select id="hour" class="w-1/2 border rounded px-3 py-2">
                     @for (int h = 0; h <= 10; h++)
@@ -76,7 +76,7 @@
     {
         <div class="text-sm text-gray-500">
             <i class="fa-solid fa-circle-info mr-1 text-gray-400"></i>
-            Bu lokasyona ait henüz bir servis eklenmemiþ.
+            Bu lokasyona ait henï¿½z bir servis eklenmemiï¿½.
         </div>
     }
     else
@@ -85,10 +85,10 @@
             <table class="min-w-full text-sm border rounded shadow-sm">
                 <thead class="bg-gray-50 text-gray-700">
                     <tr>
-                        <th class="px-4 py-2 text-left">Adý</th>
-                        <th class="px-4 py-2 text-left">Açýklama</th>
+                        <th class="px-4 py-2 text-left">Adï¿½</th>
+                        <th class="px-4 py-2 text-left">Aï¿½ï¿½klama</th>
                         <th class="px-4 py-2 text-left">Fiyat</th>
-                        <th class="px-4 py-2 text-left">Süre</th>
+                        <th class="px-4 py-2 text-left">Sï¿½re</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -122,46 +122,46 @@
         const $form = $(this);
         const $btn = $form.find("button[type='submit']");
         const token = $('input[name="__RequestVerificationToken"]').val();
-        const locationId = $("#location-id").val(); // sadece JS için
+        const locationId = $("#location-id").val(); // sadece JS iï¿½in
 
         $btn.prop("disabled", true).html('<i class="fa fa-spinner fa-spin"></i> Kaydediliyor...');
-
-        $.ajax({
-            type: "POST",
-            url: "/Admin/Admin/Worker/Create",
-            data: $form.serialize(),
-            headers: {
-                "RequestVerificationToken": token
-            },
-            success: function () {
-                $form[0].reset();
-                loadServices(locationId);
-                $("#service-add-wrapper").slideUp();
-            },
-            error: function (xhr) {
-                alert(xhr.responseText || "Servis eklenemedi.");
-            },
-            complete: function () {
-                $btn.prop("disabled", false).html('<i class="fa-solid fa-floppy-disk"></i> Kaydet');
-            }
-        });
+        
+$.ajax({
+    type: "POST",
+    url: "/Admin/AddServiceToLocation",
+    data: $form.serialize(),
+    headers: {
+        "RequestVerificationToken": token
+    },
+    success: function () {
+        $form[0].reset();
+        loadServices(locationId);
+        $("#service-add-wrapper").slideUp();
+    },
+    error: function (xhr) {
+        alert(xhr.responseText || "Servis eklenemedi.");
+    },
+    complete: function () {
+        $btn.prop("disabled", false).html('<i class="fa-solid fa-floppy-disk"></i> Kaydet');
+    }
+});
     });
 
     function loadServices(locationId) {
         const $target = $("#location-operation-panel");
         $target.html(`
             <div class="text-sm text-gray-500 flex items-center gap-2">
-                <i class="fa-solid fa-spinner fa-spin text-indigo-600"></i> Yükleniyor...
+                <i class="fa-solid fa-spinner fa-spin text-indigo-600"></i> YÃ¼kleniyor...
             </div>
         `);
 
-        $.get(`/Admin/GetServicesByLocation?locationId=${locationId}`, function (html) {
+        $.get(`/Admin/GetServicesByLocation/${locationId}`, function (html) {
             $target.html(html);
         }).fail(function () {
             $target.html(`
                 <div class="text-sm text-red-600 mt-2">
                     <i class="fa-solid fa-circle-exclamation mr-1"></i>
-                    Servis bilgileri yüklenemedi.
+                    Servis bilgileri yÃ¼klenemedi.
                 </div>
             `);
         });
