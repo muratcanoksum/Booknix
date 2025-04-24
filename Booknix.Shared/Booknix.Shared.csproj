@@ -10,7 +10,10 @@
     <None Remove="Templates\DeleteAccountVerify.html" />
     <None Remove="Templates\EmailChangeAlert.html" />
     <None Remove="Templates\EmailChangeVerify.html" />
+    <None Remove="Templates\NewWorkerEmail.html" />
     <None Remove="Templates\PasswordReset.html" />
+    <None Remove="Templates\WorkerDelete.html" />
+    <None Remove="Templates\WorkerPositionChange.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,7 +35,16 @@
     <Content Include="Templates\EmailVerification.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Templates\NewWorkerEmail.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Templates\PasswordReset.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\WorkerDelete.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\WorkerPositionChange.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

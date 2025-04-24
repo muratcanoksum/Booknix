@@ -2,28 +2,33 @@
 using Booknix.Application.DTOs;
 using Booknix.Domain.Entities;
 using Booknix.Domain.Interfaces;
+using Booknix.Shared.Interfaces;
+using Booknix.Shared.Helpers;
+using Booknix.Application.Helpers;
+using Booknix.Domain.Entities.Enums;
 
 
 namespace Booknix.Application.Services
 {
-    public class AdminService : IAdminService
+    public class AdminService(
+        ISectorRepository sectorRepo,
+        ILocationRepository locationRepo,
+        IServiceRepository serviceRepo,
+        IWorkerRepository workerRepo,
+        IUserRepository userRepo,
+        IRoleRepository roleRepo,
+        IAuditLogger auditLogger,
+        IEmailSender emailSender
+            ) : IAdminService
     {
-        private readonly ISectorRepository _sectorRepo;
-        private readonly ILocationRepository _locationRepo;
-        private readonly IServiceRepository _serviceRepo;
-        private readonly IWorkerRepository _workerRepo;
-        private readonly IUserRepository _userRepo;
-        private readonly IRoleRepository _roleRepo;
-
-        public AdminService(ISectorRepository sectorRepo, ILocationRepository locationRepo, IServiceRepository serviceRepo, IWorkerRepository workerRepo, IUserRepository userRepo, IRoleRepository roleRepo)
-        {
-            _sectorRepo = sectorRepo;
-            _locationRepo = locationRepo;
-            _serviceRepo = serviceRepo;
-            _workerRepo = workerRepo;
-            _userRepo = userRepo;
-            _roleRepo = roleRepo;
-        }
+        private readonly ISectorRepository _sectorRepo = sectorRepo;
+        private readonly ILocationRepository _locationRepo = locationRepo;
+        private readonly IServiceRepository _serviceRepo = serviceRepo;
+        private readonly IWorkerRepository _workerRepo = workerRepo;
+        private readonly IUserRepository _userRepo = userRepo;
+        private readonly IRoleRepository _roleRepo = roleRepo;
+        private readonly IAuditLogger _auditLogger = auditLogger;
+        private readonly IEmailSender _emailSender = emailSender;
 
         // Sectors
 
@@ -348,54 +353,62 @@ namespace Booknix.Application.Services
         public async Task<RequestResult> AddWorkerToLocationAsync(WorkerAddDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.FullName) || string.IsNullOrWhiteSpace(dto.Email))
+            {
                 return new RequestResult
                 {
                     Success = false,
                     Message = "Ad, soyad ve e-posta adresi boş olamaz."
                 };
+            }
 
             var existingUser = await _userRepo.GetByEmailAsync(dto.Email);
-
             Guid userId;
+            string? generatedPassword = null;
 
             if (existingUser != null)
             {
-                // Kullanıcı zaten varsa
                 userId = existingUser.Id;
 
-                // Bu kullanıcı başka bir lokasyonda zaten çalışıyor mu?
-                var alreadyWorker = await _workerRepo.GetByUserIdAsync(userId);
-                if (alreadyWorker != null)
+                var existingWorker = await _workerRepo.GetByUserIdAsync(userId);
+                if (existingWorker != null)
+                {
                     return new RequestResult
                     {
                         Success = false,
                         Message = "Bu kullanıcı zaten başka bir lokasyonda çalışıyor."
                     };
+                }
             }
             else
             {
-                // Yeni kullanıcı oluşturulacak
-                var randomPassword = Guid.NewGuid().ToString("N")[..8]; // 8 karakterlik şifre
-                Console.WriteLine($"[Yeni Kullanıcı Şifresi] {randomPassword}");
-
-                var role = await _roleRepo.GetByNameAsync("Client");
+                generatedPassword = Guid.NewGuid().ToString("N")[..8];
+                var role = await _roleRepo.GetByNameAsync("Employee");
 
                 var newUser = new User
                 {
                     Id = Guid.NewGuid(),
                     FullName = dto.FullName,
                     Email = dto.Email,
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(randomPassword),
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(generatedPassword),
                     IsEmailConfirmed = false,
                     RoleId = role!.Id,
                 };
 
-                await _userRepo.AddAsync(newUser);
-
+                try
+                {
+                    await _userRepo.AddAsync(newUser);
+                }
+                catch
+                {
+                    return new RequestResult
+                    {
+                        Success = false,
+                        Message = "Kullanıcı eklenirken bir hata oluştu."
+                    };
+                }
                 userId = newUser.Id;
             }
 
-            // Worker kaydı oluşturuluyor
             var newWorker = new Worker
             {
                 Id = Guid.NewGuid(),
@@ -404,16 +417,44 @@ namespace Booknix.Application.Services
                 RoleInLocation = dto.RoleInLocation
             };
 
-            await _workerRepo.AddAsync(newWorker);
 
-            return new RequestResult { Success = true, Message = "Çalışan başarıyla eklendi." };
+            var location = await _locationRepo.GetByIdAsync(dto.LocationId);
+            var companyName = location?.Name ?? "Firma";
+            var fullName = dto.FullName;
+            var roleDisplayName = EnumHelper.GetDisplayName(dto.RoleInLocation);
+
+            try
+            {
+                await _workerRepo.AddAsync(newWorker);
+
+                if (existingUser == null)
+                {
+                    await NotifyNewAccountWithAssignmentAsync(dto.Email, generatedPassword!, companyName, fullName, roleDisplayName);
+
+                    return new RequestResult { Success = true, Message = "Çalışan başarıyla eklendi ve giriş bilgileri ilgili email adresine gönderildi." };
+
+                }
+                else
+                {
+                    await NotifyRoleAssignmentForExistingUserAsync(dto.Email, companyName, fullName, roleDisplayName);
+
+                    return new RequestResult { Success = true, Message = "Çalışan başarıyla eklendi." };
+
+                }
+            }
+            catch
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Çalışan eklenirken bir hata oluştu."
+                };
+            }
+
         }
 
-
-        //BUNDA KALDIN ÜSTTEKİNDEDE HATALAR VAR
         public async Task<RequestResult> DeleteWorkerAsync(Guid id)
         {
-            // 1. Çalışan var mı kontrol et
             var worker = await _workerRepo.GetByIdAsync(id);
             if (worker == null)
             {
@@ -424,16 +465,31 @@ namespace Booknix.Application.Services
                 };
             }
 
-            // 2. Silme işlemi
-            await _workerRepo.DeleteAsync(id);
-
-            return new RequestResult
+            try
             {
-                Success = true,
-                Message = "Çalışan başarıyla silindi."
-            };
-        }
+                // 2. Silme işlemi
+                await _workerRepo.DeleteAsync(id);
 
+                var roleDisplayName = EnumHelper.GetDisplayName(worker.RoleInLocation);
+
+                await NotifyWorkerRemovalAsync(worker.User.Email, worker.Location.Name, worker.User.FullName, roleDisplayName);
+
+                return new RequestResult
+                {
+                    Success = true,
+                    Message = "Çalışan başarıyla silindi."
+                };
+            }
+            catch
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Çalışan silinirken bir hata oluştu."
+                };
+            }
+
+        }
 
         public async Task<RequestResult> UpdateWorkerAsync(Guid id, string fullName, string email, int role, Guid locationId)
         {
@@ -450,6 +506,73 @@ namespace Booknix.Application.Services
             await Task.Delay(1000); // Simulate some delay
             return null; // Simulate not found
         }
+
+        //YARDIMCI FONKSİYONLAR
+
+        private async Task NotifyNewAccountWithAssignmentAsync(string email, string password, string companyName, string fullName, string position)
+        {
+
+            var htmlBody = EmailTemplateHelper.LoadTemplate("NewWorkerEmail", new Dictionary<string, string>
+                {
+                    { "companyName", companyName },
+                    { "fullname", fullName },
+                    { "position", position },
+                    { "email", email },
+                    { "password", password },
+                    { "loginUrl", EmailHelper.BaseUrl+"/Auth/Login" }
+                });
+
+            await _emailSender.SendEmailAsync(
+                 email,
+                 "Booknix • Firma Tarafından Hesabınız Oluşturuldu",
+                 htmlBody,
+                 "Booknix Destek"
+             );
+
+        }
+
+        private async Task NotifyRoleAssignmentForExistingUserAsync(string email, string companyName, string fullName, string position)
+        {
+
+            var htmlBody = EmailTemplateHelper.LoadTemplate("WorkerPositionChange", new Dictionary<string, string>
+                {
+                    { "companyName", companyName },
+                    { "fullname", fullName },
+                    { "position", position },
+                    { "assignedDate", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") },
+                    { "profileUrl", EmailHelper.BaseUrl+"/Account/Manage" }
+                });
+
+            await _emailSender.SendEmailAsync(
+                 email,
+                 "Booknix • Hesap Üzerinde Yeni Atama",
+                 htmlBody,
+                 "Booknix Destek"
+             );
+
+        }
+
+        private async Task NotifyWorkerRemovalAsync(string email, string companyName, string fullName, string position)
+        {
+            var htmlBody = EmailTemplateHelper.LoadTemplate("WorkerDelete", new Dictionary<string, string>
+                {
+                    { "companyName", companyName },
+                    { "fullname", fullName },
+                    { "position", position },
+                    { "removalDate", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") }
+                });
+
+            await _emailSender.SendEmailAsync(
+                 email,
+                 "Booknix • Firma Çalışanlığı Sonlandırıldı",
+                 htmlBody,
+                 "Booknix Destek"
+             );
+
+        }
+
+        //YARDIMCI FONKSİYONLAR
+
 
     }
 }

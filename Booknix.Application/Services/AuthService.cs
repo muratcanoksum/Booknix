@@ -13,7 +13,6 @@ namespace Booknix.Application.Services
         IUserRepository userRepo,
         IRoleRepository roleRepo,
         IEmailSender emailSender,
-        IAppSettings appSettings,
         IAuditLogger auditLogger,
         ITrustedIpRepository trustedIpRepo,
         IHttpContextAccessor httpContextAccessor
@@ -22,7 +21,6 @@ namespace Booknix.Application.Services
         private readonly IUserRepository _userRepo = userRepo;
         private readonly IRoleRepository _roleRepo = roleRepo;
         private readonly IEmailSender _emailSender = emailSender;
-        private readonly IAppSettings _appSettings = appSettings;
         private readonly IAuditLogger _auditLogger = auditLogger;
         private readonly ITrustedIpRepository _trustedIpRepo = trustedIpRepo;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
@@ -57,7 +55,7 @@ namespace Booknix.Application.Services
                 IsEmailConfirmed = false
             };
 
-            var verifyLink = $"{_appSettings.BaseUrl}/Auth/VerifyEmail?token={token}";
+            var verifyLink = $"{EmailHelper.BaseUrl}/Auth/VerifyEmail?token={token}";
 
             var htmlBody = EmailTemplateHelper.LoadTemplate("EmailVerification", new Dictionary<string, string>
             {
@@ -140,7 +138,7 @@ namespace Booknix.Application.Services
                     user.TokenGeneratedAt = DateTime.UtcNow;
                     await _userRepo.UpdateAsync(user);
 
-                    var verifyLink = $"{_appSettings.BaseUrl}/Auth/VerifyEmail?token={newToken}";
+                    var verifyLink = $"{EmailHelper.BaseUrl}/Auth/VerifyEmail?token={newToken}";
                     var htmlBody = EmailTemplateHelper.LoadTemplate("EmailVerification", new Dictionary<string, string>
             {
                 { "fullname", user.FullName },
@@ -195,7 +193,7 @@ namespace Booknix.Application.Services
             var admins = role == null ? [user] : await _userRepo.GetUsersByRoleIdAsync(role.Id);
             if (admins.Count == 0) admins.Add(user);
 
-            var approvalUrl = $"{_appSettings.BaseUrl}/Auth/ApproveIp?token={token}";
+            var approvalUrl = $"{EmailHelper.BaseUrl}/Auth/ApproveIp?token={token}";
             var html = EmailTemplateHelper.LoadTemplate("NewIpApproval", new Dictionary<string, string>
             {
                 { "fullname", user.FullName },
@@ -285,7 +283,7 @@ namespace Booknix.Application.Services
 
             await _userRepo.UpdateAsync(user);
 
-            var resetLink = $"{_appSettings.BaseUrl}/Auth/ResetPassword?token={token}";
+            var resetLink = $"{EmailHelper.BaseUrl}/Auth/ResetPassword?token={token}";
 
             var html = EmailTemplateHelper.LoadTemplate("PasswordReset", new Dictionary<string, string>
             {

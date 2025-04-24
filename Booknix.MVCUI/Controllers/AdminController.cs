@@ -251,7 +251,7 @@ public class AdminController(IAdminService adminService) : Controller
         if (!result.Success)
             return BadRequest(result.Message);
 
-        return Ok();
+        return Ok(result.Message);
 
     }
 
@@ -264,7 +264,7 @@ public class AdminController(IAdminService adminService) : Controller
         if (!result.Success)
             return BadRequest(result.Message);
 
-        return Ok();
+        return Ok(result.Message);
     }
 
 

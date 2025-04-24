@@ -1,15 +1,4 @@
-﻿@using System.ComponentModel.DataAnnotations
-@using System.Reflection
-
-@functions {
-    public static string GetDisplayName(Enum value)
-    {
-        var field = value.GetType().GetField(value.ToString());
-        var attr = field?.GetCustomAttribute<DisplayAttribute>();
-        return attr?.Name ?? value.ToString();
-    }
-}
-
+﻿@using Booknix.Shared.Helpers
 @model List<Booknix.Domain.Entities.Worker>
 
 @Html.AntiForgeryToken()
@@ -34,7 +23,6 @@
     <i class="fas fa-exclamation-circle mr-2"></i> <span id="worker-alert-error-text"></span>
 </div>
 
-
 <div class="bg-white shadow rounded-lg overflow-hidden">
     <table class="min-w-full divide-y divide-gray-200 text-sm">
         <thead class="bg-gray-50">
@@ -53,12 +41,10 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 text-gray-800">@worker.User.FullName</td>
                         <td class="px-6 py-4 text-gray-800">@worker.User.Email</td>
-                        <td class="px-6 py-4 text-gray-800">
-                            @GetDisplayName(worker.RoleInLocation)
-                        </td>
+                        <td class="px-6 py-4 text-gray-800">@EnumHelper.GetDisplayName(worker.RoleInLocation)</td>
                         <td class="px-6 py-4 text-right">
-                            <button onclick="deleteWorker('@worker.Id')"
-                                    class="px-3 py-1 bg-red-100 text-red-800 rounded hover:bg-red-200 transition">
+                            <button class="delete-worker-btn px-3 py-1 bg-red-100 text-red-800 rounded hover:bg-red-200 transition"
+                                    data-id="@worker.Id">
                                 Sil
                             </button>
                         </td>
@@ -68,31 +54,27 @@
             else
             {
                 <tr>
-                    <td colspan="3" class="px-6 py-4 text-center text-gray-500">Bu lokasyona ait çalışan bulunmamaktadır.</td>
+                    <td colspan="4" class="px-6 py-4 text-center text-gray-500">Bu lokasyona ait çalışan bulunmamaktadır.</td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
 
-<!-- Modal -->
+<!-- Çalışan Ekle Modal -->
 <div id="add-worker-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 text-center">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Yeni Çalışan Ekle</h2>
-
         <form id="worker-add-form" class="space-y-4">
             <input type="hidden" name="LocationId" value="@ViewBag.LocationId" />
-
             <div class="text-left">
                 <label class="block text-sm mb-1">Ad Soyad</label>
                 <input type="text" name="FullName" class="w-full border rounded px-3 py-2" required />
             </div>
-
             <div class="text-left">
                 <label class="block text-sm mb-1">E-Posta</label>
                 <input type="email" name="Email" class="w-full border rounded px-3 py-2" required />
             </div>
-
             <div class="text-left">
                 <label class="block text-sm mb-1">Pozisyon</label>
                 <select name="RoleInLocation" class="w-full border rounded px-3 py-2" required>
@@ -101,42 +83,51 @@
                     <option value="LocationEmployee">Çalışan</option>
                 </select>
             </div>
-
             <div class="flex justify-center gap-3 mt-4">
-                <button type="button" onclick="hideAddWorkerModal()"
-                        class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded">
-                    Vazgeç
-                </button>
-                <button type="submit"
-                        class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded">
-                    Kaydet
-                </button>
+                <button type="button" onclick="hideAddWorkerModal()" class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded">Vazgeç</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded">Kaydet</button>
             </div>
         </form>
     </div>
 </div>
 
+<!-- Silme Onay Modali -->
+<div id="confirm-delete-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full text-center">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Çalışanı Sil</h2>
+        <p class="text-sm text-gray-600 mb-6">Bu çalışanı silmek istediğinize emin misiniz?</p>
+        <div class="flex justify-center gap-4">
+            <button id="confirm-delete-yes" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Evet</button>
+            <button id="confirm-delete-no" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">İptal</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    function deleteWorker(workerId) {
-        if (!confirm("Bu çalışanı silmek istediğinize emin misiniz?")) return;
+    window.alertTimersWorker = window.alertTimersWorker || {};
+    window.pendingDeleteId = window.pendingDeleteId || null;
 
-        const token = $('input[name="__RequestVerificationToken"]').val();
-        const locationId = $("#location-id").val();
+    function setTimeoutAlert(idSelector, message = "", timeInSeconds = 5) {
+        const duration = timeInSeconds * 1000;
+        const $el = $(idSelector);
 
-        $.ajax({
-            type: "POST",
-            url: `/Admin/Worker/Delete`,
-            data: { id: workerId },
-            headers: {
-                "RequestVerificationToken": token
-            },
-            success: function () {
-                loadWorkers(locationId);
-            },
-            error: function () {
-                alert("Çalışan silinemedi.");
-            }
-        });
+        if (alertTimersWorker[idSelector]) {
+            clearTimeout(alertTimersWorker[idSelector]);
+            delete alertTimersWorker[idSelector];
+        }
+
+        if (message) {
+            $el.find("span").text(message);
+        }
+
+        $el.removeClass("hidden").hide().fadeIn("slow");
+
+        alertTimersWorker[idSelector] = setTimeout(() => {
+            $el.fadeOut("slow", function () {
+                $(this).addClass("hidden").removeAttr("style").find("span").text("");
+            });
+            delete alertTimersWorker[idSelector];
+        }, duration);
     }
 
     function showAddWorkerModal() {
@@ -147,64 +138,86 @@
         $("#add-worker-modal").addClass("hidden").removeClass("flex");
     }
 
-    function loadWorkers(locationId) {
+    function showDeleteModal(workerId) {
+        pendingDeleteId = workerId;
+        $("#confirm-delete-modal").removeClass("hidden").addClass("flex");
+    }
+
+    function hideDeleteModal() {
+        pendingDeleteId = null;
+        $("#confirm-delete-modal").addClass("hidden").removeClass("flex");
+    }
+
+    async function loadWorkers(locationId) {
         const $target = $("#location-operation-panel");
         const $loader = $("#location-operation-loader");
 
         $loader.text("Çalışanlar yükleniyor...");
         $target.empty();
 
-        $.get(`/Admin/GetWorkersByLocation/${locationId}`, function (html) {
+        try {
+            const html = await $.get(`/Admin/GetWorkersByLocation/${locationId}`);
             $target.html(html);
             $loader.text("");
-        }).fail(function () {
+        } catch {
             $loader.text("Çalışanlar yüklenemedi.");
-        });
+        }
     }
 
-
-    $("#show-add-worker-modal").on("click", showAddWorkerModal);
-
-    $(document).on("submit", "#worker-add-form", function (e) {
-        e.preventDefault();
-
-        const $form = $(this);
+    $(document).on("click", "#show-add-worker-modal", showAddWorkerModal);
+    $(document).on("click", ".delete-worker-btn", function () {
+        showDeleteModal($(this).data("id"));
+    });
+    $(document).on("click", "#confirm-delete-no", hideDeleteModal);
+    $(document).off("click", "#confirm-delete-yes").on("click", "#confirm-delete-yes", async function () {
         const token = $('input[name="__RequestVerificationToken"]').val();
         const locationId = $("#location-id").val();
 
-        $.ajax({
-            type: "POST",
-            url: "/Admin/Worker/Create",
-            data: $form.serialize(),
-            headers: {
-                "RequestVerificationToken": token
-            },
-            success: function () {
-                hideAddWorkerModal();
-                $form[0].reset();
-                loadWorkers(locationId);
+        try {
+            await $.ajax({
+                type: "POST",
+                url: `/Admin/Worker/Delete`,
+                data: { id: pendingDeleteId },
+                headers: { "RequestVerificationToken": token }
+            });
 
-                $("#worker-alert-success-text").text("Çalışan başarıyla eklendi.");
-                $("#worker-alert-success").removeClass("hidden");
-                setTimeout(() => {
-                    $("#worker-alert-success").fadeOut("slow", function () {
-                        $(this).addClass("hidden").show();
-                    });
-                }, 5000);
-            },
+            await loadWorkers(locationId);
+            setTimeoutAlert("#worker-alert-success", "Çalışan başarıyla silindi.", 5);
+            document.querySelector("#worker-alert-success").scrollIntoView({ behavior: "smooth", block: "center" });
+        } catch {
+            setTimeoutAlert("#worker-alert-error", "Çalışan silinemedi.", 5);
+            document.querySelector("#worker-alert-error").scrollIntoView({ behavior: "smooth", block: "center" });
 
-            error: function (xhr) {
-                const message = xhr.responseText || "Çalışan eklenemedi.";
-                hideAddWorkerModal();
-                $("#worker-alert-error-text").text(message);
-                $("#worker-alert-error").removeClass("hidden");
-                setTimeout(() => {
-                    $("#worker-alert-error").fadeOut("slow", function () {
-                        $(this).addClass("hidden").show();
-                    });
-                }, 7000);
-            }
+        }
 
-        });
+        hideDeleteModal();
+    });
+
+    $(document).on("submit", "#worker-add-form", async function (e) {
+        e.preventDefault();
+
+        const token = $('input[name="__RequestVerificationToken"]').val();
+        const locationId = $("#location-id").val();
+        const $form = $(this);
+
+        try {
+            const response = await $.ajax({
+                type: "POST",
+                url: "/Admin/Worker/Create",
+                data: $form.serialize(),
+                headers: { "RequestVerificationToken": token }
+            });
+
+            hideAddWorkerModal();
+            $form[0].reset();
+            await loadWorkers(locationId);
+            setTimeoutAlert("#worker-alert-success", response, 5);
+            document.querySelector("#worker-alert-success").scrollIntoView({ behavior: "smooth", block: "center" });
+        } catch (xhr) {
+            hideAddWorkerModal();
+            setTimeoutAlert("#worker-alert-error", xhr.responseText || "Çalışan eklenemedi.");
+            document.querySelector("#worker-alert-error").scrollIntoView({ behavior: "smooth", block: "center" });
+        }
     });
 </script>
+

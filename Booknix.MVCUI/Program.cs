@@ -88,7 +88,7 @@ var app = builder.Build();
 
 // Token s�resi yap�land�rmas� (EmailHelper'a aktar)
 var appSettings = app.Services.GetRequiredService<IAppSettings>();
-EmailHelper.Configure(appSettings.TokenExpireMinutes);
+EmailHelper.Configure(appSettings.TokenExpireMinutes, appSettings.BaseUrl);
 
 // Middleware
 app.UseHttpsRedirection();

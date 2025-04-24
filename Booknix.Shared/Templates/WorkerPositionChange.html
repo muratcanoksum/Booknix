@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Yeni Görev Bilgilendirmesi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            margin: auto;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+            .logo img {
+                height: 100px;
+            }
+
+        .info-box {
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: monospace;
+            margin: 20px 0;
+        }
+
+        .footer {
+            margin-top: 32px;
+            font-size: 13px;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://i.hizliresim.com/p4zveuo.png" alt="Booknix Logo" />
+        </div>
+
+        <h2>Yeni Görev Ataması</h2>
+        <p>Merhaba <strong>{{fullname}}</strong>,</p>
+        <p>Booknix hesabınızla ilişkilendirilmiş yeni bir görev ataması gerçekleşti.</p>
+
+        <div class="info-box">
+            🏢 Firma: <strong>{{companyName}}</strong><br />
+            👔 Pozisyon: <strong>{{position}}</strong><br />
+            📅 Atama Tarihi: <strong>{{assignedDate}}</strong>
+        </div>
+
+        <p>Bu bilgileri <a href="{{profileUrl}}">profil sayfanızdan</a> detaylı şekilde inceleyebilirsiniz.</p>
+
+        <div class="footer">
+            Bu e-posta yalnızca bilgilendirme amaçlıdır.<br />
+            Herhangi bir sorunla karşılaşırsanız bizimle iletişime geçebilirsiniz.<br />
+            Booknix Destek Ekibi
+        </div>
+    </div>
+</body>
+</html>
