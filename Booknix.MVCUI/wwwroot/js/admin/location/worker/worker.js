@@ -17,66 +17,71 @@ $(document).off("click", "#confirm-delete-no").on("click", "#confirm-delete-no",
 });
 
 // Çalışanı Silme (Evet)
-$(document).off("click", "#confirm-delete-yes").on("click", "#confirm-delete-yes", async function () {
+$(document).off("click", "#confirm-delete-yes").on("click", "#confirm-delete-yes", function () {
     const token = $('input[name="__RequestVerificationToken"]').val();
     const locationId = $("#location-id").val();
 
-    try {
-        await $.ajax({
-            type: "POST",
-            url: "/Admin/Location/Worker/Delete",
-            data: { id: pendingDeleteId },
-            headers: { "RequestVerificationToken": token }
-        });
-
-        await loadWorkers(locationId);
-        setTimeoutAlert("#worker-alert-success", "Çalışan başarıyla silindi.");
-    } catch {
-        setTimeoutAlert("#worker-alert-error", "Çalışan silinemedi.");
-    }
+    $.ajax({
+        type: "POST",
+        url: "/Admin/Location/Worker/Delete",
+        data: { id: pendingDeleteId },
+        headers: { "RequestVerificationToken": token },
+        success: function (msg) {
+            loadWorkers(locationId, msg); // Çalışanlar yeniden yüklenecek
+        },
+        error: function (xhr) {
+            hideModal("confirm-delete-modal");
+            msg = xhr.responseText || "Çalışan silinemedi.";
+            setTimeoutAlert("e", "#location-worker-alert", msg);
+        }
+    });
 
     hideModal("confirm-delete-modal");
 });
 
+
 // Çalışan Ekleme
-$(document).off("submit", "#worker-add-form").on("submit", "#worker-add-form", async function (e) {
+$(document).off("submit", "#worker-add-form").on("submit", "#worker-add-form", function (e) {
     e.preventDefault();
 
     const token = $('input[name="__RequestVerificationToken"]').val();
     const locationId = $("#location-id").val();
     const $form = $(this);
 
-    try {
-        const response = await $.ajax({
-            type: "POST",
-            url: "/Admin/Location/Worker/Add",
-            data: $form.serialize(),
-            headers: { "RequestVerificationToken": token }
-        });
-
-        hideModal("add-worker-modal");
-        $form[0].reset();
-        await loadWorkers(locationId);
-        setTimeoutAlert("#worker-alert-success", response);
-    } catch (xhr) {
-        hideModal("add-worker-modal");
-        setTimeoutAlert("#worker-alert-error", xhr.responseText || "Çalışan eklenemedi.");
-    }
+    $.ajax({
+        type: "POST",
+        url: "/Admin/Location/Worker/Add",
+        data: $form.serialize(),
+        headers: { "RequestVerificationToken": token },
+        success: function (response) {
+            hideModal("add-worker-modal");
+            $form[0].reset();
+            loadWorkers(locationId, response); // Burada async/await kullanmıyoruz, loadWorkers direkt çağrılabilir.
+        },
+        error: function (xhr) {
+            hideModal("add-worker-modal");
+            setTimeoutAlert("e", "#location-worker-alert", xhr.responseText || "Çalışan eklenemedi.");
+        }
+    });
 });
 
+
 // AJAX ile Çalışanları Yeniden Yükleme
-async function loadWorkers(locationId) {
+function loadWorkers(locationId, msg = null) {
     const $target = $("#location-operation-panel");
     const $loader = $("#location-operation-loader");
 
     $loader.text("Çalışanlar yükleniyor...");
     $target.empty();
 
-    try {
-        const html = await $.get(`/Admin/Location/GetWorkersByLocation/${locationId}`);
+    $.get(`/Admin/Location/GetWorkersByLocation/${locationId}`, function (html) {
         $target.html(html);
         $loader.text("");
-    } catch {
+        if (msg) setTimeoutAlert("s", "#location-worker-alert", msg);
+        setTimeout(() => {
+            document.getElementById("location-operation-panel")?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+    }).fail(function () {
         $loader.text("Çalışanlar yüklenemedi.");
-    }
+    });
 }

@@ -219,17 +219,17 @@ public class AdminController(IAdminService adminService) : Controller
     [Route("Admin/Location/Service/Add")]
     public async Task<IActionResult> AddServiceToLocation(ServiceCreateDto dto)
     {
-        //if (!await _adminService.LocationExistsAsync(dto.LocationId))
-        //{
-        //    return BadRequest("Lokasyon bulunamadı. Lütfen geçerli bir lokasyon seçiniz.");
-        //}
+        if (!await _adminService.LocationExistsAsync(dto.LocationId))
+        {
+            return BadRequest("Lokasyon bulunamadı. Lütfen geçerli bir lokasyon seçiniz.");
+        }
 
-        //var result = await _adminService.AddServiceToLocationAsync(dto);
+        var result = await _adminService.AddServiceToLocationAsync(dto);
 
-        //if (!result.Success)
-        //    return BadRequest(result.Message);
+        if (!result.Success)
+            return BadRequest(result.Message);
 
-        return BadRequest("result.Messagedsasdasdasdaaaaaaa dsaaaaaa dsadasdas dsadassda");
+        return Ok(result.Message);
     }
 
 

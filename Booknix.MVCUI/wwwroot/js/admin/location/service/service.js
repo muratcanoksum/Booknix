@@ -25,12 +25,11 @@ $(document).off("submit", "#service-add-form").on("submit", "#service-add-form",
         success: function (msg) {
             $form[0].reset();
             hideModal("add-service-modal");
-            loadServices(locationId);
-            setTimeoutAlert("s", "#location-service-alert", msg)
+            loadServices(locationId, msg);
         },
         error: function (xhr) {
             var msg = xhr.responseText || "Servis eklenemedi.";
-            setTimeoutAlet("e", "#location-service-add-alert", msg)
+            setTimeoutAlert("e", "#location-service-add-alert", msg)
         },
         complete: function () {
             $btn.prop("disabled", false).html('Kaydet');
@@ -42,13 +41,21 @@ function toggleWorkers(serviceId) {
     toggleElementById(`workers-${serviceId}`);
 }
 
-function loadServices(locationId) {
+function loadServices(locationId, msg = null) {
     const $target = $("#location-operation-panel");
-    $target.html(`<div class="text-sm text-gray-500 flex items-center gap-2"><i class="fa fa-spinner fa-spin"></i> Yükleniyor...</div>`);
+    const $loader = $("#location-operation-loader");
 
-    $.get(`/Admin/Location/GetServicesByLocation/${locationId}`, html => {
+    $loader.text("Servisler yükleniyor...");
+    $target.empty();
+
+    $.get(`/Admin/Location/GetServicesByLocation/${locationId}`, function (html) {
         $target.html(html);
-    }).fail(() => {
-        $target.html(`<div class="text-sm text-red-600 mt-2"><i class="fa fa-circle-exclamation"></i> Servis bilgileri yüklenemedi.</div>`);
+        $loader.text("");
+        if (msg) setTimeoutAlert("s", "#location-service-alert", msg);
+        setTimeout(() => {
+            document.getElementById("location-operation-panel")?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+    }).fail(function () {
+        $loader.text("Servisler yüklenemedi.");
     });
 }
