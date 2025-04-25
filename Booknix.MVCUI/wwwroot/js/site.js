@@ -38,7 +38,12 @@ function toggleElementById(id) {
     if (el) el.classList.toggle("hidden");
 }
 
-$(function initCleavePhoneMask() {
+function toggleMobileMenu() {
+    const menu = document.getElementById("mobileMenu");
+    menu.classList.toggle("hidden");
+}
+
+function initCleavePhoneMask() {
     const $input = $('#phone-input');
     if ($input.length && !$input.data('cleave-applied')) {
         new Cleave('#phone-input', {
@@ -48,4 +53,5 @@ $(function initCleavePhoneMask() {
         });
         $input.data('cleave-applied', true);
     }
-});
+};
+

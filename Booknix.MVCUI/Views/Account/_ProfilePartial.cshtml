@@ -4,12 +4,19 @@
 
 <form id="profile-form">
     @Html.AntiForgeryToken()
+    
+    <!-- Alerts -->
+    <div id="profile-alert-success" class="hidden mb-4 px-4 py-3 rounded border border-green-300 bg-green-50 text-green-700 text-sm shadow-sm">
+        <i class="fas fa-check-circle mr-2"></i> <span id="profile-alert-success-text"></span>
+    </div>
 
-    <div id="profile-alert" class="hidden text-sm mb-3 rounded px-3 py-2"></div>
+    <div id="profile-alert-error" class="hidden mb-4 px-4 py-3 rounded border border-red-300 bg-red-50 text-red-700 text-sm shadow-sm">
+        <i class="fas fa-exclamation-circle mr-2"></i> <span id="profile-alert-error-text"></span>
+    </div>
 
     <!-- Telefon -->
     <div class="mb-4">
-        <label asp-for="PhoneNumber" class="block text-sm text-gray-600 mb-1">Telefon Numarası (+90)</label>
+        <label asp-for="PhoneNumber" class="block text-sm text-gray-600 mb-1">Telefon Numarası</label>
         <div class="flex items-center border rounded">
             <span class="px-3 text-gray-500 border-r">
                 <i class="fas fa-phone"></i>
@@ -38,3 +45,5 @@
         Güncelle
     </button>
 </form>
+
+<script src="~/js/account/profile.js" asp-append-version="true"></script>

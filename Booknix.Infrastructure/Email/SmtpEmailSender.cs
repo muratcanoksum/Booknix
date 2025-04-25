@@ -17,7 +17,7 @@ namespace Booknix.Infrastructure.Email
             if (environment == "Development")
             {
                 subject += $" [DEV REDIRECT TO: {to}]";
-                finalRecipient = "temp@muratcanoksum.com";
+                finalRecipient = "temp@booknix.ismailparlak.com";
             }
 
             var message = new MimeMessage();

@@ -2,8 +2,14 @@
     ViewData["Title"] = "Hesabı Sil";
 }
 
-<div id="delete-account-alert" class="hidden text-sm rounded px-4 py-2 mb-4"></div>
-<div id="delete-account-alert2" class="hidden text-sm rounded px-4 py-2 mb-4"></div>
+<!-- Alerts -->
+<div id="profile-delete-alert-success" class="hidden mb-4 px-4 py-3 rounded border border-green-300 bg-green-50 text-green-700 text-sm shadow-sm">
+    <i class="fas fa-check-circle mr-2"></i> <span></span>
+</div>
+
+<div id="profile-delete-alert-error" class="hidden mb-4 px-4 py-3 rounded border border-red-300 bg-red-50 text-red-700 text-sm shadow-sm">
+    <i class="fas fa-exclamation-circle mr-2"></i> <span></span>
+</div>
 
 <!-- Aşama 1: Bilgilendirme + Şifre -->
 <div id="delete-account-info" class="space-y-4">
@@ -71,3 +77,5 @@
         </button>
     </div>
 </form>
+
+<script src="~/js/account/delete.js" asp-append-version="true"></script>
