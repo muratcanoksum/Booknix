@@ -48,11 +48,11 @@
 
 
     <div class="flex flex-wrap gap-2 mb-4">
-        <button data-url="/Admin/GetServicesByLocation/@Model.Id"
+        <button data-url="/Admin/Location/GetServicesByLocation/@Model.Id"
                 class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
             Servisleri Göster
         </button>
-        <button data-url="/Admin/GetWorkersByLocation/@Model.Id"
+        <button data-url="/Admin/Location/GetWorkersByLocation/@Model.Id"
                 class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
             Çalışanları Göster
         </button>
@@ -63,7 +63,7 @@
     </div>
 
     <!-- Görsel Ayraç -->
-    <div class="flex items-center my-8">
+    <div class="flex items-center">
         <div class="flex-grow border-t border-gray-300"></div>
         <span class="mx-4 text-gray-400 text-sm uppercase">İşlem Modülleri</span>
         <div class="flex-grow border-t border-gray-300"></div>
@@ -74,35 +74,44 @@
 </div>
 
 @section Scripts {
-<script>
-    $(function () {
-    $(document).on("click", ".operation-tab", function () {
-    const url = $(this).data("url");
+    <script>
+        $(function () {
+            $(document).on("click", ".operation-tab", function () {
+                const url = $(this).data("url");
 
-    $(".operation-tab").removeClass("bg-indigo-600 text-white font-semibold")
-    .addClass("bg-gray-100 text-gray-800");
+                $(".operation-tab")
+                    .removeClass("bg-indigo-600 text-white font-semibold")
+                    .addClass("bg-gray-100 text-gray-800");
 
-    $(this).removeClass("bg-gray-100 text-gray-800")
-    .addClass("bg-indigo-600 text-white font-semibold");
+                $(this)
+                    .removeClass("bg-gray-100 text-gray-800")
+                    .addClass("bg-indigo-600 text-white font-semibold");
 
-    $("#location-operation-loader").text("Yükleniyor...");
-    $("#location-operation-panel").empty();
+                $("#location-operation-loader").text("Yükleniyor...");
+                $("#location-operation-panel").empty();
 
-    $.get(url, function (html) {
-    $("#location-operation-panel").html(html);
-    $("#location-operation-loader").text(""); // temizle
-    }).fail(function () {
-    $("#location-operation-loader").html(`
-    <div class="text-center space-y-2">
-    <img src="/images/logo.png" class="w-16 h-16 mx-auto">
-    <p class="text-sm text-gray-500">İçerik yüklenemedi.</p>
-    </div>
-    `);
-    });
-    });
-    });
+                $.get(url, function (html) {
+                    $("#location-operation-panel").html(html);
+                    $("#location-operation-loader").text(""); // temizle
 
+                    // Küçük bir gecikme ile scroll işlemini gerçekleştir
+                    setTimeout(function () {
+                        const operationPanel = document.getElementById("location-operation-panel");
+                        if (operationPanel) {
+                            operationPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }, 100); // 100 ms gecikme eklendi
 
+                }).fail(function () {
+                    $("#location-operation-loader").html(`
+                        <div class="text-center space-y-2">
+                            <img src="/images/logo.png" class="w-16 h-16 mx-auto">
+                            <p class="text-sm text-gray-500">İçerik yüklenemedi.</p>
+                        </div>
+                    `);
+                });
+            });
+        });
+    </script>
 
-</script>
 }

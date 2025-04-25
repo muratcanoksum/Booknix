@@ -25,8 +25,12 @@ namespace Booknix.Persistence.Repositories
         {
             return await _context.Services
                 .Where(s => s.LocationId == locationId)
+                .Include(s => s.ServiceEmployees)
+                    .ThenInclude(se => se.Worker)
+                        .ThenInclude(w => w.User)
                 .ToListAsync();
         }
+
 
         public async Task<IEnumerable<Service>> GetAllAsync()
         {

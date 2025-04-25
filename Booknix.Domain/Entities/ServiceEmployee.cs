@@ -7,10 +7,10 @@ namespace Booknix.Domain.Entities
         public Guid Id { get; set; }
 
         public Guid ServiceId { get; set; }
-        public Guid EmployeeId { get; set; }
+        public Guid WorkerId { get; set; } // eski adý EmployeeId
 
-        // Navigation
         public Service? Service { get; set; }
-        public Worker? Employee { get; set; }
+        public Worker? Worker { get; set; }
     }
+
 }

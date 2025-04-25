@@ -1,5 +1,6 @@
 ﻿using Booknix.Domain.Entities;
 using Booknix.Application.DTOs;
+using Booknix.Application.ViewModels;
 
 namespace Booknix.Application.Interfaces
 {
@@ -23,7 +24,7 @@ namespace Booknix.Application.Interfaces
 
 
         // Services
-        Task<IEnumerable<Service>> GetServicesByLocationAsync(Guid locationId);
+        Task<ServiceCreateViewModel> GetServicesByLocationAsync(Guid locationId);
         Task<RequestResult> AddServiceToLocationAsync(ServiceCreateDto dto);
         Task<RequestResult> DeleteServiceAsync(Guid id);
 

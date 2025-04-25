@@ -8,6 +8,7 @@ namespace Booknix.Domain.Interfaces
         Task<IEnumerable<ServiceEmployee>> GetByServiceIdAsync(Guid serviceId);
         Task<IEnumerable<ServiceEmployee>> GetByEmployeeIdAsync(Guid employeeId);
         Task<bool> ExistsAsync(Guid serviceId, Guid employeeId);
+        Task AddRangeAsync(IEnumerable<ServiceEmployee> entities);
 
         Task AddAsync(ServiceEmployee entity);
         Task DeleteAsync(Guid id);

@@ -84,10 +84,14 @@ namespace Booknix.Persistence.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ServiceEmployee>()
-                .HasOne(se => se.Employee)
+                .HasOne(se => se.Worker)
                 .WithMany() // Worker'da koleksiyon yoksa bu yeterli
-                .HasForeignKey(se => se.EmployeeId)
+                .HasForeignKey(se => se.WorkerId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ServiceEmployee>()
+                .HasIndex(se => new { se.ServiceId, se.WorkerId })
+                .IsUnique();
 
             // ENUM: Appointment.Status
             modelBuilder.Entity<Appointment>()

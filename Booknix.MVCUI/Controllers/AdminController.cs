@@ -204,19 +204,19 @@ public class AdminController(IAdminService adminService) : Controller
 
     // SERVICE OPERATIONS
 
-    [HttpGet("/Admin/GetServicesByLocation/{locationId}")]
+    [HttpGet("/Admin/Location/GetServicesByLocation/{locationId}")]
     public async Task<IActionResult> GetServicesByLocation(Guid locationId)
     {
-        var services = await _adminService.GetServicesByLocationAsync(locationId);
-        ViewBag.LocationId = locationId;
-        return PartialView("Location/LocationModules/Service/ServiceListPartial", services);
+        var model = await _adminService.GetServicesByLocationAsync(locationId);
+        return PartialView("Location/LocationModules/Service/ServiceListPartial", model);
     }
+
 
 
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Route("Admin/AddServiceToLocation")]
+    [Route("Admin/Location/Service/Add")]
     public async Task<IActionResult> AddServiceToLocation(ServiceCreateDto dto)
     {
         if (!await _adminService.LocationExistsAsync(dto.LocationId))
@@ -235,7 +235,7 @@ public class AdminController(IAdminService adminService) : Controller
 
     // WORKER OPERATIONS
 
-    [HttpGet("/Admin/GetWorkersByLocation/{locationId}")]
+    [HttpGet("/Admin/Location/GetWorkersByLocation/{locationId}")]
     public async Task<IActionResult> GetWorkersByLocation(Guid LocationId)
     {
         var workers = await _adminService.GetAllWorkersAsync(LocationId);
@@ -245,7 +245,7 @@ public class AdminController(IAdminService adminService) : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Route("Admin/Worker/Create")]
+    [Route("Admin/Location/Worker/Add")]
     public async Task<IActionResult> AddWorkerToLocation(WorkerAddDto dto)
     {
         var result = await _adminService.AddWorkerToLocationAsync(dto);
@@ -258,7 +258,7 @@ public class AdminController(IAdminService adminService) : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Route("Admin/Worker/Delete")]
+    [Route("Admin/Location/Worker/Delete")]
     public async Task<IActionResult> DeleteWorker(Guid id)
     {
         var result = await _adminService.DeleteWorkerAsync(id);

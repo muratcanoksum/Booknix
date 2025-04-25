@@ -6,6 +6,7 @@ using Booknix.Shared.Interfaces;
 using Booknix.Shared.Helpers;
 using Booknix.Application.Helpers;
 using Booknix.Domain.Entities.Enums;
+using Booknix.Application.ViewModels;
 
 
 namespace Booknix.Application.Services
@@ -18,7 +19,8 @@ namespace Booknix.Application.Services
         IUserRepository userRepo,
         IRoleRepository roleRepo,
         IAuditLogger auditLogger,
-        IEmailSender emailSender
+        IEmailSender emailSender,
+        IServiceEmployeeRepository serviceEmployeeRepo
             ) : IAdminService
     {
         private readonly ISectorRepository _sectorRepo = sectorRepo;
@@ -29,6 +31,7 @@ namespace Booknix.Application.Services
         private readonly IRoleRepository _roleRepo = roleRepo;
         private readonly IAuditLogger _auditLogger = auditLogger;
         private readonly IEmailSender _emailSender = emailSender;
+        private readonly IServiceEmployeeRepository _serviceEmployeeRepo = serviceEmployeeRepo;
 
         // Sectors
 
@@ -291,10 +294,18 @@ namespace Booknix.Application.Services
 
         // Services
 
-        public async Task<IEnumerable<Service>> GetServicesByLocationAsync(Guid locationId)
+        public async Task<ServiceCreateViewModel> GetServicesByLocationAsync(Guid locationId)
         {
-            return await _serviceRepo.GetByLocationIdAsync(locationId);
+            var model = new ServiceCreateViewModel
+            {
+                LocationId = locationId,
+                ServiceList = (await _serviceRepo.GetByLocationIdAsync(locationId)).ToList(),
+                AvailableWorkers = (await _workerRepo.GetByLocationIdAsync(locationId)).ToList()
+            };
+
+            return model;
         }
+
 
         public async Task<RequestResult> AddServiceToLocationAsync(ServiceCreateDto dto)
         {
@@ -317,7 +328,21 @@ namespace Booknix.Application.Services
                 LocationId = dto.LocationId
             };
 
+            // Servisi kaydet
             await _serviceRepo.AddAsync(service);
+
+            // Eğer çalışan seçildiyse ekle
+            if (dto.SelectedWorkerIds != null && dto.SelectedWorkerIds.Any())
+            {
+                var serviceEmployees = dto.SelectedWorkerIds.Select(workerId => new ServiceEmployee
+                {
+                    Id = Guid.NewGuid(),
+                    ServiceId = service.Id,
+                    WorkerId = workerId
+                }).ToList();
+
+                await _serviceEmployeeRepo.AddRangeAsync(serviceEmployees);
+            }
 
             return new RequestResult
             {
@@ -325,6 +350,7 @@ namespace Booknix.Application.Services
                 Message = "Servis başarıyla eklendi."
             };
         }
+
 
         public async Task<RequestResult> DeleteServiceAsync(Guid id)
         {
@@ -371,6 +397,16 @@ namespace Booknix.Application.Services
                 userId = existingUser.Id;
 
                 var existingWorker = await _workerRepo.GetByUserIdAsync(userId);
+
+                if (!string.Equals(existingUser.FullName, dto.FullName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new RequestResult
+                    {
+                        Success = false,
+                        Message = "Bu mail adresine kayıtlı başka bir üyemiz bulunmakta lütfen destek ile iletişime geçin."
+                    };
+                }
+
                 if (existingWorker != null)
                 {
                     return new RequestResult
