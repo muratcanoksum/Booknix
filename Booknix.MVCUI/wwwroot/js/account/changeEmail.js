@@ -17,13 +17,13 @@ $(document).off("submit", "#change-email-form").on("submit", "#change-email-form
             "RequestVerificationToken": token
         },
         success: function (msg) {
-            setTimeoutAlert("#profile-email-alert-success", msg, 900);
+            setTimeoutAlert("s", "#profile-email-alert", msg, 900);
             $form.addClass("hidden");
             $verifyForm.removeClass("hidden");
         },
         error: function (xhr) {
             const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz..";
-            setTimeoutAlert("#profile-email-alert-error", msg);
+            setTimeoutAlert("e", "#profile-email-alert", msg);
         },
         complete: function () {
             $btn.prop("disabled", false).text("Email Güncelle");
@@ -62,7 +62,7 @@ $(document).off("submit", "#change-email-verify-form").on("submit", "#change-ema
 
                 $.get(url, function (html) {
                     $("#content-panel").html(html);
-                    setTimeoutAlert("#profile-email-alert-success", msg, 10);
+                    setTimeoutAlert("s", "#profile-email-alert", msg, 10);
                 });
             }
 
@@ -70,7 +70,7 @@ $(document).off("submit", "#change-email-verify-form").on("submit", "#change-ema
         error: function (xhr) {
             const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz..";
 
-            setTimeoutAlert("#profile-email-alert-error", msg);
+            setTimeoutAlert("e", "#profile-email-alert", msg);
 
         },
         complete: function () {

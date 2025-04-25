@@ -20,14 +20,14 @@ $(document).off("submit", "#profile-photo-form").on("submit", "#profile-photo-fo
             "RequestVerificationToken": token
         },
         success: function (msg) {
-            setTimeoutAlert("#profile-photo-alert-success", "Profil fotoğrafınız başarıyla güncellendi.");
+            setTimeoutAlert("s", "#profile-photo-alert", "Profil fotoğrafınız başarıyla güncellendi.");
             if (msg) {
                 $("img[alt='Profil Fotoğrafı']").attr("src", msg);
             }
         },
         error: function (xhr) {
             const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz..";
-            setTimeoutAlert("#profile-photo-alert-error", msg);
+            setTimeoutAlert("e", "#profile-photo-alert", msg);
         },
         complete: function () {
             $btn.prop("disabled", false).text("Güncelle");

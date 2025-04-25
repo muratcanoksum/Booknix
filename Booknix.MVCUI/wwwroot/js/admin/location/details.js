@@ -13,6 +13,7 @@
     $("#location-operation-panel").empty();
 
     $.get(url, function (html) {
+
         $("#location-operation-panel").html(html);
         $("#location-operation-loader").text("");
 

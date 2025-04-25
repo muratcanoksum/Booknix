@@ -1,4 +1,6 @@
-﻿$(document).off("submit", "#location-create-form").on("submit", "#location-create-form", function (e) {
+﻿$(initCleavePhoneMask())
+
+$(document).off("submit", "#location-create-form").on("submit", "#location-create-form", function (e) {
     e.preventDefault();
 
     const $form = $(this);
@@ -19,7 +21,7 @@
             window.location.href = "/Admin/Location";
         },
         error: function (xhr) {
-            setTimeoutAlert("#location-create-form-alert", xhr.responseText || "Hata oluştu.");
+            setTimeoutAlert("e", "#location-create-alert", xhr.responseText || "Hata oluştu.");
         },
         complete: function () {
             $btn.prop("disabled", false).text("Kaydet");

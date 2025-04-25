@@ -22,13 +22,15 @@ $(document).off("submit", "#service-add-form").on("submit", "#service-add-form",
         url: "/Admin/Location/Service/Add",
         data: $form.serialize(),
         headers: { "RequestVerificationToken": token },
-        success: function () {
+        success: function (msg) {
             $form[0].reset();
             hideModal("add-service-modal");
             loadServices(locationId);
+            setTimeoutAlert("s", "#location-service-alert", msg)
         },
         error: function (xhr) {
-            alert(xhr.responseText || "Servis eklenemedi.");
+            var msg = xhr.responseText || "Servis eklenemedi.";
+            setTimeoutAlet("e", "#location-service-add-alert", msg)
         },
         complete: function () {
             $btn.prop("disabled", false).html('Kaydet');

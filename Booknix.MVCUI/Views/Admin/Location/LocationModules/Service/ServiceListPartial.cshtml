@@ -14,6 +14,8 @@
     </button>
 </div>
 
+<div id="location-service-alert"></div>
+
 <!-- Servis Listesi -->
 <div id="service-list-container" class="my-10">
     <div class="bg-white shadow-xl rounded-xl overflow-hidden">
@@ -90,6 +92,8 @@
 <div id="add-service-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 text-center">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Yeni Servis Ekle</h2>
+
+        <div id="location-service-add-alert"></div>
 
         <form id="service-add-form" class="space-y-4">
             <input type="hidden" name="LocationId" value="@Model.LocationId" />

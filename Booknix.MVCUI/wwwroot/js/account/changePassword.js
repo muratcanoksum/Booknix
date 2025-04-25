@@ -16,12 +16,12 @@ $(document).off("submit", "#reset-password-form").on("submit", "#reset-password-
             "RequestVerificationToken": token
         },
         success: function (msg) {
-            setTimeoutAlert("#profile-password-alert-success", msg);
+            setTimeoutAlert("s", "#profile-password-alert", msg);
             $form[0].reset();
         },
         error: function (xhr) {
             const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz..";
-            setTimeoutAlert("#profile-password-alert-error", msg);
+            setTimeoutAlert("e", "#profile-password-alert", msg);
         },
         complete: function () {
             $btn.prop("disabled", false).text("Şifreyi Güncelle");

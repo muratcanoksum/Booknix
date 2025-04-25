@@ -15,11 +15,11 @@ $(document).off("submit", "#profile-form").on("submit", "#profile-form", functio
             "RequestVerificationToken": token
         },
         success: function (msg) {
-            setTimeoutAlert("#profile-alert-success", msg);
+            setTimeoutAlert("s", "#profile-alert", msg);
         },
         error: function (xhr) {
             const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz.";
-            setTimeoutAlert("#profile-alert-error", msg);
+            setTimeoutAlert("e", "#profile-alert", msg);
 
         },
         complete: function () {

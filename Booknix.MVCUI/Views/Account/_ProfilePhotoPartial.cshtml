@@ -5,14 +5,7 @@
 <form id="profile-photo-form" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
 
-    <!-- Alerts -->
-    <div id="profile-photo-alert-success" class="hidden mb-4 px-4 py-3 rounded border border-green-300 bg-green-50 text-green-700 text-sm shadow-sm">
-        <i class="fas fa-check-circle mr-2"></i> <span></span>
-    </div>
-
-    <div id="profile-photo-alert-error" class="hidden mb-4 px-4 py-3 rounded border border-red-300 bg-red-50 text-red-700 text-sm shadow-sm">
-        <i class="fas fa-exclamation-circle mr-2"></i> <span></span>
-    </div>
+    <div id="profile-photo-alert" class="hidden"></div>
 
     <!-- Profil Fotoğrafı Görseli -->
     <div class="mb-4 flex justify-center">

@@ -16,13 +16,13 @@ $(document).off("submit", "#start-delete-form").on("submit", "#start-delete-form
             "RequestVerificationToken": token
         },
         success: function (msg) {
-            setTimeoutAlert("#profile-delete-alert-success", msg, 900)
+            setTimeoutAlert("s", "#profile-delete-alert", msg, 900)
             $("#delete-account-info").addClass("hidden");
             $("#delete-account-verify-form").removeClass("hidden");
         },
         error: function (xhr) {
             const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz..";
-            setTimeoutAlert("#profile-delete-alert-error", msg, 8)
+            setTimeoutAlert("e", "#profile-delete-alert", msg, 8)
         },
         complete: function () {
             $btn.prop("disabled", false).text("Devam Et ve Kodu Gönder");
@@ -52,7 +52,7 @@ $(document).off("submit", "#delete-account-verify-form").on("submit", "#delete-a
         },
         error: function (xhr) {
             const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz..";
-            setTimeoutAlert("#profile-delete-alert-error", msg, 8)
+            setTimeoutAlert("e", "#profile-delete-alert", msg, 8)
         },
         complete: function () {
             $btn.prop("disabled", false).text("Hesabı Kalıcı Olarak Sil");

@@ -19,7 +19,7 @@
             window.location.href = "/Admin/Location";
         },
         error: function (xhr) {
-            setTimeoutAlert("#location-edit-alert", xhr.responseText || "Hata oluştu.");
+            setTimeoutAlert("e", "#location-edit-alert", xhr.responseText || "Hata oluştu.");
         },
         complete: function () {
             $btn.prop("disabled", false).text("Güncelle");

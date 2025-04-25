@@ -27,12 +27,12 @@ $(document).off("submit", "#delete-location-form").on("submit", "#delete-locatio
                 window.location.href = "/Admin/Location";
             } else {
                 return res.text().then(msg => {
-                    setTimeoutAlert("#error-info", msg);
+                    setTimeoutAlert("e", "#location-info", msg);
                 });
             }
         })
         .catch(() => {
-            setTimeoutAlert("#error-info", "Sunucuya ulaşılamadı.");
+            setTimeoutAlert("e", "#location-info", "Sunucuya ulaşılamadı.");
         })
         .finally(hideDeleteModal);
 });
