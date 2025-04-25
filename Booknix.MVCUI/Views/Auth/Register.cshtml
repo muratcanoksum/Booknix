@@ -8,7 +8,7 @@
     <div class="w-full max-w-md bg-white shadow-lg rounded-lg p-8">
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Kayıt Ol</h2>
 
-        <div id="register-alert" class="hidden mb-4 px-4 py-2 text-sm rounded bg-red-100 text-red-700"></div>
+        <div id="register-alert" class="hidden"></div>
 
         <form id="register-form" class="space-y-5">
             @Html.AntiForgeryToken()
@@ -44,34 +44,7 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $("#register-form").submit(function (e) {
-            e.preventDefault();
-
-            const $btn = $(this).find("button[type='submit']");
-            $btn.prop("disabled", true).text("Yükleniyor...");
-
-            $.ajax({
-                type: "POST",
-                url: "/Auth/Register",
-                data: $(this).serialize(),
-                success: function () {
-                    window.location.href = "/Auth/Login";
-                },
-                error: function (xhr) {
-                    const errorMessage = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz.";
-                    $("#register-alert")
-                        .removeClass("hidden")
-                        .addClass("alert-danger")
-                        .text(errorMessage);
-                },
-                complete: function () {
-                    $btn.prop("disabled", false).text("Kayıt Ol");
-                }
-            });
-        });
-    </script>
+    <script src="~/js/auth/register.js" asp-append-version="true"></script>
 }
 
 
