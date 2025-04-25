@@ -86,7 +86,7 @@
                 </select>
             </div>
             <div class="flex justify-center gap-3 mt-4">
-                <button type="button" onclick="hideAddWorkerModal()" class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded">Vazgeç</button>
+                <button type="button" id="hide-add-worker-modal" class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded">Vazgeç</button>
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded">Kaydet</button>
             </div>
         </form>
@@ -105,123 +105,6 @@
     </div>
 </div>
 
-<script>
-    window.alertTimersWorker = window.alertTimersWorker || {};
-    window.pendingDeleteId = window.pendingDeleteId || null;
+<script src="~/js/admin/location/worker.js" asp-append-version="true"></script>
 
-    function setTimeoutAlert(idSelector, message = "", timeInSeconds = 5) {
-        const duration = timeInSeconds * 1000;
-        const $el = $(idSelector);
-
-        if (alertTimersWorker[idSelector]) {
-            clearTimeout(alertTimersWorker[idSelector]);
-            delete alertTimersWorker[idSelector];
-        }
-
-        if (message) {
-            $el.find("span").text(message);
-        }
-
-        $el.removeClass("hidden").hide().fadeIn("slow");
-
-        alertTimersWorker[idSelector] = setTimeout(() => {
-            $el.fadeOut("slow", function () {
-                $(this).addClass("hidden").removeAttr("style").find("span").text("");
-            });
-            delete alertTimersWorker[idSelector];
-        }, duration);
-    }
-
-    function showAddWorkerModal() {
-        $("#add-worker-modal").removeClass("hidden").addClass("flex");
-    }
-
-    function hideAddWorkerModal() {
-        $("#add-worker-modal").addClass("hidden").removeClass("flex");
-    }
-
-    function showDeleteModal(workerId) {
-        pendingDeleteId = workerId;
-        $("#confirm-delete-modal").removeClass("hidden").addClass("flex");
-    }
-
-    function hideDeleteModal() {
-        pendingDeleteId = null;
-        $("#confirm-delete-modal").addClass("hidden").removeClass("flex");
-    }
-
-    async function loadWorkers(locationId) {
-        const $target = $("#location-operation-panel");
-        const $loader = $("#location-operation-loader");
-
-        $loader.text("Çalışanlar yükleniyor...");
-        $target.empty();
-
-        try {
-            const html = await $.get(`/Admin/Location/GetWorkersByLocation/${locationId}`);
-            $target.html(html);
-            $loader.text("");
-        } catch {
-            $loader.text("Çalışanlar yüklenemedi.");
-        }
-    }
-
-    $(document).off("click", "#show-add-worker-modal").on("click", "#show-add-worker-modal", showAddWorkerModal);
-    $(document).off("click", "#delete-worker-btn").on("click", "#delete-worker-btn", function () { showDeleteModal($(this).data("id"));
-    });
-    $(document).off("click", "#confirm-delete-no").on("click", "#confirm-delete-no", hideDeleteModal);
-    $(document).off("click", "#confirm-delete-yes").on("click", "#confirm-delete-yes", async function () {
-        const token = $('input[name="__RequestVerificationToken"]').val();
-        const locationId = $("#location-id").val();
-
-        try {
-            await $.ajax({
-                type: "POST",
-                url: `/Admin/Location/Worker/Delete`,
-                data: { id: pendingDeleteId },
-                headers: { "RequestVerificationToken": token }
-            });
-
-            await loadWorkers(locationId);
-            setTimeoutAlert("#worker-alert-success", "Çalışan başarıyla silindi.", 5);
-            document.querySelector("#worker-alert-success").scrollIntoView({ behavior: "smooth", block: "center" });
-        } catch {
-            setTimeoutAlert("#worker-alert-error", "Çalışan silinemedi.", 5);
-            document.querySelector("#worker-alert-error").scrollIntoView({ behavior: "smooth", block: "center" });
-
-        }
-
-        hideDeleteModal();
-    });
-    $(document).off("submit", "#worker-add-form").on("submit", "#worker-add-form", async function (e) {
-        e.preventDefault();
-
-        const token = $('input[name="__RequestVerificationToken"]').val();
-        const locationId = $("#location-id").val();
-        const $form = $(this);
-
-        try {
-            const response = await $.ajax({
-                type: "POST",
-                url: "/Admin/Location/Worker/Add",
-                data: $form.serialize(),
-                headers: { "RequestVerificationToken": token }
-            });
-
-            hideAddWorkerModal();
-            $form[0].reset();
-            await loadWorkers(locationId);
-            setTimeoutAlert("#worker-alert-success", response, 5);
-            document.querySelector("#worker-alert-success").scrollIntoView({ behavior: "smooth", block: "center" });
-        } catch (xhr) {
-            hideAddWorkerModal();
-            setTimeoutAlert("#worker-alert-error", xhr.responseText || "Çalışan eklenemedi.");
-            document.querySelector("#worker-alert-error").scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-    });
-    $(document)
-        .off("click", "#edit-service").on("click", "#edit-service", function () {
-            console.log("Edit service clicked");
-        });
-</script>
 

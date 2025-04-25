@@ -71,56 +71,6 @@
 </form>
 
 @section Scripts {
-    <script>
-        const alertTimers = {};
-
-        function setTimeoutAlert(id_name, time = 4) {
-            const Itime = time * 1000;
-            if (alertTimers[id_name]) clearTimeout(alertTimers[id_name]);
-            alertTimers[id_name] = setTimeout(() => {
-                const $el = $(id_name);
-                if ($el.length) {
-                    $el.fadeOut("slow", function () {
-                        $(this).removeAttr("style").addClass("hidden").text("");
-                    });
-                }
-                delete alertTimers[id_name];
-            }, Itime);
-        }
-
-        $("#location-create-form").submit(function (e) {
-            e.preventDefault();
-
-            const $form = $(this);
-            const $btn = $form.find("button[type='submit']");
-            const $alert = $("#location-create-form-alert");
-            const token = $form.find('input[name="__RequestVerificationToken"]').val();
-
-            $btn.prop("disabled", true).text("Kaydediliyor...");
-
-            $.ajax({
-                type: "POST",
-                url: "/Admin/CreateLocation",
-                data: $form.serialize(),
-                headers: {
-                    "RequestVerificationToken": token
-                },
-                success: function () {
-                    window.location.href = "/Admin/Location";
-                },
-                error: function (xhr) {
-                    const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.";
-                    $alert
-                        .removeClass("hidden text-green-600 bg-green-100 border-green-300")
-                        .addClass("text-red-500 bg-red-100 border border-red-300")
-                        .text(msg);
-                    setTimeoutAlert("#location-create-form-alert");
-                },
-                complete: function () {
-                    $btn.prop("disabled", false).text("Kaydet");
-                }
-            });
-        });
-    </script>
-
+    <script src="~/js/admin/location/create.js" asp-append-version="true"></script>
 }
+

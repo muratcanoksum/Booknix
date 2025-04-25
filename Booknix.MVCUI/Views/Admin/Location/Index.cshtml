@@ -47,8 +47,8 @@
                     <td class="px-6 py-4 text-sm text-right space-x-2">
 
                         <a asp-controller="Admin" asp-action="LocationDetails" asp-route-id="@location.Id"
-                            class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition">
-                                Detay
+                           class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition">
+                            Detay
                         </a>
 
 
@@ -104,52 +104,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        let selectedLocationId = null;
-
-        function showDeleteModal(id) {
-            selectedLocationId = id;
-            $("#delete-location-id").val(id);
-            $("#delete-modal").removeClass("hidden").addClass("flex");
-        }
-
-        function hideDeleteModal() {
-            $("#delete-modal").addClass("hidden").removeClass("flex");
-        }
-
-        $("#delete-location-form").submit(function (e) {
-            e.preventDefault();
-
-            const token = $(this).find('input[name="__RequestVerificationToken"]').val();
-
-            fetch(`/Admin/Location/Delete/${selectedLocationId}`, {
-                method: 'POST',
-                headers: {
-                    'RequestVerificationToken': token
-                }
-            })
-                .then(res => {
-                    if (res.ok) {
-                        window.location.href = "/Admin/Location";
-                    } else {
-                        return res.text().then(msg => {
-                            $("#error-info-text").text(msg || "Silme işlemi başarısız oldu.");
-                            $("#error-info").removeClass("hidden");
-                        });
-                    }
-                })
-                .catch(() => {
-                    $("#error-info-text").text("Sunucuya ulaşılamadı. Lütfen daha sonra tekrar deneyin.");
-                    $("#error-info").removeClass("hidden");
-                })
-                .finally(() => hideDeleteModal());
-        });
-
-        setTimeout(() => {
-            $("#location-info").fadeOut("slow", function () { $(this).remove(); });
-            $("#error-info").fadeOut("slow", function () {
-                $(this).addClass("hidden").find("span").text("");
-            });
-        }, 7000);
-    </script>
+    <script src="~/js/admin/location/index.js" asp-append-version="true"></script>
 }

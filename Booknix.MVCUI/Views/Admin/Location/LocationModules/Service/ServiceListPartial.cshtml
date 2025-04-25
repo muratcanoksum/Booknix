@@ -149,7 +149,7 @@
             </div>
 
             <div class="flex justify-center gap-3 mt-4">
-                <button type="button" onclick="hideAddServiceModal()"
+                <button type="button" id="hide-add-service-modal"
                         class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded">
                     Vazgeç
                 </button>
@@ -162,89 +162,4 @@
     </div>
 </div>
 
-<script>
-    function showAddServiceModal() {
-        $("#add-service-modal").removeClass("hidden").addClass("flex");
-    }
-
-    function hideAddServiceModal() {
-        $("#add-service-modal").addClass("hidden").removeClass("flex");
-    }
-
-    function toggleWorkers(serviceId) {
-        const row = document.getElementById("workers-" + serviceId);
-        row.classList.toggle("hidden");
-    }
-
-    $(document).off("click", "#show-add-service-modal").on("click", "#show-add-service-modal", showAddServiceModal);
-
-    $(document).off("submit", "#service-add-form").on("submit", "#service-add-form", function (e) {
-        e.preventDefault();
-
-        const hour = $("#hour").val().toString().padStart(2, '0');
-        const minute = $("#minute").val().toString().padStart(2, '0');
-        $("#duration-input").val(`${hour}:${minute}`);
-
-        const $form = $(this);
-        const $btn = $form.find("button[type='submit']");
-        const token = $('input[name="__RequestVerificationToken"]').val();
-        const locationId = $("#location-id").val();
-
-        $btn.prop("disabled", true).html('<i class="fa fa-spinner fa-spin"></i> Kaydediliyor...');
-
-        $.ajax({
-            type: "POST",
-            url: "/Admin/Location/Service/Add",
-            data: $form.serialize(),
-            headers: {
-                "RequestVerificationToken": token
-            },
-            success: function () {
-                $form[0].reset();
-                hideAddServiceModal();
-                loadServices(locationId);
-            },
-            error: function (xhr) {
-                alert(xhr.responseText || "Servis eklenemedi.");
-            },
-            complete: function () {
-                $btn.prop("disabled", false).html('Kaydet');
-            }
-        });
-    });
-
-    $(document)
-        .off("click", ".edit-service").on("click", ".edit-service", function () {
-            // Düzenleme işlemi buraya eklenecek
-        });
-
-    $(document)
-        .off("click", ".delete-service").on("click", ".delete-service", function () {
-            // Silme işlemi buraya eklenecek
-        });
-
-    $(document)
-        .off("click", ".remove-worker").on("click", ".remove-worker", function () {
-            // Tekil çalışan silme işlemi buraya eklenecek
-        });
-
-    function loadServices(locationId) {
-        const $target = $("#location-operation-panel");
-        $target.html(`
-            <div class="text-sm text-gray-500 flex items-center gap-2">
-                <i class="fa-solid fa-spinner fa-spin text-indigo-600"></i> Yükleniyor...
-            </div>
-        `);
-
-        $.get(`/Admin/Location/GetServicesByLocation/${locationId}`, function (html) {
-            $target.html(html);
-        }).fail(function () {
-            $target.html(`
-                <div class="text-sm text-red-600 mt-2">
-                    <i class="fa-solid fa-circle-exclamation mr-1"></i>
-                    Servis bilgileri yüklenemedi.
-                </div>
-            `);
-        });
-    }
-</script>
+<script src="~/js/admin/location/service.js" asp-append-version="true"></script>
