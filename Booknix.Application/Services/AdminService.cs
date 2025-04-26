@@ -528,14 +528,46 @@ namespace Booknix.Application.Services
 
         }
 
-        public async Task<RequestResult> UpdateWorkerAsync(Guid id, string fullName, string email, int role, Guid locationId)
+        public async Task<RequestResult> UpdateWorkerAsync(Guid id, WorkerAddDto dto)
         {
-            await Task.Delay(1000); // Simulate some delay
-            return new RequestResult
+            var worker = await _workerRepo.GetByIdAsync(id);
+            if (worker == null)
             {
-                Success = false,
-                Message = "Bu özellik henüz geliştirilmedi."
-            };
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Çalışan bulunamadı."
+                };
+            }
+
+            var oldName = worker.User.FullName;
+            var oldPosition = EnumHelper.GetDisplayName(worker.RoleInLocation);
+            var position = EnumHelper.GetDisplayName(dto.RoleInLocation);
+
+            worker.User.FullName = dto.FullName;
+            worker.RoleInLocation = dto.RoleInLocation;
+
+            try
+            {
+                await _workerRepo.UpdateAsync(worker);
+                await NotifyWorkerUpdateAsync(worker.User.Email, worker.Location.Name, dto.FullName, position, oldName, oldPosition);
+                return new RequestResult
+                {
+                    Success = true,
+                    Message = "Çalışan başarıyla güncellendi."
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Çalışan güncellenirken hata oluştu lütfen sistem yöneticinize başvurun."
+                };
+
+            }
+
         }
 
         public async Task<Worker?> GetWorkerByIdAsync(Guid id)
@@ -602,6 +634,28 @@ namespace Booknix.Application.Services
             await _emailSender.SendEmailAsync(
                  email,
                  "Booknix • Firma Çalışanlığı Sonlandırıldı",
+                 htmlBody,
+                 "Booknix Destek"
+             );
+
+        }
+
+        private async Task NotifyWorkerUpdateAsync(string email, string companyName, string fullName, string position, string oldName, string oldPosition)
+        {
+
+            var htmlBody = EmailTemplateHelper.LoadTemplate("WorkerUpdateTemplate", new Dictionary<string, string>
+                {
+                    { "companyName", companyName },
+                    { "newFullName", fullName },
+                    { "newPosition", position },
+                    { "updateDate", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") },
+                    { "oldFullName", oldName },
+                    { "oldPosition", oldPosition },
+                });
+
+            await _emailSender.SendEmailAsync(
+                 email,
+                 "Booknix • Çalışan Bilgileriniz Güncellendi",
                  htmlBody,
                  "Booknix Destek"
              );

@@ -258,6 +258,18 @@ public class AdminController(IAdminService adminService) : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Route("Admin/Location/Worker/Edit")]
+    public async Task<IActionResult> EditWorkerToLocation(Guid Id, WorkerAddDto dto)
+    {
+        var result = await _adminService.UpdateWorkerAsync(Id, dto);
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok(result.Message);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     [Route("Admin/Location/Worker/Delete")]
     public async Task<IActionResult> DeleteWorker(Guid id)
     {

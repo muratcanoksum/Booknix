@@ -6,37 +6,48 @@ function setTimeoutAlert(type, idSelector, message = "", timeInSeconds = 5) {
     const duration = timeInSeconds * 1000;
     const $el = $(idSelector);
 
-    // Success ya da error için ilgili CSS sınıflarını belirle
     let alertClass = '';
     let iconClass = '';
 
     if (type === 's') {
-        alertClass = 'mb-4 px-4 py-3 rounded border border-green-300 bg-green-50 text-green-700 text-sm shadow-sm';
-        iconClass = 'fas fa-check-circle';
+        alertClass = 'flex items-center gap-3 mb-4 p-3 rounded-md border border-green-300 bg-green-50 text-green-700 text-sm shadow';
+        iconClass = 'fas fa-check-circle text-green-600';
     } else if (type === 'e') {
-        alertClass = 'mb-4 px-4 py-3 rounded border border-red-300 bg-red-50 text-red-700 text-sm shadow-sm';
-        iconClass = 'fas fa-exclamation-circle';
+        alertClass = 'flex items-center gap-3 mb-4 p-3 rounded-md border border-red-300 bg-red-50 text-red-700 text-sm shadow';
+        iconClass = 'fas fa-exclamation-circle text-red-600';
+    } else if (type === 'i') {
+        alertClass = 'flex items-center gap-3 mb-4 p-3 rounded-md border border-yellow-300 bg-yellow-50 text-yellow-800 text-sm shadow';
+        iconClass = 'fas fa-info-circle text-yellow-600';
     }
 
-    // Mevcut zamanlayıcıyı temizle
     if (alertTimers[idSelector]) {
         clearTimeout(alertTimers[idSelector]);
         delete alertTimers[idSelector];
     }
 
-    // Uyarıyı oluştur ve içerik ekle
     $el.removeClass("hidden").hide().fadeIn("slow")
-        .removeClass().addClass(`${alertClass}`)
-        .html(`<i class="${iconClass} mr-2"></i><span>${message}</span>`);
+        .removeClass().addClass(alertClass)
+        .html(`
+            <div class="flex items-center justify-center">
+                <i class="${iconClass} text-lg"></i>
+            </div>
+            <div class="flex-1">
+                <span>${message}</span>
+            </div>
+        `);
 
-    // Zamanlayıcıyı başlat
-    alertTimers[idSelector] = setTimeout(() => {
-        $el.fadeOut("slow", function () {
-            $(this).addClass("hidden").removeAttr("style").find("span").text("");
-        });
-        delete alertTimers[idSelector];
-    }, duration);
+    if (timeInSeconds > 0) {
+        alertTimers[idSelector] = setTimeout(() => {
+            $el.fadeOut("slow", function () {
+                $(this).addClass("hidden").removeAttr("style").find("span").text("");
+            });
+            delete alertTimers[idSelector];
+        }, duration);
+    }
 }
+
+
+
 
 function showModal(id) {
     $(`#${id}`).removeClass("hidden").addClass("flex");

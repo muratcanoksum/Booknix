@@ -1,7 +1,6 @@
 ﻿@using Booknix.Shared.Helpers
 @model List<Booknix.Domain.Entities.Worker>
 
-@Html.AntiForgeryToken()
 <input type="hidden" id="location-id" value="@ViewBag.LocationId" />
 
 <div class="flex justify-between items-center mb-4">
@@ -37,7 +36,7 @@
                         <td class="px-6 py-4 text-gray-800">@worker.User.Email</td>
                         <td class="px-6 py-4 text-gray-800">@EnumHelper.GetDisplayName(worker.RoleInLocation)</td>
                         <td class="px-6 py-4 text-center space-x-2">
-                            <button id="edit-worker-btn" class="text-green-600 hover:text-green-800" data-id="@worker.Id">
+                            <button id="show-edit-worker-modal" class="text-green-600 hover:text-green-800" data-id="@worker.Id">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
                             <button id="delete-worker-btn" class="text-red-600 hover:text-red-800" data-id="@worker.Id">
@@ -62,6 +61,7 @@
     <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 text-center">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Yeni Çalışan Ekle</h2>
         <form id="worker-add-form" class="space-y-4">
+            @Html.AntiForgeryToken()
             <input type="hidden" name="LocationId" value="@ViewBag.LocationId" />
             <div class="text-left">
                 <label class="block text-sm mb-1">Ad Soyad</label>
@@ -86,6 +86,46 @@
         </form>
     </div>
 </div>
+
+<!-- Çalışan Düzenle Modal -->
+<div id="edit-worker-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 text-center">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Çalışan Düzenle</h2>
+        
+        <div id="edit-worker-info" class="hidden"></div>
+
+        <div id="edit-worker-alert" class="hidden"></div>
+
+        <form id="worker-edit-form" class="space-y-4">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" id="edit-worker-id" />
+            <input type="hidden" name="LocationId" value="@ViewBag.LocationId" />
+            <div class="text-left">
+                <label class="block text-sm mb-1">Ad Soyad</label>
+                <input type="text" name="FullName" id="edit-worker-fullname" class="w-full border rounded px-3 py-2" required />
+            </div>
+            <div class="text-left">
+                <label class="block text-sm mb-1">E-Posta</label>
+                <input type="email" name="Email" id="edit-worker-email" class="w-full border rounded px-3 py-2" disabled required />
+            </div>
+            <div class="text-left">
+                <label class="block text-sm mb-1">Pozisyon</label>
+                <select name="RoleInLocation" id="edit-worker-role" class="w-full border rounded px-3 py-2" required>
+                    <option value="" disabled>Bir pozisyon seçin</option>
+                    <option value="LocationAdmin">Yönetici</option>
+                    <option value="LocationEmployee">Çalışan</option>
+                </select>
+            </div>
+            <div class="flex justify-center gap-3 mt-4">
+                <button type="button" id="hide-edit-worker-modal" class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded">Vazgeç</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
 
 <!-- Silme Onay Modali -->
 <div id="confirm-delete-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">

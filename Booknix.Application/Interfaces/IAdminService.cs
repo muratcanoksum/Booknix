@@ -32,7 +32,7 @@ namespace Booknix.Application.Interfaces
         Task<IEnumerable<Worker>> GetAllWorkersAsync(Guid locationId);
         Task<RequestResult> AddWorkerToLocationAsync(WorkerAddDto dto);
         Task<RequestResult> DeleteWorkerAsync(Guid id);
-        Task<RequestResult> UpdateWorkerAsync(Guid id, string fullName, string email, int role, Guid locationId);
+        Task<RequestResult> UpdateWorkerAsync(Guid id, WorkerAddDto dto);
         Task<Worker?> GetWorkerByIdAsync(Guid id);
     }
 }

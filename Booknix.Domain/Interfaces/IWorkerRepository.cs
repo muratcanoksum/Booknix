@@ -10,8 +10,8 @@ namespace Booknix.Domain.Interfaces
         Task<Worker?> GetByUserAndLocationAsync(Guid userId, Guid locationId);
         Task<bool> ExistsAsync(Guid userId, Guid locationId);
 
-        Task AddAsync(Worker userLocation);
-        Task UpdateAsync(Worker userLocation);
+        Task AddAsync(Worker worker);
+        Task UpdateAsync(Worker worker);
         Task DeleteAsync(Guid id);
     }
 }

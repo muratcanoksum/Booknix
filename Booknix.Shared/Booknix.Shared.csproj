@@ -14,6 +14,7 @@
     <None Remove="Templates\PasswordReset.html" />
     <None Remove="Templates\WorkerDelete.html" />
     <None Remove="Templates\WorkerPositionChange.html" />
+    <None Remove="Templates\WorkerUpdateTemplate.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,6 +46,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\WorkerPositionChange.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\WorkerUpdateTemplate.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
