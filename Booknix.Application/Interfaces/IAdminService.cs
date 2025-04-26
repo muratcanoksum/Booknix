@@ -27,6 +27,10 @@ namespace Booknix.Application.Interfaces
         Task<ServiceCreateViewModel> GetServicesByLocationAsync(Guid locationId);
         Task<RequestResult> AddServiceToLocationAsync(ServiceCreateDto dto);
         Task<RequestResult> DeleteServiceAsync(Guid id);
+        Task<RequestResult> UpdateServiceAsync(ServiceUpdateDto dto);
+        Task<Service?> GetServiceByIdAsync(Guid id);
+        Task<ServiceEmployee?> GetServiceEmployeeAsync(Guid serviceId, Guid workerId);
+        Task<RequestResult> RemoveWorkerFromServiceAsync(Guid serviceEmployeeId);
 
         // Workers
         Task<IEnumerable<Worker>> GetAllWorkersAsync(Guid locationId);

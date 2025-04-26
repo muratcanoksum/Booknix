@@ -44,6 +44,12 @@ namespace Booknix.Persistence.Repositories
                 .AnyAsync(se => se.ServiceId == serviceId && se.WorkerId == employeeId);
         }
 
+        public async Task<ServiceEmployee?> GetByServiceAndWorkerIdAsync(Guid serviceId, Guid workerId)
+        {
+            return await _context.ServiceEmployees
+                .FirstOrDefaultAsync(se => se.ServiceId == serviceId && se.WorkerId == workerId);
+        }
+
         public async Task AddAsync(ServiceEmployee entity)
         {
             await _context.ServiceEmployees.AddAsync(entity);

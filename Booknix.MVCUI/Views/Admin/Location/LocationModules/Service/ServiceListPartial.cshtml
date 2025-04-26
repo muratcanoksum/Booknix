@@ -44,10 +44,13 @@
                                         class="text-indigo-600 hover:text-indigo-800">
                                     <i class="fa-solid fa-users"></i>
                                 </button>
-                                <button type="button" class="text-green-600 hover:text-green-800 edit-service">
+                                <button type="button" 
+                                        class="text-green-600 hover:text-green-800 edit-service"
+                                        data-service-id="@service.Id">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
-                                <button type="button" class="text-red-600 hover:text-red-800 delete-service">
+                                <button type="button" class="text-red-600 hover:text-red-800 delete-service"
+                                        data-service-id="@service.Id">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </td>
@@ -91,26 +94,27 @@
 <!-- Modal -->
 <div id="add-service-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 text-center">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4">Yeni Servis Ekle</h2>
+        <h2 id="service-modal-title" class="text-lg font-semibold text-gray-800 mb-4">Yeni Servis Ekle</h2>
 
         <div id="location-service-add-alert"></div>
 
         <form id="service-add-form" class="space-y-4">
             <input type="hidden" name="LocationId" value="@Model.LocationId" />
+            <input type="hidden" name="Id" id="service-id" value="" />
 
             <div class="text-left">
                 <label class="block text-sm text-gray-600 mb-1">Adı</label>
-                <input type="text" name="Name" class="w-full border rounded px-3 py-2" required />
+                <input type="text" name="Name" id="service-name" class="w-full border rounded px-3 py-2" required />
             </div>
 
             <div class="text-left">
                 <label class="block text-sm text-gray-600 mb-1">Çıklama</label>
-                <input type="text" name="Description" class="w-full border rounded px-3 py-2" />
+                <input type="text" name="Description" id="service-description" class="w-full border rounded px-3 py-2" />
             </div>
 
             <div class="text-left">
                 <label class="block text-sm text-gray-600 mb-1">Fiyat</label>
-                <input type="number" name="Price" step="0.01" class="w-full border rounded px-3 py-2" required />
+                <input type="number" name="Price" id="service-price" step="0.01" class="w-full border rounded px-3 py-2" required />
             </div>
 
             <div class="text-left">
@@ -140,7 +144,9 @@
                         foreach (var worker in Model.AvailableWorkers)
                         {
                             <div class="flex items-center gap-2">
-                                <input type="checkbox" name="SelectedWorkerIds" value="@worker.Id" class="text-indigo-600" />
+                                <input type="checkbox" name="SelectedWorkerIds" 
+                                       id="worker-@worker.Id"
+                                       value="@worker.Id" class="text-indigo-600 worker-checkbox" />
                                 <label class="text-sm text-gray-800">@worker.User.FullName (@EnumHelper.GetDisplayName(worker.RoleInLocation))</label>
                             </div>
                         }
@@ -157,7 +163,7 @@
                         class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded">
                     Vazgeç
                 </button>
-                <button type="submit"
+                <button type="submit" id="service-submit-button"
                         class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded">
                     Kaydet
                 </button>

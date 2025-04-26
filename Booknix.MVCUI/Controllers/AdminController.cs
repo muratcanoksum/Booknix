@@ -232,6 +232,77 @@ public class AdminController(IAdminService adminService) : Controller
         return Ok(result.Message);
     }
 
+    [HttpGet]
+    [Route("Admin/Location/Service/Get/{id}")]
+    public async Task<IActionResult> GetServiceById(Guid id)
+    {
+        var service = await _adminService.GetServiceByIdAsync(id);
+        if (service == null)
+        {
+            return NotFound("Servis bulunamadı.");
+        }
+        
+        return PartialView("Location/LocationModules/Service/ServiceDetailsPartial", service);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("Admin/Location/Service/Update")]
+    public async Task<IActionResult> UpdateService(ServiceUpdateDto dto)
+    {
+        if (!await _adminService.LocationExistsAsync(dto.LocationId))
+        {
+            return BadRequest("Lokasyon bulunamadı. Lütfen geçerli bir lokasyon seçiniz.");
+        }
+
+        var result = await _adminService.UpdateServiceAsync(dto);
+
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok(result.Message);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("Admin/Location/Service/Delete/{id}")]
+    public async Task<IActionResult> DeleteService(Guid id)
+    {
+        var result = await _adminService.DeleteServiceAsync(id);
+        
+        if (!result.Success)
+            return BadRequest(result.Message);
+        
+        return Ok(result.Message);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("Admin/Location/Service/RemoveWorker")]
+    public async Task<IActionResult> RemoveWorkerFromService(Guid workerId, Guid serviceId)
+    {
+        // Bu action işçiyi servisten kaldıracak ama işçi kaydı silinmeyecek
+        // Sadece ServicesEmployees tablosundaki kayıt silinecek
+        
+        try
+        {
+            var serviceEmployee = await _adminService.GetServiceEmployeeAsync(serviceId, workerId);
+            
+            if (serviceEmployee == null)
+                return BadRequest("Çalışan bu servise atanmamış.");
+                
+            var result = await _adminService.RemoveWorkerFromServiceAsync(serviceEmployee.Id);
+            
+            if (!result.Success)
+                return BadRequest(result.Message);
+                
+            return Ok(result.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"İşlem sırasında bir hata oluştu: {ex.Message}");
+        }
+    }
 
     // WORKER OPERATIONS
 
