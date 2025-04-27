@@ -44,7 +44,7 @@
                                         class="text-indigo-600 hover:text-indigo-800">
                                     <i class="fa-solid fa-users"></i>
                                 </button>
-                                <button type="button" 
+                                <button type="button"
                                         class="text-green-600 hover:text-green-800 edit-service"
                                         data-service-id="@service.Id">
                                     <i class="fa-solid fa-pen-to-square"></i>
@@ -56,15 +56,24 @@
                             </td>
                         </tr>
                         <tr id="workers-@service.Id" class="hidden bg-gray-50">
-                            <td colspan="5" class="px-6 py-4 bg-indigo-50">
+                            <td colspan="5" class="p-6">
                                 @if (service.ServiceEmployees != null && service.ServiceEmployees.Any())
                                 {
-                                    <div class="space-y-2">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         @foreach (var se in service.ServiceEmployees)
                                         {
-                                            <div class="flex justify-between items-center">
-                                                <span class="text-gray-700">@se.Worker?.User?.FullName</span>
-                                                <button data-worker-id="@se.WorkerId" data-service-id="@service.Id" class="remove-worker text-red-500 hover:text-red-700">
+                                            <div class="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                                        <i class="fa-solid fa-user text-indigo-600"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium text-gray-800">@se.Worker?.User?.FullName</div>
+                                                        <div class="text-sm text-gray-500">@EnumHelper.GetDisplayName(se.Worker?.RoleInLocation!)</div>
+                                                    </div>
+                                                </div>
+                                                <button data-worker-id="@se.WorkerId" data-service-id="@service.Id"
+                                                        class="remove-worker text-red-500 hover:text-red-700">
                                                     <i class="fa-solid fa-user-minus"></i>
                                                 </button>
                                             </div>
@@ -73,10 +82,11 @@
                                 }
                                 else
                                 {
-                                    <div class="text-gray-500 italic">Atanmış çalışan yok.</div>
+                                    <div class="text-gray-500 italic text-center">Atanmış çalışan yok.</div>
                                 }
                             </td>
                         </tr>
+
                     }
                 }
                 else
@@ -144,7 +154,7 @@
                         foreach (var worker in Model.AvailableWorkers)
                         {
                             <div class="flex items-center gap-2">
-                                <input type="checkbox" name="SelectedWorkerIds" 
+                                <input type="checkbox" name="SelectedWorkerIds"
                                        id="worker-@worker.Id"
                                        value="@worker.Id" class="text-indigo-600 worker-checkbox" />
                                 <label class="text-sm text-gray-800">@worker.User.FullName (@EnumHelper.GetDisplayName(worker.RoleInLocation))</label>
@@ -169,6 +179,18 @@
                 </button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="confirm-delete-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full text-center">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Çalışanı Sil</h2>
+        <p class="text-sm text-gray-600 mb-6">Bu çalışanı silmek istediğinize emin misiniz?</p>
+        <div class="flex justify-center gap-4">
+            <button id="confirm-delete-yes" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Evet</button>
+            <button id="confirm-delete-no" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">İptal</button>
+        </div>
     </div>
 </div>
 

@@ -46,16 +46,26 @@ function setTimeoutAlert(type, idSelector, message = "", timeInSeconds = 5) {
     }
 }
 
-
-
-
 function showModal(id) {
-    $(`#${id}`).removeClass("hidden").addClass("flex");
+    const $modal = $(`#${id}`);
+    $modal.removeClass("hidden").addClass("flex");
+
+    // Fade in + blur efekti ekle
+    $modal.hide().fadeIn(300, function () {
+        $modal.addClass("backdrop-blur-sm bg-opacity-40");
+    });
 }
 
 function hideModal(id) {
-    $(`#${id}`).addClass("hidden").removeClass("flex");
+    const $modal = $(`#${id}`);
+
+    // Fade out + blur efekti kaldır
+    $modal.fadeOut(300, function () {
+        $modal.addClass("hidden").removeClass("flex backdrop-blur-sm bg-opacity-40").removeAttr("style");
+    });
 }
+
+
 
 function toggleElementById(id) {
     const el = document.getElementById(id);
