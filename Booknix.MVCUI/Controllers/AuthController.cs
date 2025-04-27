@@ -1,16 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Booknix.Application.DTOs;
 using Booknix.Application.Interfaces;
-using Booknix.Domain.Entities;
-using Booknix.Infrastructure.Email;
 using Booknix.Persistence.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Booknix.Infrastructure.Filters;
 
 namespace Booknix.MVCUI.Controllers;
 
-[UnAuth]
 public class AuthController(
     IAuthService authService,
     BooknixDbContext context,
@@ -21,6 +16,7 @@ public class AuthController(
     private readonly IEmailSender _emailSender = emailSender;
 
     // LOGIN
+    [UnAuth]
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
@@ -28,7 +24,7 @@ public class AuthController(
         return View();
     }
 
-
+    [UnAuth]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginRequestDto dto, string? returnUrl)
@@ -42,6 +38,9 @@ public class AuthController(
         HttpContext.Session.SetString("FullName", result.FullName);
         HttpContext.Session.SetString("Role", result.Role);
         HttpContext.Session.SetString("Email", result.Email);
+        HttpContext.Session.SetString("LocationId", result.LocationId?.ToString() ?? "");
+        HttpContext.Session.SetString("LocationRole", result.LocationRole?.ToString() ?? "");
+
 
 
         if (dto.RememberMe)
@@ -56,9 +55,11 @@ public class AuthController(
     }
 
     // REGISTER
+    [UnAuth]
     [HttpGet]
     public IActionResult Register() => View();
 
+    [UnAuth]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterRequestDto dto)
@@ -73,6 +74,7 @@ public class AuthController(
     }
 
     // LOGOUT
+    [Auth]
     [HttpGet]
     public IActionResult Logout()
     {
@@ -83,6 +85,7 @@ public class AuthController(
     }
 
     // VERIFY EMAIL
+    [UnAuth]
     [HttpGet]
     public async Task<IActionResult> VerifyEmail(string token)
     {
@@ -94,9 +97,11 @@ public class AuthController(
         return View("VerifyResult"); // Basit bir sonuç sayfası gösterebiliriz
     }
 
+    [UnAuth]
     [HttpGet]
     public IActionResult ForgotPassword() => View();
 
+    [UnAuth]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestDto dto)
@@ -109,6 +114,7 @@ public class AuthController(
         return Ok();
     }
 
+    [UnAuth]
     [HttpGet]
     public async Task<IActionResult> ResetPassword(string token)
     {
@@ -122,6 +128,7 @@ public class AuthController(
         return View();
     }
 
+    [UnAuth]
     [HttpPost]
     public async Task<IActionResult> ResetPassword(ResetPasswordRequestDto dto)
     {
@@ -133,6 +140,7 @@ public class AuthController(
         return Ok();
     }
 
+    [UnAuth]
     [HttpGet]
     public async Task<IActionResult> ApproveIp(string token)
     {

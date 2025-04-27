@@ -1,0 +1,73 @@
+﻿@model Booknix.Domain.Entities.Location
+
+@{
+    ViewData["Title"] = TempData["Title"];
+}
+
+<h2 class="text-2xl font-bold text-gray-800 mb-4">
+    <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
+    Lokasyon Bilgileri
+</h2>
+
+<div class="bg-white shadow rounded-lg p-6 space-y-4 text-sm">
+    <div>
+        <strong class="text-gray-600 block">Adı:</strong>
+        <span class="text-gray-800">@Model.Name</span>
+    </div>
+
+    <div>
+        <strong class="text-gray-600 block">Adres:</strong>
+        <span class="text-gray-800">@Model.Address</span>
+    </div>
+
+    <div>
+        <strong class="text-gray-600 block">Telefon:</strong>
+        <span class="text-gray-800">@Model.PhoneNumber</span>
+    </div>
+
+    <div>
+        <strong class="text-gray-600 block">Sektör:</strong>
+        <span class="text-gray-800">@Model.Sector?.Name</span>
+    </div>
+</div>
+
+
+<!-- Genişletilebilir Bölüm -->
+<div class="mt-6">
+    <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+        <i class="fas fa-tools text-gray-600 mr-2"></i>
+        Lokasyona Ait İşlemler
+    </h3>
+
+
+
+    <div class="flex flex-wrap gap-2 mb-4">
+        <button data-url="/Admin/Location/GetServicesByLocation/@Model.Id"
+                class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
+            Servisleri Göster
+        </button>
+        <button data-url="/Admin/Location/GetWorkersByLocation/@Model.Id"
+                class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
+            Çalışanları Göster
+        </button>
+        <button data-url="/Admin/GetWorkingHours/@Model.Id"
+                class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
+            Çalışma Saatleri
+        </button>
+    </div>
+
+    <!-- Görsel Ayraç -->
+    <div class="flex items-center">
+        <div class="flex-grow border-t border-gray-300"></div>
+        <span class="mx-4 text-gray-400 text-sm uppercase">İşlem Modülleri</span>
+        <div class="flex-grow border-t border-gray-300"></div>
+    </div>
+
+    <div id="location-operation-loader" class="text-sm text-gray-500 mb-2">Lütfen bir işlem seçin...</div>
+    <div id="location-operation-panel"></div>
+</div>
+
+@*@section Scripts {
+    <script src="~/js/admin/location/details.js" asp-append-version="true"></script>
+}*@
+

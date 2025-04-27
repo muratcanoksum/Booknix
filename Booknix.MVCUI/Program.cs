@@ -71,6 +71,7 @@ builder.Services.AddScoped<IAuditLogger, AuditLogger>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<ILocationAdminService, LocationAdminService>();
 
 
 builder.Services.AddSingleton<IAppSettings, AppSettings>();

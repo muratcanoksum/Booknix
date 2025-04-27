@@ -15,6 +15,7 @@ namespace Booknix.Application.Services
         IEmailSender emailSender,
         IAuditLogger auditLogger,
         ITrustedIpRepository trustedIpRepo,
+        IWorkerRepository workerRepo,
         IHttpContextAccessor httpContextAccessor
             ) : IAuthService
     {
@@ -24,6 +25,7 @@ namespace Booknix.Application.Services
         private readonly IAuditLogger _auditLogger = auditLogger;
         private readonly ITrustedIpRepository _trustedIpRepo = trustedIpRepo;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IWorkerRepository _workerRepo = workerRepo;
 
         public async Task<bool> RegisterAsync(RegisterRequestDto request, string roleName)
         {
@@ -102,13 +104,16 @@ namespace Booknix.Application.Services
             }
 
             await _auditLogger.LogAsync(user.Id, "Login", "User", user.Id.ToString(), null, "Kullanıcı başarılı şekilde giriş yaptı.");
+            var worker = await _workerRepo.GetByUserIdAsync(user.Id); // Kullanıcıyı yükle
 
             return (new AuthResponseDto
             {
                 Id = user.Id,
                 FullName = user.FullName,
                 Email = user.Email,
-                Role = user.Role?.Name ?? "Unknown"
+                Role = user.Role?.Name ?? "Unknown",
+                LocationId = worker?.LocationId,
+                LocationRole = worker?.RoleInLocation
             }, "");
         }
 

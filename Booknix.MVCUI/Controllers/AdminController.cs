@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Booknix.Infrastructure.Filters;
 using Booknix.Application.Interfaces;
 using Booknix.Application.DTOs;
-using Booknix.Domain.Entities;
 
 namespace Booknix.MVCUI.Controllers;
 
@@ -241,7 +240,7 @@ public class AdminController(IAdminService adminService) : Controller
         {
             return NotFound("Servis bulunamadı.");
         }
-        
+
         return PartialView("Location/LocationModules/Service/ServiceDetailsPartial", service);
     }
 
@@ -269,10 +268,10 @@ public class AdminController(IAdminService adminService) : Controller
     public async Task<IActionResult> DeleteService(Guid id)
     {
         var result = await _adminService.DeleteServiceAsync(id);
-        
+
         if (!result.Success)
             return BadRequest(result.Message);
-        
+
         return Ok(result.Message);
     }
 
@@ -283,19 +282,19 @@ public class AdminController(IAdminService adminService) : Controller
     {
         // Bu action işçiyi servisten kaldıracak ama işçi kaydı silinmeyecek
         // Sadece ServicesEmployees tablosundaki kayıt silinecek
-        
+
         try
         {
             var serviceEmployee = await _adminService.GetServiceEmployeeAsync(serviceId, workerId);
-            
+
             if (serviceEmployee == null)
                 return BadRequest("Çalışan bu servise atanmamış.");
-                
+
             var result = await _adminService.RemoveWorkerFromServiceAsync(serviceEmployee.Id);
-            
+
             if (!result.Success)
                 return BadRequest(result.Message);
-                
+
             return Ok(result.Message);
         }
         catch (Exception ex)
