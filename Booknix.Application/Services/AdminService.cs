@@ -354,13 +354,91 @@ namespace Booknix.Application.Services
 
         public async Task<RequestResult> DeleteServiceAsync(Guid id)
         {
-            await _serviceRepo.DeleteAsync(id);
+            var service = await _serviceRepo.GetByIdAsync(id);
+            if (service == null)
+                return new RequestResult { Success = false, Message = "Silinmek istenen servis bulunamadı." };
 
-            return new RequestResult
+            await _serviceRepo.DeleteAsync(service.Id);
+            return new RequestResult { Success = true, Message = "Servis başarıyla silindi." };
+        }
+
+        public async Task<Service?> GetServiceByIdAsync(Guid id)
+        {
+            return await _serviceRepo.GetByIdWithDetailsAsync(id);
+        }
+
+        public async Task<RequestResult> UpdateServiceAsync(ServiceUpdateDto dto)
+        {
+            // Servisi veritabanından getir
+            var service = await _serviceRepo.GetByIdWithDetailsAsync(dto.Id);
+            if (service == null)
+                return new RequestResult { Success = false, Message = "Güncellenecek servis bulunamadı." };
+
+            // Temel bilgileri güncelle
+            service.Name = dto.Name;
+            service.Description = dto.Description;
+            service.Price = dto.Price;
+            service.Duration = dto.Duration;
+
+            // Servisi güncelle
+            await _serviceRepo.UpdateAsync(service);
+
+            // Mevcut tüm çalışanları temizle ve yeniden atama yap
+            // Önce mevcut çalışanları listele
+            var existingEmployees = await _serviceEmployeeRepo.GetByServiceIdAsync(service.Id);
+            
+            // Çıkarılan çalışanları sil
+            foreach (var employee in existingEmployees)
             {
-                Success = true,
-                Message = "Servis başarıyla silindi."
-            };
+                if (!dto.SelectedWorkerIds.Contains(employee.WorkerId))
+                {
+                    await _serviceEmployeeRepo.DeleteAsync(employee.Id);
+                }
+            }
+
+            // Yeni çalışanları ekle
+            foreach (var workerId in dto.SelectedWorkerIds)
+            {
+                // Çalışan zaten bu servise atanmış mı kontrol et
+                if (!existingEmployees.Any(e => e.WorkerId == workerId))
+                {
+                    var serviceEmployee = new ServiceEmployee
+                    {
+                        ServiceId = service.Id,
+                        WorkerId = workerId
+                    };
+                    await _serviceEmployeeRepo.AddAsync(serviceEmployee);
+                }
+            }
+
+            return new RequestResult { Success = true, Message = "Servis başarıyla güncellendi." };
+        }
+
+        public async Task<ServiceEmployee?> GetServiceEmployeeAsync(Guid serviceId, Guid workerId)
+        {
+            return await _serviceEmployeeRepo.GetByServiceAndWorkerIdAsync(serviceId, workerId);
+        }
+
+        public async Task<RequestResult> RemoveWorkerFromServiceAsync(Guid serviceEmployeeId)
+        {
+            try
+            {
+                await _serviceEmployeeRepo.DeleteAsync(serviceEmployeeId);
+                
+                return new RequestResult 
+                { 
+                    Success = true, 
+                    Message = "Çalışan bu servisten başarıyla kaldırıldı." 
+                };
+            }
+            catch (Exception)
+            {
+                return new RequestResult 
+                { 
+                    Success = false, 
+                    Message = "Çalışan servisten kaldırılırken bir hata oluştu." 
+                };
+            }
         }
 
         public async Task<bool> LocationExistsAsync(Guid locationId)
