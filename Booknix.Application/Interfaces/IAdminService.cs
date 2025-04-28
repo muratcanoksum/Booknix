@@ -38,5 +38,9 @@ namespace Booknix.Application.Interfaces
         Task<RequestResult> DeleteWorkerAsync(Guid id);
         Task<RequestResult> UpdateWorkerAsync(Guid id, WorkerAddDto dto);
         Task<Worker?> GetWorkerByIdAsync(Guid id);
+
+        // WorkerHours
+        Task<List<WorkerWorkingHour>> GetWorkerWorkingHoursAsync(Guid workerId, int year, int month);
+
     }
 }

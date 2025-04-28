@@ -23,6 +23,8 @@ namespace Booknix.Persistence.Data
         public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
         public DbSet<MediaFile> MediaFiles => Set<MediaFile>();
         public DbSet<TrustedIp> TrustedIps => Set<TrustedIp>();
+        public DbSet<WorkerWorkingHour> WorkerWorkingHours => Set<WorkerWorkingHour>();
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -133,6 +135,17 @@ namespace Booknix.Persistence.Data
                 .WithMany()
                 .HasForeignKey(a => a.AdminUserId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<WorkerWorkingHour>()
+                .HasOne(w => w.Worker)
+                .WithMany(w => w.WorkerWorkingHours)
+                .HasForeignKey(w => w.WorkerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<WorkerWorkingHour>()
+                .HasIndex(w => new { w.WorkerId, w.Date })
+                .IsUnique(); // Aynı gün için bir tane kayıt olsun
+
 
             // Seed roller
             modelBuilder.Entity<Role>().HasData(

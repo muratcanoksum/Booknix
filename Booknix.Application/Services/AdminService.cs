@@ -20,7 +20,8 @@ namespace Booknix.Application.Services
         IRoleRepository roleRepo,
         IAuditLogger auditLogger,
         IEmailSender emailSender,
-        IServiceEmployeeRepository serviceEmployeeRepo
+        IServiceEmployeeRepository serviceEmployeeRepo,
+        IWorkerWorkingHourRepository workerWorkingHourRepo
             ) : IAdminService
     {
         private readonly ISectorRepository _sectorRepo = sectorRepo;
@@ -32,6 +33,7 @@ namespace Booknix.Application.Services
         private readonly IAuditLogger _auditLogger = auditLogger;
         private readonly IEmailSender _emailSender = emailSender;
         private readonly IServiceEmployeeRepository _serviceEmployeeRepo = serviceEmployeeRepo;
+        private readonly IWorkerWorkingHourRepository _workerWorkingHourRepo = workerWorkingHourRepo;
 
         // Sectors
 
@@ -386,7 +388,7 @@ namespace Booknix.Application.Services
             // Mevcut tüm çalışanları temizle ve yeniden atama yap
             // Önce mevcut çalışanları listele
             var existingEmployees = await _serviceEmployeeRepo.GetByServiceIdAsync(service.Id);
-            
+
             // Çıkarılan çalışanları sil
             foreach (var employee in existingEmployees)
             {
@@ -424,19 +426,19 @@ namespace Booknix.Application.Services
             try
             {
                 await _serviceEmployeeRepo.DeleteAsync(serviceEmployeeId);
-                
-                return new RequestResult 
-                { 
-                    Success = true, 
-                    Message = "Çalışan bu servisten başarıyla kaldırıldı." 
+
+                return new RequestResult
+                {
+                    Success = true,
+                    Message = "Çalışan bu servisten başarıyla kaldırıldı."
                 };
             }
             catch (Exception)
             {
-                return new RequestResult 
-                { 
-                    Success = false, 
-                    Message = "Çalışan servisten kaldırılırken bir hata oluştu." 
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Çalışan servisten kaldırılırken bir hata oluştu."
                 };
             }
         }
@@ -741,6 +743,13 @@ namespace Booknix.Application.Services
         }
 
         //YARDIMCI FONKSİYONLAR
+
+        // Worker Hour
+        public async Task<List<WorkerWorkingHour>> GetWorkerWorkingHoursAsync(Guid workerId, int year, int month)
+        {
+            return await _workerWorkingHourRepo.GetWorkerWorkingHoursAsync(workerId, year, month);
+        }
+
 
 
     }

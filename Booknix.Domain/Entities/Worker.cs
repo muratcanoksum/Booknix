@@ -14,4 +14,6 @@ public class Worker
     public Location Location { get; set; } = null!;
 
     public LocationRole RoleInLocation { get; set; }
+    public ICollection<WorkerWorkingHour> WorkerWorkingHours { get; set; } = new List<WorkerWorkingHour>();
+
 }

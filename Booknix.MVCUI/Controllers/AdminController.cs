@@ -350,6 +350,34 @@ public class AdminController(IAdminService adminService) : Controller
         return Ok(result.Message);
     }
 
+    // WORKER HOURS OPERATIONS
+
+    [HttpGet]
+    [Route("/Admin/Location/GetWorkingHoursByLocation/{locationId}")]
+    public async Task<IActionResult> GetWorkingHoursByLocation(Guid locationId)
+    {
+        var workers = await _adminService.GetAllWorkersAsync(locationId);
+        ViewBag.LocationId = locationId;
+        return PartialView("Location/LocationModules/WorkerHour/WorkerHourMainPartial", workers);
+    }
+
+    [HttpGet]
+    [Route("/Admin/Location/GetWorkerWorkingHours/{workerId}/{year}/{month}")]
+    public async Task<IActionResult> GetWorkerWorkingHours(Guid workerId, int year, int month)
+    {
+        var workingHours = await _adminService.GetWorkerWorkingHoursAsync(workerId, year, month);
+
+        var result = workingHours.Select(x => new
+        {
+            Day = x.Date.Day,
+            IsOnLeave = x.IsOnLeave,
+            IsDayOff = x.IsDayOff,
+            StartTime = x.StartTime?.ToString(@"hh\:mm"),
+            EndTime = x.EndTime?.ToString(@"hh\:mm")
+        });
+
+        return Json(result);
+    }
 
 
 
