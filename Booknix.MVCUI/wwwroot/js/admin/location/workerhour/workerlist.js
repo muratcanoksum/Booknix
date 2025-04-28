@@ -31,3 +31,5 @@ $(document).off("click", ".worker-item").on("click", ".worker-item", function ()
 
     }
 });
+
+attachSearchFilter('worker-search', '#worker-list', '.worker-item');

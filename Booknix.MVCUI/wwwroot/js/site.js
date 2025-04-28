@@ -89,3 +89,21 @@ function initCleavePhoneMask() {
     }
 };
 
+function attachSearchFilter(inputId, containerSelector, itemSelector) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    input.addEventListener('input', function () {
+        const query = input.value.trim().toLowerCase();
+        const items = document.querySelectorAll(containerSelector + ' ' + itemSelector);
+
+        items.forEach(item => {
+            const text = item.textContent.trim().toLowerCase();
+            if (text.includes(query)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    });
+}
