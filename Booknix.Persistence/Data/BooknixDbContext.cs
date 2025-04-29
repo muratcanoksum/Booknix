@@ -148,12 +148,19 @@ namespace Booknix.Persistence.Data
 
             modelBuilder.Entity<WorkerWorkingHour>(entity =>
             {
+                entity.Property(x => x.StartTime)
+                      .HasColumnType("time");
+
+                entity.Property(x => x.EndTime)
+                      .HasColumnType("time");
+
                 entity.Property(x => x.Date)
                       .HasColumnType("timestamp without time zone");
 
                 entity.Property(x => x.CreatedAt)
                       .HasColumnType("timestamp with time zone");
             });
+
 
             // Seed roller
             modelBuilder.Entity<Role>().HasData(
