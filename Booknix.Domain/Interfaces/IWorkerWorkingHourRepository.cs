@@ -8,6 +8,7 @@ namespace Booknix.Domain.Interfaces
         Task AddAsync(WorkerWorkingHour entity);
         Task UpdateAsync(WorkerWorkingHour entity);
         Task<WorkerWorkingHour?> GetByWorkerIdAndDateAsync(Guid workerId, DateTime date);
-
+        Task AddRangeAsync(IEnumerable<WorkerWorkingHour> entities);
+        Task UpdateRangeAsync(IEnumerable<WorkerWorkingHour> entities);
     }
 }

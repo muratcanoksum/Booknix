@@ -7,6 +7,7 @@ using Booknix.Shared.Helpers;
 using Booknix.Application.Helpers;
 using Booknix.Domain.Entities.Enums;
 using Booknix.Application.ViewModels;
+using System.Text.Json; // En üste ekle
 
 
 namespace Booknix.Application.Services
@@ -751,6 +752,7 @@ namespace Booknix.Application.Services
             return await _workerWorkingHourRepo.GetWorkerWorkingHoursAsync(workerId, year, month);
         }
 
+
         public async Task<RequestResult> AddWorkerWorkingHourAsync(WorkerWorkingHourDto dto)
         {
             var worker = await _workerRepo.GetByIdAsync(dto.WorkerId);
@@ -764,8 +766,7 @@ namespace Booknix.Application.Services
                 };
             }
 
-            // 1. İş kuralları kontrolü
-
+            // İş kuralları
             if (!dto.IsOnLeave && !dto.IsDayOff)
             {
                 if (!dto.StartTime.HasValue || !dto.EndTime.HasValue)
@@ -787,54 +788,65 @@ namespace Booknix.Application.Services
                 }
             }
 
-            // 2. Tarih normalize
-            var normalizedDate = DateTime.SpecifyKind(dto.Date, DateTimeKind.Unspecified);
+            List<DateTime> datesToProcess;
 
-            var existingWorkingHour = await _workerWorkingHourRepo.GetByWorkerIdAndDateAsync(dto.WorkerId, normalizedDate);
-
-            if (existingWorkingHour != null)
+            if (!string.IsNullOrEmpty(dto.SelectedDays))
             {
-                existingWorkingHour.StartTime = dto.StartTime;
-                existingWorkingHour.EndTime = dto.EndTime;
-                existingWorkingHour.IsOnLeave = dto.IsOnLeave;
-                existingWorkingHour.IsDayOff = dto.IsDayOff;
-
-                await _workerWorkingHourRepo.UpdateAsync(existingWorkingHour);
-
-                return new RequestResult
-                {
-                    Success = true,
-                    Message = "Çalışma saati güncellendi."
-                };
+                datesToProcess = JsonSerializer.Deserialize<List<DateTime>>(dto.SelectedDays) ?? [];
             }
             else
             {
-                var workingHour = new WorkerWorkingHour
-                {
-                    Id = Guid.NewGuid(),
-                    WorkerId = dto.WorkerId,
-                    Date = normalizedDate,
-                    StartTime = dto.StartTime,
-                    EndTime = dto.EndTime,
-                    IsOnLeave = dto.IsOnLeave,
-                    IsDayOff = dto.IsDayOff,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                await _workerWorkingHourRepo.AddAsync(workingHour);
-
-                return new RequestResult
-                {
-                    Success = true,
-                    Message = "Çalışma saati eklendi."
-                };
+                datesToProcess = [dto.Date];
             }
+
+            var addList = new List<WorkerWorkingHour>();
+            var updateList = new List<WorkerWorkingHour>();
+
+            foreach (var rawDate in datesToProcess)
+            {
+                var normalizedDate = DateTime.SpecifyKind(rawDate, DateTimeKind.Unspecified);
+
+                var existingWorkingHour = await _workerWorkingHourRepo.GetByWorkerIdAndDateAsync(dto.WorkerId, normalizedDate);
+
+                if (existingWorkingHour != null)
+                {
+                    existingWorkingHour.StartTime = dto.StartTime;
+                    existingWorkingHour.EndTime = dto.EndTime;
+                    existingWorkingHour.IsOnLeave = dto.IsOnLeave;
+                    existingWorkingHour.IsDayOff = dto.IsDayOff;
+
+                    updateList.Add(existingWorkingHour);
+                }
+                else
+                {
+                    var newWorkingHour = new WorkerWorkingHour
+                    {
+                        Id = Guid.NewGuid(),
+                        WorkerId = dto.WorkerId,
+                        Date = normalizedDate,
+                        StartTime = dto.StartTime,
+                        EndTime = dto.EndTime,
+                        IsOnLeave = dto.IsOnLeave,
+                        IsDayOff = dto.IsDayOff,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    addList.Add(newWorkingHour);
+                }
+            }
+
+            if (addList.Any())
+                await _workerWorkingHourRepo.AddRangeAsync(addList);
+
+            if (updateList.Any())
+                await _workerWorkingHourRepo.UpdateRangeAsync(updateList);
+
+            return new RequestResult
+            {
+                Success = true,
+                Message = "Çalışma saatleri başarıyla kaydedildi."
+            };
         }
-
-
-
-
-
 
     }
 }

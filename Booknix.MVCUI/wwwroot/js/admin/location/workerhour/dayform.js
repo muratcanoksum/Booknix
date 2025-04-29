@@ -27,38 +27,61 @@ $(document).off("change", "#is-on-leave, #is-day-off").on("change", "#is-on-leav
 });
 
 
-// Form submit işlemi (şu anlık sadece console.log yapıyor)
 $(document).off("submit", "#day-form").on("submit", "#day-form", function (e) {
     e.preventDefault();
+
     const $form = $(this);
     const $btn = $form.find("button[type=submit]");
-    const $workerId = window.selectedWorkerId;
-    const $month = window.selectedMonth;
-    const $year = window.selectedYear;
+    const workerId = window.selectedWorkerId;
 
-    if (!$workerId || !window.selectedDay || !$month || !$year) {
-        alert("Lütfen sayfayı yenileyin veya sistem yöneticinize başvurun!");
+    if (!workerId) {
+        alert("Lütfen bir çalışan seçiniz!");
         return;
+    }
+
+    let datesToSend = [];
+
+    if (multiSelectMode) {
+        if (!selectedDates || selectedDates.length === 0) {
+            alert("Lütfen en az bir gün seçiniz!");
+            return;
+        }
+        datesToSend = selectedDates;
+    } else {
+        const singleDate = $("#worker-timeform-date").val();
+        if (!singleDate) {
+            alert("Lütfen bir gün seçiniz!");
+            return;
+        }
+        datesToSend = [singleDate];
     }
 
     $btn.prop("disabled", true).text("Kaydediliyor...");
 
+    const formData = $form.serializeArray();
+
+    const filteredFormData = formData.filter(x => x.name !== "SelectedDays");
+    filteredFormData.push({ name: "SelectedDays", value: JSON.stringify(datesToSend) });
+
     $.ajax({
         type: "POST",
         url: "/Admin/Location/WorkerHour/Add",
-        data: $form.serialize(),
+        data: $.param(filteredFormData),
         success: function (msg) {
             setTimeoutAlert("s", "#day-form-alert", msg, 5);
-            fetchCalendarData($workerId, $year, $month);
+            fetchCalendarData(workerId, currentYear, currentMonth + 1); // Seçilen yıl ve ayı güncelle
             $btn.prop("disabled", false).text("Kaydet");
+            // Çoklu moddaysak seçimleri sıfırla
+
         },
         error: function (xhr) {
-            var msg = xhr.responseText || "Günlük formu kaydedilemedi.";
-            setTimeoutAlert("e", "#day-form-alert", msg, 5);
+            const errorMsg = xhr.responseText || "Günlük formu kaydedilemedi.";
+            setTimeoutAlert("e", "#day-form-alert", errorMsg, 5);
             $btn.prop("disabled", false).text("Kaydet");
         }
     });
 });
+
 
 
 // Form ilk açıldığında da çalıştırmak için

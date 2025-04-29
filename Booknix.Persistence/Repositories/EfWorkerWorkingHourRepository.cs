@@ -40,5 +40,17 @@ namespace Booknix.Persistence.Repositories
             return await _context.WorkerWorkingHours
                 .FirstOrDefaultAsync(x => x.WorkerId == workerId && x.Date.Date == date.Date);
         }
+        public async Task AddRangeAsync(IEnumerable<WorkerWorkingHour> entities)
+        {
+            await _context.WorkerWorkingHours.AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRangeAsync(IEnumerable<WorkerWorkingHour> entities)
+        {
+            _context.WorkerWorkingHours.UpdateRange(entities);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
