@@ -17,8 +17,28 @@ namespace Booknix.Persistence.Repositories
         public async Task<List<WorkerWorkingHour>> GetWorkerWorkingHoursAsync(Guid workerId, int year, int month)
         {
             return await _context.WorkerWorkingHours
-                .Where(x => x.WorkerId == workerId && x.Date.Year == year && x.Date.Month == month)
+                .Where(x => x.WorkerId == workerId &&
+                            x.Date.Year == year &&
+                            x.Date.Month == month)
                 .ToListAsync();
+        }
+
+        public async Task AddAsync(WorkerWorkingHour entity)
+        {
+            await _context.WorkerWorkingHours.AddAsync(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(WorkerWorkingHour entity)
+        {
+            _context.WorkerWorkingHours.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<WorkerWorkingHour?> GetByWorkerIdAndDateAsync(Guid workerId, DateTime date)
+        {
+            return await _context.WorkerWorkingHours
+                .FirstOrDefaultAsync(x => x.WorkerId == workerId && x.Date.Date == date.Date);
         }
     }
 }

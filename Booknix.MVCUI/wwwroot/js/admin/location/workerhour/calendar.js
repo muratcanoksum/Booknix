@@ -135,6 +135,12 @@ $(document).off("click", ".calendar-day").on("click", ".calendar-day", function 
 
     $("#day-form-title").text(`Seçili Gün İşlemleri (${clickedDay}.${currentMonth + 1}.${currentYear})`);
 
+    const date = new Date(Date.UTC(currentYear, currentMonth, clickedDay));
+    const formattedDate = date.toISOString().split('T')[0];
+    $("#worker-timeform-date").val(formattedDate);
+
+
+
 
     // 4. En son formun input aktif/pasif ayarlarını yap
     updateDayFormUI();

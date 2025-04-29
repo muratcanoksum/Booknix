@@ -379,7 +379,17 @@ public class AdminController(IAdminService adminService) : Controller
         return Json(result);
     }
 
+    [HttpPost]
+    [Route("/Admin/Location/WorkerHour/Add")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddWorkerHour(WorkerWorkingHourDto dto)
+    {
+        var result = await _adminService.AddWorkerWorkingHourAsync(dto);
+        if (!result.Success)
+            return BadRequest(result.Message);
 
+        return Ok(result.Message);
+    }
 
 
 

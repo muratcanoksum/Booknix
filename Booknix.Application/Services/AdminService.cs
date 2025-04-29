@@ -745,10 +745,94 @@ namespace Booknix.Application.Services
         //YARDIMCI FONKSİYONLAR
 
         // Worker Hour
+
         public async Task<List<WorkerWorkingHour>> GetWorkerWorkingHoursAsync(Guid workerId, int year, int month)
         {
             return await _workerWorkingHourRepo.GetWorkerWorkingHoursAsync(workerId, year, month);
         }
+
+        public async Task<RequestResult> AddWorkerWorkingHourAsync(WorkerWorkingHourDto dto)
+        {
+            var worker = await _workerRepo.GetByIdAsync(dto.WorkerId);
+
+            if (worker == null)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Çalışan bulunamadı."
+                };
+            }
+
+            // 1. İş kuralları kontrolü
+
+            if (!dto.IsOnLeave && !dto.IsDayOff)
+            {
+                if (!dto.StartTime.HasValue || !dto.EndTime.HasValue)
+                {
+                    return new RequestResult
+                    {
+                        Success = false,
+                        Message = "Çalışma günü için başlangıç ve bitiş saati zorunludur."
+                    };
+                }
+
+                if (dto.StartTime.Value >= dto.EndTime.Value)
+                {
+                    return new RequestResult
+                    {
+                        Success = false,
+                        Message = "Başlangıç saati, bitiş saatinden önce olmalıdır."
+                    };
+                }
+            }
+
+            // 2. Tarih normalize
+            var normalizedDate = DateTime.SpecifyKind(dto.Date, DateTimeKind.Unspecified);
+
+            var existingWorkingHour = await _workerWorkingHourRepo.GetByWorkerIdAndDateAsync(dto.WorkerId, normalizedDate);
+
+            if (existingWorkingHour != null)
+            {
+                existingWorkingHour.StartTime = dto.StartTime;
+                existingWorkingHour.EndTime = dto.EndTime;
+                existingWorkingHour.IsOnLeave = dto.IsOnLeave;
+                existingWorkingHour.IsDayOff = dto.IsDayOff;
+
+                await _workerWorkingHourRepo.UpdateAsync(existingWorkingHour);
+
+                return new RequestResult
+                {
+                    Success = true,
+                    Message = "Çalışma saati güncellendi."
+                };
+            }
+            else
+            {
+                var workingHour = new WorkerWorkingHour
+                {
+                    Id = Guid.NewGuid(),
+                    WorkerId = dto.WorkerId,
+                    Date = normalizedDate,
+                    StartTime = dto.StartTime,
+                    EndTime = dto.EndTime,
+                    IsOnLeave = dto.IsOnLeave,
+                    IsDayOff = dto.IsDayOff,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                await _workerWorkingHourRepo.AddAsync(workingHour);
+
+                return new RequestResult
+                {
+                    Success = true,
+                    Message = "Çalışma saati eklendi."
+                };
+            }
+        }
+
+
+
 
 
 

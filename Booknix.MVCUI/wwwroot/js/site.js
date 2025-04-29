@@ -107,3 +107,17 @@ function attachSearchFilter(inputId, containerSelector, itemSelector) {
         });
     });
 }
+
+function showLoading() {
+    const loading = document.getElementById('global-loading-overlay');
+    if (loading) {
+        loading.classList.remove('hidden');
+    }
+}
+
+function hideLoading() {
+    const loading = document.getElementById('global-loading-overlay');
+    if (loading) {
+        loading.classList.add('hidden');
+    }
+}

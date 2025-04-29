@@ -12,9 +12,6 @@ function updateDayFormUI() {
     }
 }
 
-// Gün seçildiğinde çalışanları tetikleyecek fonksiyon zaten calendar.js içinde çağrılıyor
-// Seçim yapılınca otomatik formu temizleyip yeni verileri basıyoruz
-
 // Checkbox değişince birbirini kontrol et
 $(document).off("change", "#is-on-leave, #is-day-off").on("change", "#is-on-leave, #is-day-off", function () {
     const changedId = $(this).attr("id");
@@ -33,27 +30,36 @@ $(document).off("change", "#is-on-leave, #is-day-off").on("change", "#is-on-leav
 // Form submit işlemi (şu anlık sadece console.log yapıyor)
 $(document).off("submit", "#day-form").on("submit", "#day-form", function (e) {
     e.preventDefault();
+    const $form = $(this);
+    const $btn = $form.find("button[type=submit]");
+    const $workerId = window.selectedWorkerId;
+    const $month = window.selectedMonth;
+    const $year = window.selectedYear;
 
-    if (!window.selectedWorkerId || !window.selectedDay || !window.selectedMonth || !window.selectedYear) {
-        alert("Önce bir gün seçmelisiniz!");
+    if (!$workerId || !window.selectedDay || !$month || !$year) {
+        alert("Lütfen sayfayı yenileyin veya sistem yöneticinize başvurun!");
         return;
     }
 
-    const data = {
-        WorkerId: window.selectedWorkerId,
-        Day: window.selectedDay,
-        Month: window.selectedMonth,
-        Year: window.selectedYear,
-        StartTime: $("#start-time").val(),
-        EndTime: $("#end-time").val(),
-        IsOnLeave: $("#is-on-leave").is(":checked"),
-        IsDayOff: $("#is-day-off").is(":checked")
-    };
+    $btn.prop("disabled", true).text("Kaydediliyor...");
 
-    console.log("Günlük Form Verisi:", data);
-
-    // İleride buraya ajax ile veri gönderimi eklenecek
+    $.ajax({
+        type: "POST",
+        url: "/Admin/Location/WorkerHour/Add",
+        data: $form.serialize(),
+        success: function (msg) {
+            setTimeoutAlert("s", "#day-form-alert", msg, 5);
+            fetchCalendarData($workerId, $year, $month);
+            $btn.prop("disabled", false).text("Kaydet");
+        },
+        error: function (xhr) {
+            var msg = xhr.responseText || "Günlük formu kaydedilemedi.";
+            setTimeoutAlert("e", "#day-form-alert", msg, 5);
+            $btn.prop("disabled", false).text("Kaydet");
+        }
+    });
 });
+
 
 // Form ilk açıldığında da çalıştırmak için
 $(document).ready(function () {

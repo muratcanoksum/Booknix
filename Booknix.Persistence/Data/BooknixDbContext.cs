@@ -146,6 +146,14 @@ namespace Booknix.Persistence.Data
                 .HasIndex(w => new { w.WorkerId, w.Date })
                 .IsUnique(); // Aynı gün için bir tane kayıt olsun
 
+            modelBuilder.Entity<WorkerWorkingHour>(entity =>
+            {
+                entity.Property(x => x.Date)
+                      .HasColumnType("timestamp without time zone");
+
+                entity.Property(x => x.CreatedAt)
+                      .HasColumnType("timestamp with time zone");
+            });
 
             // Seed roller
             modelBuilder.Entity<Role>().HasData(

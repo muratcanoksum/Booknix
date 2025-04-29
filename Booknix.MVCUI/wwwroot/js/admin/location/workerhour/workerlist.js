@@ -14,6 +14,7 @@ $(document).off("click", ".worker-item").on("click", ".worker-item", function ()
     if (selectedWorkerId) {
         $("#calendar-section").removeClass("hidden"); // Takvim panelini göster
         fetchCalendarData(selectedWorkerId, currentYear, currentMonth + 1);
+        $("#worker-timeform-id").val(selectedWorkerId);
 
         setTimeout(() => {
             const calendarSection = document.getElementById("calendar-section");

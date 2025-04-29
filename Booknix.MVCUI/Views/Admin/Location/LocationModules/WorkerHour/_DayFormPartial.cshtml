@@ -1,4 +1,7 @@
 ﻿<form id="day-form" class="bg-gray-100 p-4 rounded-xl shadow-inner space-y-4 w-full h-full">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="worker-timeform-id" name="WorkerId" value="" />
+    <input type="hidden" id="worker-timeform-date" name="Date" value="" />
     <h4 id="day-form-title" class="text-md font-semibold text-gray-700">Seçili Gün İşlemleri</h4>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -14,12 +17,12 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="flex items-center gap-2">
-            <input type="checkbox" id="is-on-leave" name="IsOnLeave" class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
+            <input type="checkbox" id="is-on-leave" name="IsOnLeave" value="true" class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
             <label for="is-on-leave" class="text-sm text-gray-700">İzinli Gün</label>
         </div>
 
         <div class="flex items-center gap-2">
-            <input type="checkbox" id="is-day-off" name="IsDayOff" class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
+            <input type="checkbox" id="is-day-off" name="IsDayOff" value="true" class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
             <label for="is-day-off" class="text-sm text-gray-700">Çalışmadığı Gün</label>
         </div>
     </div>
@@ -29,6 +32,8 @@
             Kaydet
         </button>
     </div>
+
+    <div id="day-form-alert" class="hidden"></div>
 </form>
 
 <script src="~/js/admin/location/workerhour/dayform.js" asp-append-version="true"></script>

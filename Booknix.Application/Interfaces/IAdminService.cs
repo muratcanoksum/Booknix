@@ -41,6 +41,7 @@ namespace Booknix.Application.Interfaces
 
         // WorkerHours
         Task<List<WorkerWorkingHour>> GetWorkerWorkingHoursAsync(Guid workerId, int year, int month);
+        Task<RequestResult> AddWorkerWorkingHourAsync(WorkerWorkingHourDto dto);
 
     }
 }
