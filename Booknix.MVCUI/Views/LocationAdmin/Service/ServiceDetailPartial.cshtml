@@ -1,0 +1,16 @@
+@model Booknix.Domain.Entities.Service
+
+<div class="form-data"
+     data-name="@Model.Name"
+     data-description="@Model.Description"
+     data-price="@Model.Price"
+     data-duration="@Model.Duration.ToString(@"hh\:mm\:ss")">
+</div>
+
+<input type="hidden" id="service-id" value="@Model.Id" />
+<input type="hidden" id="service-location-id" value="@Model.LocationId" />
+
+@foreach (var se in Model.ServiceEmployees)
+{
+    <input type="hidden" class="selected-worker-id" value="@se.WorkerId" />
+} 
