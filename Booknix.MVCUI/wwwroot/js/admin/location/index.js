@@ -1,4 +1,4 @@
-﻿let selectedLocationId = null;
+﻿window.selectedLocationId = window.selectedLocationId || null;
 
 function showDeleteModal(id) {
     selectedLocationId = id;

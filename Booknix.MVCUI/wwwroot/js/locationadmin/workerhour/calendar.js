@@ -1,11 +1,13 @@
 // Global Ay ve Yıl Değişkenleri
-let currentYear = new Date().getFullYear();
-let currentMonth = new Date().getMonth(); // 0-11
-let multiSelectMode = false;
-let selectedDates = [];
+window.currentYear = new Date().getFullYear();
+window.currentMonth = new Date().getMonth(); // 0-11
+window.multiSelectMode = false;
+window.selectedDates = [];
 
-const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+
+window.monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
     "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+
 
 // Takvim verisi çek
 function fetchCalendarData(workerId, year, month) {
@@ -53,13 +55,19 @@ function renderCalendar(workerHours = []) {
             }
         }
 
+        // UTC ISO yerine elle tarih formatla
+        const formattedDate = `${currentYear}-${(currentMonth + 1).toString().padStart(2, "0")}-${dayText}`;
+        const isSelected = selectedDates.includes(formattedDate);
+        const selectedClass = isSelected ? "ring-2 ring-indigo-500 selected" : "";
+
         $calendarGrid.append(`
-            <div class="calendar-day ${bgClass} text-white text-center flex flex-col items-center justify-center rounded w-full aspect-square max-w-[80px] cursor-pointer select-none"
-                data-day="${day}" ${extraAttributes}>
-                <div class="text-base">${dayText}</div>
-            </div>
-        `);
+        <div class="calendar-day ${bgClass} ${selectedClass} text-white text-center flex flex-col items-center justify-center rounded w-full aspect-square max-w-[80px] cursor-pointer select-none"
+            data-day="${day}" ${extraAttributes}>
+            <div class="text-base">${dayText}</div>
+        </div>
+    `);
     }
+
 
     $("#calendar-current").text(`${monthNames[currentMonth]} ${currentYear}`);
 }
