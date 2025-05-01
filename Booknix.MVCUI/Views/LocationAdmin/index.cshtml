@@ -42,15 +42,15 @@
 
 
     <div class="flex flex-wrap gap-2 mb-4">
-        <button data-url="/Admin/Location/GetServicesByLocation/@Model.Id"
+        <button data-url="/LocationAdmin/GetServicesByLocation/@Model.Id"
                 class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
             Servisleri Göster
         </button>
-        <button data-url="/Admin/Location/GetWorkersByLocation/@Model.Id"
+        <button data-url="/LocationAdmin/GetWorkersByLocation/@Model.Id"
                 class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
             Çalışanları Göster
         </button>
-        <button data-url="/Admin/GetWorkingHours/@Model.Id"
+        <button data-url="/LocationAdmin/GetWorkingHoursByLocation/@Model.Id"
                 class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
             Çalışma Saatleri
         </button>
@@ -67,7 +67,9 @@
     <div id="location-operation-panel"></div>
 </div>
 
-@*@section Scripts {
-    <script src="~/js/admin/location/details.js" asp-append-version="true"></script>
-}*@
+@section Scripts {
+    <script src="~/js/locationAdmin/service/service.js" asp-append-version="true"></script>
+    <script src="~/js/locationAdmin/worker/worker.js" asp-append-version="true"></script>
+    <script src="~/js/locationAdmin/details.js" asp-append-version="true"></script>
+}
 

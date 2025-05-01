@@ -1,0 +1,8 @@
+@model List<Booknix.Domain.Entities.Worker>
+
+<div id="worker-hour-operation-panel" class="space-y-8">
+    @await Html.PartialAsync("Location/LocationModules/WorkerHour/_WorkerListPartial", Model)
+    @await Html.PartialAsync("Location/LocationModules/WorkerHour/_CalendarPartial")
+</div>
+
+<script src="~/js/locationAdmin/workerhour/workinghour.js" asp-append-version="true"></script> 

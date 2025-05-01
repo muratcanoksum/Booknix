@@ -5,6 +5,7 @@ namespace Booknix.Domain.Interfaces
     public interface IWorkerRepository
     {
         Task<Worker?> GetByIdAsync(Guid id);
+        Task<Worker?> GetByIdWithDetailsAsync(Guid id);
         Task<Worker?> GetByUserIdAsync(Guid userId);
         Task<IEnumerable<Worker>> GetByLocationIdAsync(Guid locationId);
         Task<Worker?> GetByUserAndLocationAsync(Guid userId, Guid locationId);

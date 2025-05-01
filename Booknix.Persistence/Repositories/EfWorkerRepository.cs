@@ -22,6 +22,15 @@ namespace Booknix.Persistence.Repositories
                 .FirstOrDefaultAsync(w => w.Id == id);
         }
 
+        public async Task<Worker?> GetByIdWithDetailsAsync(Guid id)
+        {
+            return await _context.Workers
+                .Include(w => w.User)
+                    .ThenInclude(u => u.Role)
+                .Include(w => w.Location)
+                .FirstOrDefaultAsync(w => w.Id == id);
+        }
+
         public async Task<Worker?> GetByUserIdAsync(Guid userId)
         {
             return await _context.Workers
