@@ -15,6 +15,7 @@ namespace Booknix.Domain.Interfaces
         Task DeleteAsync(Guid id);
 
         List<Service> Search(string query);
+        Service? GetByIdWithLocationAndEmployees(Guid id);
 
     }
 }

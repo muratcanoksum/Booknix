@@ -86,6 +86,15 @@ namespace Booknix.Persistence.Repositories
                 .ToList();
         }
 
+        public Service? GetByIdWithLocationAndEmployees(Guid id)
+        {
+            return _context.Services
+                .Include(s => s.Location)
+                .Include(s => s.ServiceEmployees)
+                    .ThenInclude(se => se.Worker)
+                        .ThenInclude(e => e.User)
+                .FirstOrDefault(s => s.Id == id);
+        }
 
     }
 }

@@ -1,0 +1,33 @@
+﻿@model Booknix.Application.DTOs.LocationDetailsDto
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<section class="mb-10">
+    <div class="flex flex-col items-center text-center mb-8">
+        <img src="@Model.ImageUrl" alt="@Model.Name"
+             class="w-32 h-32 object-cover rounded-full border-4 border-gray-200 shadow mb-4" />
+
+        <h2 class="text-2xl font-bold text-gray-800">@Model.Name</h2>
+        <p class="text-sm text-gray-500">@Model.Address</p>
+    </div>
+
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Hizmetler</h3>
+
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        @foreach (var service in Model.Services!)
+        {
+            <a href="/lokasyon/@Model.Slug/@service.Id" class="bg-white rounded-xl shadow-md hover:shadow-lg p-5 transition transform hover:scale-105 flex flex-col justify-between">
+                <div>
+                    <h4 class="text-md font-semibold text-gray-800">@service.Name</h4>
+                    <p class="text-sm text-gray-500 mt-1">@service.Description</p>
+                </div>
+
+                <div class="mt-4 text-sm text-gray-600">
+                    <p>₺@service.Price</p>
+                    <p>@(service.Duration.TotalMinutes) dakika</p>
+                </div>
+            </a>
+        }
+    </div>
+</section>

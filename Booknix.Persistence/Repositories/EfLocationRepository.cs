@@ -76,6 +76,14 @@ namespace Booknix.Persistence.Repositories
                 .ToList();
         }
 
+        public Location? GetBySlugWithServices(string slug)
+        {
+            return _context.Locations
+                .Include(l => l.Services)
+                .Include(l => l.MediaFiles)
+                .FirstOrDefault(l => l.Slug == slug);
+        }
+
 
     }
 }

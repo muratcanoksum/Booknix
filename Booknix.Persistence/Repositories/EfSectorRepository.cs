@@ -69,6 +69,14 @@ namespace Booknix.Persistence.Repositories
         .ToListAsync();
         }
 
+        public Sector? GetBySlugWithLocations(string slug)
+        {
+            return _context.Sectors
+                .Include(s => s.Locations)
+                    .ThenInclude(l => l.MediaFiles)
+                .FirstOrDefault(s => s.Slug == slug);
+        }
+
 
 
     }

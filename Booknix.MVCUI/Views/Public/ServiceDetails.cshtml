@@ -1,0 +1,33 @@
+﻿@model Booknix.Application.DTOs.ServiceDetailsDto
+@{
+    ViewData["Title"] = Model.ServiceName;
+}
+
+<section class="mb-10">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">@Model.ServiceName</h2>
+        <p class="text-gray-600 text-sm">@Model.Description</p>
+
+        <div class="mt-4 text-sm text-gray-700 space-y-1">
+            <p><strong>Lokasyon:</strong> @Model.LocationName</p>
+            <p><strong>Süre:</strong> @Model.Duration.TotalMinutes dakika</p>
+            <p><strong>Fiyat:</strong> ₺@Model.Price</p>
+        </div>
+    </div>
+
+    <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Hizmeti Veren Çalışanlar</h3>
+
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+            @foreach (var worker in Model.Workers!)
+            {
+                <a href="/randevu/@worker.Id?sid=@Model.ServiceName" class="bg-white border rounded-xl shadow-sm hover:shadow-md p-4 flex items-center gap-4 transition-all">
+                    <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold">
+                        @worker.FullName!.Substring(0, 1)
+                    </div>
+                    <span class="text-sm font-medium text-gray-800">@worker.FullName</span>
+                </a>
+            }
+        </div>
+    </div>
+</section>

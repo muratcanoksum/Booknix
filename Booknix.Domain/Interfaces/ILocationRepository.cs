@@ -12,6 +12,7 @@ namespace Booknix.Domain.Interfaces
         Task UpdateAsync(Location location);
         Task DeleteAsync(Guid id);
         List<Location> Search(string query);
+        Location? GetBySlugWithServices(string slug);
 
     }
 }

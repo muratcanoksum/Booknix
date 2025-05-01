@@ -74,7 +74,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ILocationAdminService, LocationAdminService>();
-builder.Services.AddScoped<IHomeService, HomeService>();
+builder.Services.AddScoped<IPublicService, PublicService>();
 
 
 builder.Services.AddSingleton<IAppSettings, AppSettings>();
@@ -115,7 +115,7 @@ app.UseStatusCodePages(context =>
         context.HttpContext.Response.Redirect($"/Error/{statusCode}");
     }
 
-    return Task.CompletedTask; // artık return Task gerekiyor
+    return Task.CompletedTask;
 });
 
 
@@ -123,6 +123,6 @@ app.UseStatusCodePages(context =>
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Public}/{action=Index}/{id?}");
 
 app.Run();

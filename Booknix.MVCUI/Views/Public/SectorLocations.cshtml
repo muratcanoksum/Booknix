@@ -1,0 +1,24 @@
+﻿@model Booknix.Application.DTOs.SectorLocationsDto
+@{
+    ViewData["Title"] = Model.SectorName;
+}
+
+<section class="mb-10">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">
+        <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
+        @Model.SectorName Lokasyonları
+    </h2>
+
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        @foreach (var location in Model.Locations!)
+        {
+            <a href="/lokasyon/@location.Slug" class="bg-white rounded-xl shadow-md hover:shadow-xl p-5 transition-all transform hover:scale-105 flex flex-col items-center text-center">
+                <img src="@location.ImageUrl" alt="@location.Name"
+                     class="w-28 h-28 object-cover rounded-full border-4 border-gray-200 mb-3" />
+
+                <h4 class="text-md font-semibold text-gray-800 mb-1">@location.Name</h4>
+                <p class="text-sm text-gray-500">@location.Address</p>
+            </a>
+        }
+    </div>
+</section>

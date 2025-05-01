@@ -11,6 +11,8 @@ namespace Booknix.Domain.Interfaces
         Task UpdateAsync(Sector sector);
         Task DeleteAsync(Guid id);
         Task<List<Sector>> GetAllWithLocationsAndMediaAsync();
+        Sector? GetBySlugWithLocations(string slug);
+
     }
 }
 

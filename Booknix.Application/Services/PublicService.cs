@@ -5,7 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Booknix.Application.Services;
 
-public class HomeService : IHomeService
+public class PublicService : IPublicService
 {
     private readonly ISectorRepository _sectorRepo;
     private readonly IAppointmentRepository _appointmentRepo;
@@ -13,7 +13,7 @@ public class HomeService : IHomeService
     private readonly IMemoryCache _cache;
     private readonly ILocationRepository _locationRepo;
 
-    public HomeService(
+    public PublicService(
         ISectorRepository sectorRepo,
         IAppointmentRepository appointmentRepo,
         IServiceRepository serviceRepo,
@@ -53,7 +53,7 @@ public class HomeService : IHomeService
         }).ToList();
 
         // Popüler hizmetler - cache'li
-        if (!_cache.TryGetValue("popular_services", out List<PopularServiceDto> popular))
+        if (!_cache.TryGetValue("popular_services", out List<PopularServiceDto>? popular))
         {
             var appointments = await _appointmentRepo.GetAllAsync();
             var services = await _serviceRepo.GetAllAsync();
@@ -71,7 +71,7 @@ public class HomeService : IHomeService
             _cache.Set("popular_services", popular, TimeSpan.FromMinutes(10));
         }
 
-        dto.PopularServices = popular;
+        dto.PopularServices = popular!;
 
         return dto;
     }
@@ -102,6 +102,67 @@ public class HomeService : IHomeService
             .ToList();
     }
 
+    public SectorLocationsDto? GetLocationsBySectorSlug(string slug)
+    {
+        var sector = _sectorRepo.GetBySlugWithLocations(slug); // bunu repository'de yazacağız
+
+        if (sector == null) return null;
+
+        return new SectorLocationsDto
+        {
+            SectorName = sector.Name,
+            Locations = sector.Locations.Select(l => new LocationCardDto
+            {
+                Name = l.Name,
+                Address = l.Address,
+                Slug = l.Slug,
+                ImageUrl = l.MediaFiles.FirstOrDefault()?.FilePath ?? "/images/default/location.png"
+            }).ToList()
+        };
+    }
+
+    public LocationDetailsDto? GetLocationDetails(string slug)
+    {
+        var location = _locationRepo.GetBySlugWithServices(slug);
+        if (location == null) return null;
+
+        return new LocationDetailsDto
+        {
+            Name = location.Name,
+            Address = location.Address,
+            Slug = location.Slug,
+            ImageUrl = location.MediaFiles.FirstOrDefault()?.FilePath ?? "/images/default/location.png",
+            Services = location.Services.Select(s => new ServiceCardDto
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Price = s.Price,
+                Duration = s.Duration,
+                Description = s.Description
+            }).ToList()
+        };
+    }
+
+    public ServiceDetailsDto? GetServiceDetails(string locationSlug, Guid serviceId)
+    {
+        var service = _serviceRepo.GetByIdWithLocationAndEmployees(serviceId);
+        if (service == null || service.Location?.Slug != locationSlug) return null;
+
+        return new ServiceDetailsDto
+        {
+            ServiceName = service.Name,
+            Description = service.Description,
+            Price = service.Price,
+            Duration = service.Duration,
+            LocationSlug = service.Location.Slug,
+            LocationName = service.Location.Name,
+            Workers = service.ServiceEmployees.Select(se => new WorkerMiniDto
+            {
+                FullName = se.Worker!.User.FullName,
+                Id = se.Worker.User.Id
+            }).ToList()
+        };
+    }
 
 
 }
