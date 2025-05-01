@@ -1,21 +1,66 @@
-﻿@using Booknix.Application.Helpers
-@model List<Booknix.Domain.Entities.Sector>
-
+﻿@* Views/Home/Index.cshtml *@
+@model Booknix.Application.DTOs.HomePageDto
 @{
     ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="bg-white py-10">
-    <div class="max-w-6xl mx-auto px-4">
-        <!-- Hoş Geldin Mesajı -->
-        <h2 class="text-gray-800 text-2xl md:text-3xl font-semibold text-center mb-2">
-            Güzellikten sağlığa, tüm hizmetler tek bir platformda!
-        </h2>
-        <p class="text-gray-500 text-center max-w-2xl mx-auto mb-10 text-sm md:text-base">
-            Berberden dişçiye, kuaförden fizik tedaviye kadar birçok sektörde hizmet sağlayıcıları keşfedin.
-            Booknix ile kolayca randevu alın, zamanınızı verimli yönetin.
-        </p>
-
-    
+<section class="mb-8">
+    <div class="flex justify-center mb-6">
+        <input type="text" placeholder="Hizmet veya lokasyon ara..."
+               class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring focus:ring-blue-200 text-sm" />
     </div>
-</div>
+</section>
+
+<section class="mb-10">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Kategoriler</h2>
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        @foreach (var category in Model.Sectors)
+        {
+            <a href="/sektor/@category.Slug" class="bg-white rounded-xl shadow hover:shadow-md p-4 flex flex-col items-center text-center transition">
+                <img src="@category.ImageUrl" alt="@category.Name" class="w-20 h-20 object-contain mb-3" />
+                <span class="font-medium text-gray-700">@category.Name</span>
+            </a>
+        }
+    </div>
+</section>
+
+@* Lokasyonlar *@
+@foreach (var sector in Model.Sectors)
+{
+    <section class="mb-12">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-lg font-bold text-gray-800">@sector.Name Lokasyonları</h3>
+            <a href="/sektor/@sector.Slug" class="text-sm text-blue-600 hover:underline">Tümünü Gör</a>
+        </div>
+        <div class="overflow-x-auto">
+            <div class="flex space-x-4 pb-2">
+                @foreach (var location in sector.Locations)
+                {
+                    <a href="/lokasyon/@location.Slug" class="min-w-[240px] bg-white rounded-xl shadow p-4 flex-shrink-0">
+                        <h4 class="text-md font-semibold text-gray-800 mb-1">@location.Name</h4>
+                        <p class="text-xs text-gray-500">@location.City</p>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+@* Popüler Hizmetler *@
+<section class="mb-10">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Popüler Hizmetler</h2>
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        @foreach (var service in Model.PopularServices)
+        {
+            <div class="bg-white rounded-xl shadow p-4">
+                <h4 class="text-md font-semibold text-gray-800 mb-1">@service.Name</h4>
+                <p class="text-sm text-gray-500">@service.LocationName</p>
+                <p class="text-xs text-green-600 mt-1">@service.TotalAppointments randevu</p>
+            </div>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/home/index.js" asp-append-version="true"></script>
+}
