@@ -1,6 +1,6 @@
 ﻿// site.js — tüm sayfalarda çağırılabilir ortak fonksiyonlar
 
-const alertTimers = {};
+window.alertTimers = window.alertTimers || {};
 
 function setTimeoutAlert(type, idSelector, message = "", timeInSeconds = 5) {
     const duration = timeInSeconds * 1000;

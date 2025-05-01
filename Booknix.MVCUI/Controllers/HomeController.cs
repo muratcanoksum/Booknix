@@ -22,4 +22,13 @@ public class HomeController : Controller
     {
         return View();
     }
+
+    [HttpGet("/api/search")]
+    public IActionResult Search(string q)
+    {
+        var results = _homeService.SearchLocationsAndServices(q);
+        return Ok(results);
+    }
+
+
 }

@@ -11,5 +11,7 @@ namespace Booknix.Domain.Interfaces
         Task AddAsync(Location location);
         Task UpdateAsync(Location location);
         Task DeleteAsync(Guid id);
+        List<Location> Search(string query);
+
     }
 }

@@ -13,5 +13,8 @@ namespace Booknix.Domain.Interfaces
         Task AddAsync(Service service);
         Task UpdateAsync(Service service);
         Task DeleteAsync(Guid id);
+
+        List<Service> Search(string query);
+
     }
 }

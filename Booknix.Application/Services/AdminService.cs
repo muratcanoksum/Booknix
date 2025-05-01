@@ -164,6 +164,7 @@ namespace Booknix.Application.Services
         }
 
         //
+
         private static string GenerateSlug(string text)
         {
             var turkishMap = new Dictionary<char, char>
@@ -185,6 +186,7 @@ namespace Booknix.Application.Services
             var normalized = text
                 .Trim()
                 .ToLower()
+                .Replace("&", " and ")
                 .Select(c => turkishMap.ContainsKey(c) ? turkishMap[c] : c)
                 .ToArray();
 
@@ -195,6 +197,8 @@ namespace Booknix.Application.Services
 
             return slug;
         }
+
+
 
 
 
@@ -231,7 +235,8 @@ namespace Booknix.Application.Services
                 Name = name.Trim(),
                 Address = address.Trim(),
                 PhoneNumber = phoneNumber.Trim(),
-                SectorId = sectorId
+                SectorId = sectorId,
+                Slug = GenerateSlug(name)
             };
 
             await _locationRepo.AddAsync(location);
@@ -318,6 +323,7 @@ namespace Booknix.Application.Services
             location.Address = address.Trim();
             location.PhoneNumber = phoneNumber.Trim();
             location.SectorId = sectorId;
+            location.Slug = GenerateSlug(name.Trim());
 
             await _locationRepo.UpdateAsync(location);
 

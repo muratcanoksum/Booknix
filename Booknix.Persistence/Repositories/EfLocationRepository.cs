@@ -67,5 +67,15 @@ namespace Booknix.Persistence.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public List<Location> Search(string query)
+        {
+            return _context.Locations
+                .Include(x => x.Sector)
+                .Where(x => x.Name.ToLower().Contains(query.ToLower()))
+                .ToList();
+        }
+
+
     }
 }

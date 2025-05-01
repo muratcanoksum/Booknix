@@ -61,9 +61,12 @@ namespace Booknix.Persistence.Repositories
         public async Task<List<Sector>> GetAllWithLocationsAndMediaAsync()
         {
             return await _context.Sectors
-                .Include(s => s.Locations)
-                .Include(s => s.MediaFiles)
-                .ToListAsync();
+        .Include(s => s.Locations)  // Locations'ý dahil et
+            .ThenInclude(l => l.Services)  // Services'ý dahil et
+        .Include(s => s.Locations)  // Locations'ý tekrar dahil et
+            .ThenInclude(l => l.Workers)  // Workers'ý dahil et
+        .Include(s => s.MediaFiles)  // MediaFiles'ý dahil et
+        .ToListAsync();
         }
 
 

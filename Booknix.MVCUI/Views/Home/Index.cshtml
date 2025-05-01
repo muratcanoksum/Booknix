@@ -4,58 +4,45 @@
     ViewData["Title"] = "Ana Sayfa";
 }
 
-<section class="mb-8">
+<section class="mb-8" id="searchSection">
     <div class="flex justify-center mb-6">
-        <input type="text" placeholder="Hizmet veya lokasyon ara..."
+        <input type="text" id="globalSearch" placeholder="Hizmet veya lokasyon ara..."
                class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring focus:ring-blue-200 text-sm" />
     </div>
+    <div id="search-spinner" class="hidden flex items-center justify-center gap-2 mt-3 text-sm text-gray-500">
+        <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg>
+        <span>Arama yapılıyor...</span>
+    </div>
+
 </section>
 
-<section class="mb-10">
+<section class="mb-10" id="categorySection">
     <h2 class="text-xl font-semibold text-gray-800 mb-4">Kategoriler</h2>
-    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="categoryGrid">
         @foreach (var category in Model.Sectors)
         {
-            <a href="/sektor/@category.Slug" class="bg-white rounded-xl shadow hover:shadow-md p-4 flex flex-col items-center text-center transition">
-                <img src="@category.ImageUrl" alt="@category.Name" class="w-20 h-20 object-contain mb-3" />
-                <span class="font-medium text-gray-700">@category.Name</span>
+            <a href="/sektor/@category.Slug" class="category-item bg-white rounded-xl shadow-lg hover:shadow-2xl p-6 flex flex-col items-center text-center transition-all duration-300 transform hover:scale-105">
+                <img src="@category.ImageUrl" alt="@category.Name" class="w-32 h-32 object-contain mb-4 rounded-full border-4 border-gray-200" />
+                <span class="font-semibold text-gray-800 text-lg">@category.Name</span>
+                <p class="text-sm text-gray-500 mt-2">@category.LocationsCount lokasyon</p>
             </a>
         }
     </div>
 </section>
 
-@* Lokasyonlar *@
-@foreach (var sector in Model.Sectors)
-{
-    <section class="mb-12">
-        <div class="flex justify-between items-center mb-2">
-            <h3 class="text-lg font-bold text-gray-800">@sector.Name Lokasyonları</h3>
-            <a href="/sektor/@sector.Slug" class="text-sm text-blue-600 hover:underline">Tümünü Gör</a>
-        </div>
-        <div class="overflow-x-auto">
-            <div class="flex space-x-4 pb-2">
-                @foreach (var location in sector.Locations)
-                {
-                    <a href="/lokasyon/@location.Slug" class="min-w-[240px] bg-white rounded-xl shadow p-4 flex-shrink-0">
-                        <h4 class="text-md font-semibold text-gray-800 mb-1">@location.Name</h4>
-                        <p class="text-xs text-gray-500">@location.City</p>
-                    </a>
-                }
-            </div>
-        </div>
-    </section>
-}
-
 @* Popüler Hizmetler *@
-<section class="mb-10">
+<section class="mb-10" id="serviceSection">
     <h2 class="text-xl font-semibold text-gray-800 mb-4">Popüler Hizmetler</h2>
-    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="serviceGrid">
         @foreach (var service in Model.PopularServices)
         {
-            <div class="bg-white rounded-xl shadow p-4">
+            <div class="service-item bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
                 <h4 class="text-md font-semibold text-gray-800 mb-1">@service.Name</h4>
                 <p class="text-sm text-gray-500">@service.LocationName</p>
-                <p class="text-xs text-green-600 mt-1">@service.TotalAppointments randevu</p>
+                <p class="text-xs text-green-600 mt-2">@service.TotalAppointments randevu</p>
             </div>
         }
     </div>

@@ -13,7 +13,9 @@ public class SectorDto
     public string Slug { get; set; } = "";
     public string? ImageUrl { get; set; }
     public List<LocationDto> Locations { get; set; } = new();
+    public int LocationsCount { get; set; } // Lokasyon sayısı
 }
+
 
 public class LocationDto
 {
@@ -21,6 +23,7 @@ public class LocationDto
     public string Name { get; set; } = "";
     public string Slug { get; set; } = "";
     public string City { get; set; } = "";
+    public int ServicesCount { get; set; } // Hizmet sayısı
 }
 
 public class PopularServiceDto

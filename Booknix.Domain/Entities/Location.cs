@@ -10,6 +10,7 @@ namespace Booknix.Domain.Entities
         public string Address { get; set; } = null!;
         public Guid SectorId { get; set; }
         public string PhoneNumber { get; set; } = null!;
+        public string Slug { get; set; } = null!;
 
         // Navigation
         public Sector? Sector { get; set; }
