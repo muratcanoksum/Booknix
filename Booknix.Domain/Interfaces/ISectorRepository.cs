@@ -10,6 +10,7 @@ namespace Booknix.Domain.Interfaces
         Task AddAsync(Sector sector);
         Task UpdateAsync(Sector sector);
         Task DeleteAsync(Guid id);
+        Task<List<Sector>> GetAllWithLocationsAndMediaAsync();
     }
 }
 

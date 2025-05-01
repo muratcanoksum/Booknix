@@ -58,19 +58,15 @@ namespace Booknix.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<HomeSectorDto>> GetSectorsWithMediaAsync()
+        public async Task<List<Sector>> GetAllWithLocationsAndMediaAsync()
         {
             return await _context.Sectors
                 .Include(s => s.Locations)
                 .Include(s => s.MediaFiles)
-                .Select(s => new HomeSectorDto
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                    LocationCount = s.Locations.Count,
-                    ImageUrl = s.MediaFiles.FirstOrDefault()!.FilePath
-                })
                 .ToListAsync();
         }
+
+
+
     }
 }

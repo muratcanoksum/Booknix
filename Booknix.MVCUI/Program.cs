@@ -61,6 +61,7 @@ builder.Services.AddScoped<IWorkingHourRepository, EfWorkingHourRepository>();
 builder.Services.AddScoped<ILocationRepository, EfLocationRepository>();
 builder.Services.AddScoped<IServiceRepository, EfServiceRepository>();
 builder.Services.AddScoped<IWorkerWorkingHourRepository, EfWorkerWorkingHourRepository>();
+builder.Services.AddScoped<IAppointmentRepository, EfAppointmentRepository>();
 
 
 
@@ -73,6 +74,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ILocationAdminService, LocationAdminService>();
+builder.Services.AddScoped<IHomeService, HomeService>();
 
 
 builder.Services.AddSingleton<IAppSettings, AppSettings>();
@@ -85,6 +87,8 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+builder.Services.AddMemoryCache();
+
 
 var app = builder.Build();
 

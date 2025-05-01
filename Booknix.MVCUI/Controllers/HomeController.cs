@@ -1,35 +1,25 @@
-using System.Diagnostics;
 using Booknix.Application.Interfaces;
-using Booknix.MVCUI.Models;
-using Booknix.Persistence.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace Booknix.MVCUI.Controllers
+namespace Booknix.MVCUI.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly IHomeService _homeService;
+
+    public HomeController(IHomeService homeService)
     {
+        _homeService = homeService;
+    }
 
-        public HomeController()
-        {
+    public async Task<IActionResult> Index()
+    {
+        var dto = await _homeService.GetHomePageDataAsync();
+        return View(dto);
+    }
 
-        }
-
-        public IActionResult Index()
-        {
-            ViewBag.FullName = HttpContext.Session.GetString("FullName");
-            ViewBag.Role = HttpContext.Session.GetString("Role");
-
-            //var sectors = await _homeService.GetSectorsAsync();
-            return View();
-        }
-
-        public IActionResult Privacy() => View();
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+    public IActionResult Privacy()
+    {
+        return View();
     }
 }

@@ -70,7 +70,8 @@ namespace Booknix.Application.Services
             // 3. Yeni sektör oluştur ve kaydet
             var newSector = new Sector
             {
-                Name = name.Trim()
+                Name = name.Trim(),
+                Slug = GenerateSlug(name),
             };
 
             await _sectorRepo.AddAsync(newSector);
@@ -152,6 +153,7 @@ namespace Booknix.Application.Services
 
             // Güncelleme işlemi
             sector.Name = name.Trim();
+            sector.Slug = GenerateSlug(name);
             await _sectorRepo.UpdateAsync(sector);
 
             return new RequestResult
@@ -160,6 +162,40 @@ namespace Booknix.Application.Services
                 Message = "Sektör başarıyla güncellendi."
             };
         }
+
+        //
+        private static string GenerateSlug(string text)
+        {
+            var turkishMap = new Dictionary<char, char>
+            {
+                ['ç'] = 'c',
+                ['Ç'] = 'c',
+                ['ğ'] = 'g',
+                ['Ğ'] = 'g',
+                ['ı'] = 'i',
+                ['İ'] = 'i',
+                ['ö'] = 'o',
+                ['Ö'] = 'o',
+                ['ş'] = 's',
+                ['Ş'] = 's',
+                ['ü'] = 'u',
+                ['Ü'] = 'u'
+            };
+
+            var normalized = text
+                .Trim()
+                .ToLower()
+                .Select(c => turkishMap.ContainsKey(c) ? turkishMap[c] : c)
+                .ToArray();
+
+            var slug = new string(normalized)
+                .Replace(" ", "-")
+                .Replace("--", "-")
+                .Replace("---", "-");
+
+            return slug;
+        }
+
 
 
         // Locations
