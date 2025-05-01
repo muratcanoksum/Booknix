@@ -52,5 +52,26 @@ namespace Booknix.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public List<WorkerWorkingHour> GetValidWorkingDays(Guid workerId, DateTime start, DateTime end)
+        {
+            var startDate = DateTime.SpecifyKind(start.Date, DateTimeKind.Unspecified);
+            var endDate = DateTime.SpecifyKind(end.Date, DateTimeKind.Unspecified);
+
+
+
+            return _context.WorkerWorkingHours
+                 .Where(w =>
+                     w.WorkerId == workerId &&
+                     w.Date >= startDate &&
+                     w.Date <= endDate &&
+                     w.StartTime != null &&
+                     w.EndTime != null &&
+                     !w.IsOnLeave &&
+                     !w.IsDayOff)
+                 .ToList();
+
+        }
+
+
     }
 }

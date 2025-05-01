@@ -55,4 +55,20 @@ public class PublicController(IPublicService publicService) : Controller
         return View("ServiceDetails", model);
     }
 
+    [HttpGet("/randevu/{workerId}")]
+    public async Task<IActionResult> AppointmentSlots(Guid workerId, Guid sid)
+    {
+        var now = DateTime.Now;
+        var startDate = now.Date;
+        var endDate = startDate.AddDays(7);
+
+        var dto = await _publicService.GetAppointmentSlotPageData(workerId, sid, startDate, endDate, now.TimeOfDay);
+        return View("AppointmentSlots", dto);
+    }
+
+
+
+
+
+
 }

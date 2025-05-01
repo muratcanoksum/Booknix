@@ -21,7 +21,7 @@
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
             @foreach (var worker in Model.Workers!)
             {
-                <a href="/randevu/@worker.Id?sid=@Model.ServiceName" class="bg-white border rounded-xl shadow-sm hover:shadow-md p-4 flex items-center gap-4 transition-all">
+                <a href="/randevu/@worker.Id?sid=@Model.ServiceId" class="bg-white border rounded-xl shadow-sm hover:shadow-md p-4 flex items-center gap-4 transition-all">
                     <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold">
                         @worker.FullName!.Substring(0, 1)
                     </div>

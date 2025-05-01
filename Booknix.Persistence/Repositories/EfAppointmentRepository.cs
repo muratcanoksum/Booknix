@@ -18,4 +18,21 @@ public class EfAppointmentRepository : IAppointmentRepository
     {
         return await _context.Appointments.ToListAsync();
     }
+
+    public List<Appointment> GetByWorkerBetweenDates(Guid workerId, DateTime start, DateTime end)
+    {
+        var startUtc = DateTime.SpecifyKind(start, DateTimeKind.Utc);
+        var endUtc = DateTime.SpecifyKind(end, DateTimeKind.Utc);
+
+        return _context.Appointments
+            .Include(a => a.AppointmentSlot)
+            .Where(a =>
+                a.AppointmentSlot!.AssignerWorkerId == workerId &&
+                a.AppointmentSlot.StartTime >= startUtc &&
+                a.AppointmentSlot.StartTime <= endUtc)
+            .ToList();
+    }
+
+
+
 }

@@ -10,5 +10,7 @@ namespace Booknix.Domain.Interfaces
         Task<WorkerWorkingHour?> GetByWorkerIdAndDateAsync(Guid workerId, DateTime date);
         Task AddRangeAsync(IEnumerable<WorkerWorkingHour> entities);
         Task UpdateRangeAsync(IEnumerable<WorkerWorkingHour> entities);
+        List<WorkerWorkingHour> GetValidWorkingDays(Guid workerId, DateTime start, DateTime end);
+
     }
 }

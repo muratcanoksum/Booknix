@@ -14,10 +14,11 @@ namespace Booknix.Domain.Entities
 
         public string? Notes { get; set; }
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public User? User { get; set; }
         public Service? Service { get; set; }
         public AppointmentSlot? AppointmentSlot { get; set; }
     }
-    
+
 }

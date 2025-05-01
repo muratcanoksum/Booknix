@@ -9,5 +9,6 @@ public interface IPublicService
     SectorLocationsDto? GetLocationsBySectorSlug(string slug);
     LocationDetailsDto? GetLocationDetails(string slug);
     ServiceDetailsDto? GetServiceDetails(string locationSlug, Guid serviceId);
+    Task<AppointmentSlotPageDto> GetAppointmentSlotPageData(Guid workerId, Guid serviceId, DateTime startDate, DateTime endDate, TimeSpan currentTime);
 
 }

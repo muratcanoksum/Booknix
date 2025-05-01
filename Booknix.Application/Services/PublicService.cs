@@ -12,13 +12,17 @@ public class PublicService : IPublicService
     private readonly IServiceRepository _serviceRepo;
     private readonly IMemoryCache _cache;
     private readonly ILocationRepository _locationRepo;
+    private readonly IWorkerWorkingHourRepository _workingHourRepo;
+    private readonly IWorkerRepository _workerRepo;
 
     public PublicService(
         ISectorRepository sectorRepo,
         IAppointmentRepository appointmentRepo,
         IServiceRepository serviceRepo,
         IMemoryCache cache,
-        ILocationRepository locationRepo
+        ILocationRepository locationRepo,
+        IWorkerWorkingHourRepository workingHourRepo,
+        IWorkerRepository workerRepo
         )
     {
         _sectorRepo = sectorRepo;
@@ -26,6 +30,8 @@ public class PublicService : IPublicService
         _serviceRepo = serviceRepo;
         _cache = cache;
         _locationRepo = locationRepo;
+        _workingHourRepo = workingHourRepo;
+        _workerRepo = workerRepo;
 
     }
 
@@ -151,6 +157,7 @@ public class PublicService : IPublicService
         return new ServiceDetailsDto
         {
             ServiceName = service.Name,
+            ServiceId = serviceId.ToString(),
             Description = service.Description,
             Price = service.Price,
             Duration = service.Duration,
@@ -159,10 +166,69 @@ public class PublicService : IPublicService
             Workers = service.ServiceEmployees.Select(se => new WorkerMiniDto
             {
                 FullName = se.Worker!.User.FullName,
-                Id = se.Worker.User.Id
+                Id = se.Worker.Id
             }).ToList()
         };
     }
+
+    public async Task<AppointmentSlotPageDto> GetAppointmentSlotPageData(Guid workerId, Guid serviceId, DateTime startDate, DateTime endDate, TimeSpan currentTime)
+    {
+        var service = await _serviceRepo.GetByIdAsync(serviceId);
+        if (service == null) return new AppointmentSlotPageDto();
+
+        var worker = await _workerRepo.GetByIdAsync(workerId);
+        if (worker == null) return new AppointmentSlotPageDto();
+
+        var result = new AppointmentSlotPageDto
+        {
+            LocationName = service.Location?.Name ?? "-",
+            ServiceName = service.Name,
+            Price = service.Price,
+            Duration = service.Duration,
+            WorkerName = worker.User?.FullName ?? "-"
+        };
+
+        var workingDays = _workingHourRepo.GetValidWorkingDays(workerId, startDate, endDate);
+        var takenSlots = _appointmentRepo.GetByWorkerBetweenDates(workerId, startDate, endDate)
+            .Select(a => new
+            {
+                Date = a.AppointmentSlot!.StartTime.Date,
+                Time = a.AppointmentSlot!.StartTime.TimeOfDay
+            }).ToList();
+
+        foreach (var day in workingDays)
+        {
+            var slotTime = day.StartTime!.Value;
+            var isToday = day.Date.Date == startDate.Date;
+
+            while (slotTime <= day.EndTime - service.Duration)
+            {
+                if (isToday && slotTime <= currentTime)
+                {
+                    slotTime += service.Duration;
+                    continue;
+                }
+
+                bool isTaken = takenSlots.Any(x => x.Date == day.Date && x.Time == slotTime);
+                if (!isTaken)
+                {
+                    result.Slots.Add(new AppointmentSlotDto
+                    {
+                        Date = day.Date,
+                        Time = slotTime,
+                        IsAvailable = true
+                    });
+                }
+
+                slotTime += service.Duration;
+            }
+        }
+
+        result.Slots = result.Slots.OrderBy(x => x.Date).ThenBy(x => x.Time).ToList();
+        return result;
+    }
+
+
 
 
 }
