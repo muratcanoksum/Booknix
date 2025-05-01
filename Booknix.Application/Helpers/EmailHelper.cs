@@ -25,5 +25,22 @@
 
             return generatedAtUtc.Value.AddMinutes(expireMinutes) < DateTime.UtcNow;
         }
+        
+        public static bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+                
+            try
+            {
+                // Use .NET's built-in email address validation
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

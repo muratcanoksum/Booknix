@@ -1,4 +1,4 @@
-﻿// Global Ay ve Yıl Değişkenleri
+// Global Ay ve Yıl Değişkenleri
 window.currentYear = new Date().getFullYear();
 window.currentMonth = new Date().getMonth(); // 0-11
 window.multiSelectMode = false;

@@ -1,0 +1,78 @@
+<div id="calendar-section" class="hidden bg-white shadow rounded-xl p-6 w-full space-y-8">
+    <div class="flex flex-col gap-8 lg:grid lg:grid-cols-3">
+
+        <!-- Sol Panel: Takvim -->
+        <div id="calendar-panel" class="col-span-1">
+            <!-- Üst Butonlar ve Ay -->
+            <div class="flex flex-col space-y-4 mb-6">
+
+                <!-- Çoklu Seçim Alanı -->
+                <div class="flex items-center justify-between">
+                    <button id="multi-select-toggle" class="px-4 py-2 bg-indigo-100 text-indigo-700 font-medium text-sm rounded-md hover:bg-indigo-500 hover:text-white transition">
+                        Çoklu Seçim Aç
+                    </button>
+                    <div id="selected-day-count" class="text-sm text-gray-600 ml-4"></div>
+                </div>
+
+                <!-- Ay Değişim Alanı -->
+                <div class="flex items-center justify-between">
+                    <button id="calendar-prev" class="text-gray-600 hover:text-indigo-600 text-2xl">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+
+                    <div class="text-center">
+                        <div id="calendar-current" class="text-lg font-semibold text-gray-800"></div>
+                        <div class="flex justify-center mt-1">
+                            <button id="calendar-today" class="px-3 py-1 bg-indigo-100 hover:bg-indigo-500 text-indigo-700 hover:text-white text-xs rounded-md transition">
+                                Bugün
+                            </button>
+                        </div>
+                    </div>
+
+                    <button id="calendar-next" class="text-gray-600 hover:text-indigo-600 text-2xl">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Takvim Günleri -->
+            <div class="grid grid-cols-7 gap-1">
+                <div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div><div>Cum</div><div>Cmt</div><div>Paz</div>
+            </div>
+
+            <div id="calendar-grid" class="grid grid-cols-7 gap-1 pt-2">
+                <!-- Dinamik Günler Buraya Çizilecek -->
+            </div>
+        </div>
+
+        <!-- Sağ Panel: Günlük Form -->
+        <div id="day-form-section" class="col-span-2 hidden">
+            @await Html.PartialAsync("Location/LocationModules/WorkerHour/_DayFormPartial")
+        </div>
+
+    </div>
+
+    <!-- Alt Legend Alanı -->
+    <div class="flex flex-wrap justify-center gap-8 text-sm text-gray-700 pt-8 border-t mt-8 pt-6">
+        <div class="flex items-center gap-2">
+            <div class="w-4 h-4 bg-green-500 rounded-full"></div>
+            <span>Çalışıyor</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="w-4 h-4 bg-orange-400 rounded-full"></div>
+            <span>İzinli</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="w-4 h-4 bg-red-500 rounded-full"></div>
+            <span>Çalışmıyor</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="w-4 h-4 bg-gray-300 rounded-full"></div>
+            <span>Veri Yok</span>
+        </div>
+    </div>
+
+</div>
+
+<script src="~/js/locationAdmin/workerhour/calendar.js" asp-append-version="true"></script> 

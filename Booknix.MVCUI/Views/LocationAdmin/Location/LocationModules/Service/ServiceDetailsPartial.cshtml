@@ -1,0 +1,26 @@
+@model Booknix.Domain.Entities.Service
+
+<div id="service-details-container" class="space-y-4">
+    <!-- Gizli Alanlar -->
+    <input type="hidden" id="service-id" value="@Model.Id" />
+    <input type="hidden" id="service-location-id" value="@Model.LocationId" />
+
+    <!-- Servis Bilgileri -->
+    <div class="form-data"
+         data-name="@Model.Name"
+         data-description="@Model.Description"
+         data-price="@Model.Price"
+         data-duration="@Model.Duration">
+    </div>
+
+    <!-- Seçili Çalışanlar -->
+    @if (Model.ServiceEmployees != null && Model.ServiceEmployees.Any())
+    {
+        <div id="selected-workers" class="space-y-2">
+            @foreach (var employee in Model.ServiceEmployees)
+            {
+                <input type="hidden" class="selected-worker-id" value="@employee.WorkerId" />
+            }
+        </div>
+    }
+</div> 
