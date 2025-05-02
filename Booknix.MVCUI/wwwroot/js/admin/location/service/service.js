@@ -39,6 +39,15 @@ function loadServiceForEdit(serviceId) {
         $("#hour").val(duration.hours);
         $("#minute").val(duration.minutes);
 
+        const servicegapString = $formData.attr("data-servicegap"); // örnek: "01:20:00"
+        const parts = servicegapString.split(":");
+
+        const hours = parseInt(parts[0], 10);
+        const minutes = parseInt(parts[1], 10);
+        const totalMinutes = (hours * 60) + minutes;
+
+        $("#service-gap").val(totalMinutes);
+
         // Update duration input for form submission
         const hour = String(duration.hours).padStart(2, '0');
         const minute = String(duration.minutes).padStart(2, '0');

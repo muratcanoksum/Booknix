@@ -21,6 +21,9 @@ namespace Booknix.Application.DTOs
         [Required]
         public TimeSpan Duration { get; set; }
 
+        [Required]
+        public int ServiceGapMinutes { get; set; }  // Kullanıcıdan dakika olarak alınır
+
         // ✅ Yeni eklenen alan: çalışanlar
         public List<Guid> SelectedWorkerIds { get; set; } = new();
     }

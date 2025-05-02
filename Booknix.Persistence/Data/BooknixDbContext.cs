@@ -161,6 +161,21 @@ namespace Booknix.Persistence.Data
                       .HasColumnType("timestamp with time zone");
             });
 
+            modelBuilder.Entity<Location>()
+                .Property(l => l.LunchBreakStart)
+                .HasColumnType("time");
+
+            modelBuilder.Entity<Location>()
+                .Property(l => l.LunchBreakEnd)
+                .HasColumnType("time");
+
+            modelBuilder.Entity<Service>()
+                .Property(s => s.ServiceGap)
+                .HasColumnType("time");
+
+
+
+
 
             // Seed roller
             modelBuilder.Entity<Role>().HasData(

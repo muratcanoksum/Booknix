@@ -1,5 +1,7 @@
 using Booknix.Application.Interfaces;
+using Booknix.Infrastructure.Filters;
 using Microsoft.AspNetCore.Mvc;
+using Booknix.Application.DTOs;
 
 namespace Booknix.MVCUI.Controllers;
 
@@ -45,6 +47,7 @@ public class PublicController(IPublicService publicService) : Controller
         return View("LocationDetails", model);
     }
 
+    [Auth]
     [HttpGet("/lokasyon/{slug}/{id}")]
     public IActionResult ServiceDetails(string slug, Guid id)
     {
@@ -55,6 +58,7 @@ public class PublicController(IPublicService publicService) : Controller
         return View("ServiceDetails", model);
     }
 
+    [Auth]
     [HttpGet("/randevu/{workerId}")]
     public async Task<IActionResult> AppointmentSlots(Guid workerId, Guid sid)
     {
@@ -66,6 +70,26 @@ public class PublicController(IPublicService publicService) : Controller
         return View("AppointmentSlots", dto);
     }
 
+    //[Auth]
+    //[HttpPost]
+    //[ValidateAntiForgeryToken]
+    //public async Task<IActionResult> ConfirmAppointment(CreateAppointmentDto dto)
+    //{
+    //    var userIdStr = HttpContext.Session.GetString("UserId");
+    //    if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+    //        return RedirectToAction("Login", "Auth", new { returnUrl = Request.Path });
+
+    //    var result = await _publicService.CreateAppointmentAsync(userId, dto);
+
+    //    if (!result.Success)
+    //    {
+    //        TempData["Error"] = result.Message;
+    //        return RedirectToAction("ServiceDetails", new { slug = dto.Slug, id = dto.ServiceId });
+    //    }
+
+    //    TempData["Success"] = "Randevunuz baþarýyla oluþturuldu.";
+    //    return RedirectToAction("MyAppointments", "Account");
+    //}
 
 
 

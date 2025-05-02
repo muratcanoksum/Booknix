@@ -143,6 +143,12 @@ namespace Booknix.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<TimeSpan>("LunchBreakEnd")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("LunchBreakStart")
+                        .HasColumnType("time");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -346,6 +352,9 @@ namespace Booknix.Persistence.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
+
+                    b.Property<TimeSpan>("ServiceGap")
+                        .HasColumnType("time");
 
                     b.HasKey("Id");
 

@@ -11,6 +11,8 @@ namespace Booknix.Domain.Entities
         public Guid SectorId { get; set; }
         public string PhoneNumber { get; set; } = null!;
         public string Slug { get; set; } = null!;
+        public TimeSpan LunchBreakStart { get; set; }
+        public TimeSpan LunchBreakEnd { get; set; }
 
         // Navigation
         public Sector? Sector { get; set; }

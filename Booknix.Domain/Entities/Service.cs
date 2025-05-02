@@ -11,6 +11,7 @@ namespace Booknix.Domain.Entities
 
         public decimal Price { get; set; }
         public TimeSpan Duration { get; set; }
+        public TimeSpan ServiceGap { get; set; } = TimeSpan.FromMinutes(30);
 
         public Guid LocationId { get; set; }
 

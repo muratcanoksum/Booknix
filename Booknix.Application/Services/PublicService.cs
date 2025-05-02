@@ -1,39 +1,28 @@
 ﻿using Booknix.Application.DTOs;
 using Booknix.Application.Interfaces;
+using Booknix.Domain.Entities.Enums;
 using Booknix.Domain.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Booknix.Application.Services;
 
-public class PublicService : IPublicService
+public class PublicService(
+    ISectorRepository sectorRepo,
+    IAppointmentRepository appointmentRepo,
+    IServiceRepository serviceRepo,
+    IMemoryCache cache,
+    ILocationRepository locationRepo,
+    IWorkerWorkingHourRepository workingHourRepo,
+    IWorkerRepository workerRepo
+        ) : IPublicService
 {
-    private readonly ISectorRepository _sectorRepo;
-    private readonly IAppointmentRepository _appointmentRepo;
-    private readonly IServiceRepository _serviceRepo;
-    private readonly IMemoryCache _cache;
-    private readonly ILocationRepository _locationRepo;
-    private readonly IWorkerWorkingHourRepository _workingHourRepo;
-    private readonly IWorkerRepository _workerRepo;
-
-    public PublicService(
-        ISectorRepository sectorRepo,
-        IAppointmentRepository appointmentRepo,
-        IServiceRepository serviceRepo,
-        IMemoryCache cache,
-        ILocationRepository locationRepo,
-        IWorkerWorkingHourRepository workingHourRepo,
-        IWorkerRepository workerRepo
-        )
-    {
-        _sectorRepo = sectorRepo;
-        _appointmentRepo = appointmentRepo;
-        _serviceRepo = serviceRepo;
-        _cache = cache;
-        _locationRepo = locationRepo;
-        _workingHourRepo = workingHourRepo;
-        _workerRepo = workerRepo;
-
-    }
+    private readonly ISectorRepository _sectorRepo = sectorRepo;
+    private readonly IAppointmentRepository _appointmentRepo = appointmentRepo;
+    private readonly IServiceRepository _serviceRepo = serviceRepo;
+    private readonly IMemoryCache _cache = cache;
+    private readonly ILocationRepository _locationRepo = locationRepo;
+    private readonly IWorkerWorkingHourRepository _workingHourRepo = workingHourRepo;
+    private readonly IWorkerRepository _workerRepo = workerRepo;
 
     public async Task<HomePageDto> GetHomePageDataAsync()
     {
@@ -179,54 +168,91 @@ public class PublicService : IPublicService
         var worker = await _workerRepo.GetByIdAsync(workerId);
         if (worker == null) return new AppointmentSlotPageDto();
 
+        var location = service.Location;
+        if (location == null) return new AppointmentSlotPageDto();
+
         var result = new AppointmentSlotPageDto
         {
-            LocationName = service.Location?.Name ?? "-",
+            LocationName = location.Name,
             ServiceName = service.Name,
             Price = service.Price,
             Duration = service.Duration,
             WorkerName = worker.User?.FullName ?? "-"
         };
 
+        var serviceGap = service.ServiceGap;
         var workingDays = _workingHourRepo.GetValidWorkingDays(workerId, startDate, endDate);
-        var takenSlots = _appointmentRepo.GetByWorkerBetweenDates(workerId, startDate, endDate)
+
+        var takenAppointments = _appointmentRepo
+            .GetByWorkerBetweenDates(workerId, startDate, endDate)
             .Select(a => new
             {
-                Date = a.AppointmentSlot!.StartTime.Date,
-                Time = a.AppointmentSlot!.StartTime.TimeOfDay
+                Start = a.AppointmentSlot!.StartTime,
+                End = a.AppointmentSlot!.EndTime,
+                Status = a.Status // Artık gerçek appointment status
             }).ToList();
 
         foreach (var day in workingDays)
         {
+            var baseDate = day.Date.Date;
             var slotTime = day.StartTime!.Value;
-            var isToday = day.Date.Date == startDate.Date;
+            var endTime = day.EndTime!.Value;
+            var lunchStart = baseDate.Add(location.LunchBreakStart);
+            var lunchEnd = baseDate.Add(location.LunchBreakEnd);
 
-            while (slotTime <= day.EndTime - service.Duration)
+            while (true)
             {
-                if (isToday && slotTime <= currentTime)
+                var potentialStart = baseDate.Add(slotTime);
+                var potentialEnd = potentialStart.Add(service.Duration);
+
+                if (potentialEnd - serviceGap > baseDate.Add(endTime))
+                    break;
+
+                // Bugün ve geçmiş saat mi?
+                if (baseDate == startDate.Date && slotTime <= currentTime)
                 {
-                    slotTime += service.Duration;
+                    slotTime += service.Duration + serviceGap;
                     continue;
                 }
 
-                bool isTaken = takenSlots.Any(x => x.Date == day.Date && x.Time == slotTime);
-                if (!isTaken)
+                // Öğle arasına denk geliyor mu?
+                if (potentialStart < lunchEnd && potentialEnd > lunchStart)
                 {
-                    result.Slots.Add(new AppointmentSlotDto
-                    {
-                        Date = day.Date,
-                        Time = slotTime,
-                        IsAvailable = true
-                    });
+                    slotTime = location.LunchBreakEnd;
+                    continue;
                 }
 
-                slotTime += service.Duration;
+                // Randevu çakışma kontrolü (tam bitiş zamanı hariç)
+                var existing = takenAppointments.FirstOrDefault(r =>
+                    r.Start < potentialEnd &&
+                    r.End > potentialStart &&
+                    r.End != potentialStart);
+
+                AppointmentStatus? status = existing?.Status;
+
+                result.Slots.Add(new AppointmentSlotDto
+                {
+                    Date = baseDate,
+                    Time = slotTime,
+                    IsAvailable = status == null,
+                    Status = status
+                });
+
+                slotTime += service.Duration + serviceGap;
             }
         }
 
-        result.Slots = result.Slots.OrderBy(x => x.Date).ThenBy(x => x.Time).ToList();
+        result.Slots = result.Slots
+            .OrderBy(x => x.Date)
+            .ThenBy(x => x.Time)
+            .ToList();
+
         return result;
     }
+
+
+
+
 
 
 

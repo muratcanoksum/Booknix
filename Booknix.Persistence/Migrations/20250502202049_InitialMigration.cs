@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Booknix.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,7 +30,8 @@ namespace Booknix.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Slug = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -78,7 +79,11 @@ namespace Booknix.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Address = table.Column<string>(type: "text", nullable: false),
-                    SectorId = table.Column<Guid>(type: "uuid", nullable: false)
+                    SectorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    Slug = table.Column<string>(type: "text", nullable: false),
+                    LunchBreakStart = table.Column<TimeSpan>(type: "time", nullable: false),
+                    LunchBreakEnd = table.Column<TimeSpan>(type: "time", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -196,8 +201,8 @@ namespace Booknix.Persistence.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     Duration = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    LocationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: true)
+                    ServiceGap = table.Column<TimeSpan>(type: "time", nullable: false),
+                    LocationId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -208,11 +213,6 @@ namespace Booknix.Persistence.Migrations
                         principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Services_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -260,40 +260,6 @@ namespace Booknix.Persistence.Migrations
                         principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AppointmentSlots",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    LocationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ServiceId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AssignedEmployeeId = table.Column<Guid>(type: "uuid", nullable: true),
-                    StartTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AppointmentSlots", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AppointmentSlots_Locations_LocationId",
-                        column: x => x.LocationId,
-                        principalTable: "Locations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AppointmentSlots_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AppointmentSlots_Users_AssignedEmployeeId",
-                        column: x => x.AssignedEmployeeId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -369,13 +335,46 @@ namespace Booknix.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AppointmentSlots",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    LocationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ServiceId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AssignerWorkerId = table.Column<Guid>(type: "uuid", nullable: true),
+                    StartTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppointmentSlots", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppointmentSlots_Locations_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Locations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AppointmentSlots_Services_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Services",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AppointmentSlots_Workers_AssignerWorkerId",
+                        column: x => x.AssignerWorkerId,
+                        principalTable: "Workers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ServiceEmployees",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ServiceId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EmployeeId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: true)
+                    WorkerId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -387,13 +386,32 @@ namespace Booknix.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ServiceEmployees_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
+                        name: "FK_ServiceEmployees_Workers_WorkerId",
+                        column: x => x.WorkerId,
+                        principalTable: "Workers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WorkerWorkingHours",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    WorkerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    StartTime = table.Column<TimeSpan>(type: "time", nullable: true),
+                    EndTime = table.Column<TimeSpan>(type: "time", nullable: true),
+                    IsOnLeave = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDayOff = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkerWorkingHours", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ServiceEmployees_Workers_EmployeeId",
-                        column: x => x.EmployeeId,
+                        name: "FK_WorkerWorkingHours_Workers_WorkerId",
+                        column: x => x.WorkerId,
                         principalTable: "Workers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -408,7 +426,8 @@ namespace Booknix.Persistence.Migrations
                     ServiceId = table.Column<Guid>(type: "uuid", nullable: false),
                     AppointmentSlotId = table.Column<Guid>(type: "uuid", nullable: false),
                     Notes = table.Column<string>(type: "text", nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -460,9 +479,9 @@ namespace Booknix.Persistence.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppointmentSlots_AssignedEmployeeId",
+                name: "IX_AppointmentSlots_AssignerWorkerId",
                 table: "AppointmentSlots",
-                column: "AssignedEmployeeId");
+                column: "AssignerWorkerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AppointmentSlots_LocationId",
@@ -525,29 +544,20 @@ namespace Booknix.Persistence.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ServiceEmployees_EmployeeId",
+                name: "IX_ServiceEmployees_ServiceId_WorkerId",
                 table: "ServiceEmployees",
-                column: "EmployeeId");
+                columns: new[] { "ServiceId", "WorkerId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ServiceEmployees_ServiceId",
+                name: "IX_ServiceEmployees_WorkerId",
                 table: "ServiceEmployees",
-                column: "ServiceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServiceEmployees_UserId",
-                table: "ServiceEmployees",
-                column: "UserId");
+                column: "WorkerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Services_LocationId",
                 table: "Services",
                 column: "LocationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Services_UserId",
-                table: "Services",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TrustedIps_UserId",
@@ -574,6 +584,12 @@ namespace Booknix.Persistence.Migrations
                 name: "IX_Workers_UserId",
                 table: "Workers",
                 column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkerWorkingHours_WorkerId_Date",
+                table: "WorkerWorkingHours",
+                columns: new[] { "WorkerId", "Date" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -610,16 +626,19 @@ namespace Booknix.Persistence.Migrations
                 name: "UserProfiles");
 
             migrationBuilder.DropTable(
+                name: "WorkerWorkingHours");
+
+            migrationBuilder.DropTable(
                 name: "WorkingHours");
 
             migrationBuilder.DropTable(
                 name: "AppointmentSlots");
 
             migrationBuilder.DropTable(
-                name: "Workers");
+                name: "Services");
 
             migrationBuilder.DropTable(
-                name: "Services");
+                name: "Workers");
 
             migrationBuilder.DropTable(
                 name: "Locations");

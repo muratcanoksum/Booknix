@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Booknix.Persistence.Migrations
 {
     [DbContext(typeof(BooknixDbContext))]
-    [Migration("20250501182644_LocationSlugAdd")]
-    partial class LocationSlugAdd
+    [Migration("20250502202049_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,9 @@ namespace Booknix.Persistence.Migrations
 
                     b.Property<Guid>("AppointmentSlotId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Notes")
                         .HasColumnType("text");
@@ -64,7 +67,7 @@ namespace Booknix.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AssignedEmployeeId")
+                    b.Property<Guid?>("AssignerWorkerId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("EndTime")
@@ -84,7 +87,7 @@ namespace Booknix.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssignedEmployeeId");
+                    b.HasIndex("AssignerWorkerId");
 
                     b.HasIndex("LocationId");
 
@@ -142,6 +145,12 @@ namespace Booknix.Persistence.Migrations
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<TimeSpan>("LunchBreakEnd")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("LunchBreakStart")
+                        .HasColumnType("time");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -346,6 +355,9 @@ namespace Booknix.Persistence.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
+
+                    b.Property<TimeSpan>("ServiceGap")
+                        .HasColumnType("time");
 
                     b.HasKey("Id");
 
@@ -616,9 +628,9 @@ namespace Booknix.Persistence.Migrations
 
             modelBuilder.Entity("Booknix.Domain.Entities.AppointmentSlot", b =>
                 {
-                    b.HasOne("Booknix.Domain.Entities.User", "AssignedEmployee")
+                    b.HasOne("Booknix.Domain.Entities.Worker", "AssignerWorker")
                         .WithMany()
-                        .HasForeignKey("AssignedEmployeeId");
+                        .HasForeignKey("AssignerWorkerId");
 
                     b.HasOne("Booknix.Domain.Entities.Location", "Location")
                         .WithMany()
@@ -632,7 +644,7 @@ namespace Booknix.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AssignedEmployee");
+                    b.Navigation("AssignerWorker");
 
                     b.Navigation("Location");
 

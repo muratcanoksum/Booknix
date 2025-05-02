@@ -126,16 +126,20 @@
                         @for (int h = 0; h <= 10; h++)
                         {
                             <option value="@h">@h saat</option>
-}
+                        }
                     </select>
                     <select id="minute" class="w-1/2 border rounded px-3 py-2">
                         @for (int m = 0; m < 60; m += 5)
                         {
                             <option value="@m">@m dakika</option>
-}
+                        }
                     </select>
                 </div>
                 <input type="hidden" id="duration-input" name="Duration" required />
+            </div>
+            <div>
+                <label class="block text-sm mb-1 text-gray-700">Randevular Arası Bekleme Süresi (dakika)</label>
+                <input type="number" id="service-gap" name="ServiceGapMinutes" class="w-full border rounded px-3 py-2" min="0" step="5" value="15" required />
             </div>
 
             <div>

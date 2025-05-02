@@ -14,6 +14,18 @@
                 @TempData["Success"]
             </div>
         }
+        @if (ViewBag.ReturnUrl != null)
+        {
+            TempData["Info"] = "Devam etmek için giriş yapmalısınız.";
+        }
+
+        @if (TempData["Info"] != null)
+        {
+            <div id="info-message" class="bg-blue-100 border border-blue-300 text-blue-700 px-4 py-3 rounded mb-4 text-sm text-center">
+                @TempData["Info"]
+            </div>
+        }
+
 
         <div id="login-alert" class="hidden"></div>
 

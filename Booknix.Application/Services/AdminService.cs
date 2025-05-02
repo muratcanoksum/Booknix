@@ -370,6 +370,7 @@ namespace Booknix.Application.Services
                 Description = dto.Description?.Trim(),
                 Price = dto.Price,
                 Duration = dto.Duration,
+                ServiceGap = TimeSpan.FromMinutes(dto.ServiceGapMinutes),
                 LocationId = dto.LocationId
             };
 
@@ -395,7 +396,6 @@ namespace Booknix.Application.Services
                 Message = "Servis başarıyla eklendi."
             };
         }
-
 
         public async Task<RequestResult> DeleteServiceAsync(Guid id)
         {
@@ -424,6 +424,7 @@ namespace Booknix.Application.Services
             service.Description = dto.Description;
             service.Price = dto.Price;
             service.Duration = dto.Duration;
+            service.ServiceGap = TimeSpan.FromMinutes(dto.ServiceGapMinutes);
 
             // Servisi güncelle
             await _serviceRepo.UpdateAsync(service);
