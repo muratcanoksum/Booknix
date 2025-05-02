@@ -121,3 +121,17 @@ function hideLoading() {
         loading.classList.add('hidden');
     }
 }
+
+function formatDateToTurkish(dateString) {
+    const months = [
+        "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+        "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+    ];
+
+    const parts = dateString.split("-");
+    const year = parts[0];
+    const month = parseInt(parts[1], 10) - 1;
+    const day = parts[2];
+
+    return `${day} ${months[month]} ${year}`;
+}

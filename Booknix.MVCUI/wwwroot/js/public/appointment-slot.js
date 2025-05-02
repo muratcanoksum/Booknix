@@ -1,41 +1,53 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
-    let selectedButton = null;
-    let selectedTime = null;
+﻿let $selectedButton = null;
 
-    document.querySelectorAll("button[data-slot-time]").forEach(button => {
-        button.addEventListener("click", () => {
-            if (selectedButton) {
-                selectedButton.classList.remove("ring", "ring-offset-2", "ring-indigo-600");
-            }
+$(document).off("click", ".slot-button").on("click", ".slot-button", function () {
+    if ($selectedButton) {
+        $selectedButton.removeClass("ring ring-offset-2 ring-indigo-600");
+    }
 
-            if (selectedButton === button) {
-                selectedButton = null;
-                selectedTime = null;
-                document.getElementById("selectedTime").textContent = "Henüz seçilmedi";
-                return;
-            }
+    if ($selectedButton?.is(this)) {
+        $selectedButton = null;
+        $("#selectedTime").text("Henüz seçilmedi");
+        $("#selectedDate").text("Henüz seçilmedi");
+        $("#Time").val("");
+        $("#Date").val("");
+        return;
+    }
 
-            selectedButton = button;
-            selectedTime = button.getAttribute("data-slot-time");
+    $selectedButton = $(this);
+    const time = $(this).data("slot-time");
+    const date = $(this).data("slot-date");
+    const formatted = formatDateToTurkish(date);
 
-            button.classList.add("ring", "ring-offset-2", "ring-indigo-600");
-            document.getElementById("selectedTime").textContent = selectedTime;
-        });
-    });
+    $(this).addClass("ring ring-offset-2 ring-indigo-600");
+    $("#selectedDate").text(formatted);
+    $("#selectedTime").text(time);
+    $("#Time").val(time);
+    $("#Date").val(date);
+});
 
-    document.getElementById("confirm-appointment")?.addEventListener("click", () => {
-        if (!selectedTime) {
-            alert("Lütfen bir saat seçiniz.");
-            return;
-        }
+$(document).off("submit", "#confirm-form").on("submit", "#confirm-form", function (e) {
+    if (!$("#Time").val() || !$("#Date").val()) {
+        e.preventDefault();
+        alert("Lütfen bir saat seçiniz.");
+    }
 
-        // TODO: Ajax ile post işlemi yapılabilir
-        console.log("Seçilen saat:", selectedTime);
-    });
+    // // AJAX ile gönderme örneği:
+    // e.preventDefault();
+    // $.ajax({
+    //     type: "POST",
+    //     url: "/Public/ConfirmAppointment",
+    //     data: $(this).serialize(),
+    //     success: function (msg) {
+    //         alert("Randevu oluşturuldu!");
+    //     },
+    //     error: function () {
+    //         alert("Randevu oluşturulurken hata oluştu.");
+    //     }
+    // });
 });
 
 const card = document.getElementById("infoCard");
-
 window.addEventListener("scroll", () => {
     const offset = window.scrollY;
     card.style.transform = `translateY(${offset}px)`;

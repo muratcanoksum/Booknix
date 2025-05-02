@@ -67,29 +67,45 @@ public class PublicController(IPublicService publicService) : Controller
         var endDate = startDate.AddDays(7);
 
         var dto = await _publicService.GetAppointmentSlotPageData(workerId, sid, startDate, endDate, now.TimeOfDay);
+
+        ViewBag.WorkerId = workerId;
+        ViewBag.ServiceId = sid;
+
         return View("AppointmentSlots", dto);
     }
 
-    //[Auth]
-    //[HttpPost]
-    //[ValidateAntiForgeryToken]
-    //public async Task<IActionResult> ConfirmAppointment(CreateAppointmentDto dto)
-    //{
-    //    var userIdStr = HttpContext.Session.GetString("UserId");
-    //    if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
-    //        return RedirectToAction("Login", "Auth", new { returnUrl = Request.Path });
 
-    //    var result = await _publicService.CreateAppointmentAsync(userId, dto);
+    [Auth]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConfirmAppointment(CreateAppointmentDto dto)
+    {
+        var userIdStr = HttpContext.Session.GetString("UserId");
+        if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+            return RedirectToAction("Login", "Auth", new { returnUrl = Request.Path });
 
-    //    if (!result.Success)
-    //    {
-    //        TempData["Error"] = result.Message;
-    //        return RedirectToAction("ServiceDetails", new { slug = dto.Slug, id = dto.ServiceId });
-    //    }
+        //var result = await _publicService.CreateAppointmentAsync(userId, dto);
 
-    //    TempData["Success"] = "Randevunuz baþarýyla oluþturuldu.";
-    //    return RedirectToAction("MyAppointments", "Account");
-    //}
+        var result = new RequestResult
+        {
+            Success = true,
+            Message = "Randevu baþarýyla oluþturuldu."
+        };
+        {
+
+        }
+
+        if (!result.Success)
+        {
+            TempData["Error"] = result.Message;
+            //return RedirectToAction("ServiceDetails", new { slug = dto.Slug, id = dto.ServiceId });
+            BadRequest(result.Message);
+        }
+
+        TempData["Success"] = "Randevunuz baþarýyla oluþturuldu.";
+        //return RedirectToAction("MyAppointments", "Account");
+        return Ok(result.Message);
+    }
 
 
 

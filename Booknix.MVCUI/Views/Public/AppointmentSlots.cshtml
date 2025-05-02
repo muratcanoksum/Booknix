@@ -7,6 +7,10 @@
         .GroupBy(s => s.Date)
         .OrderBy(g => g.Key)
         .ToList();
+
+    var workerId = ViewBag.WorkerId as Guid?;
+    var serviceId = ViewBag.ServiceId as Guid?;
+    var slug = ViewBag.Slug as string;
 }
 
 <div class="relative flex flex-col lg:flex-row gap-6 items-start">
@@ -39,7 +43,7 @@
                                 };
 
                                 <button type="button"
-                                        class="@colorClass text-sm font-medium px-4 py-2 rounded-lg shadow-sm transition"
+                                        class="slot-button @colorClass text-sm font-medium px-4 py-2 rounded-lg shadow-sm transition"
                                         data-slot-date="@slot.Date.ToString("yyyy-MM-dd")"
                                         data-slot-time="@slot.Time.ToString(@"hh\:mm")"
                                         @(slot.IsAvailable ? "" : "disabled")>
@@ -67,14 +71,29 @@
 
             <hr class="my-3" />
 
-            <div class="text-gray-600 text-sm mb-3">
-                Seçilen saat: <span id="selectedTime">Henüz seçilmedi</span>
+            <div class="text-gray-600 text-sm mb-3 space-y-1">
+                <p class="font-semibold text-gray-800">Seçilen Randevu:</p>
+                <p><i class="fa-solid fa-calendar-days text-indigo-600 mr-2"></i><span id="selectedDate">Henüz seçilmedi</span></p>
+                <p><i class="fa-solid fa-clock text-indigo-600 mr-2"></i><span id="selectedTime">Henüz seçilmedi</span></p>
             </div>
 
-            <button id="confirm-appointment"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold w-full py-2 rounded-md text-sm transition">
-                Randevuyu Onayla
-            </button>
+
+
+            <form id="confirm-form" method="post" asp-action="ConfirmAppointment" asp-controller="Public">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="ServiceId" value="@serviceId" />
+                <input type="hidden" name="WorkerId" value="@workerId" />
+                <input type="hidden" name="Slug" value="@slug" />
+
+                <input type="hidden" name="Date" id="Date" />
+                <input type="hidden" name="Time" id="Time" />
+
+                <button id="confirm-appointment"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold w-full py-2 rounded-md text-sm transition">
+                    Randevuyu Onayla
+                </button>
+            </form>
         </div>
     </div>
 </div>
