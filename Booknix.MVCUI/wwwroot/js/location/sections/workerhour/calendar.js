@@ -4,6 +4,10 @@ window.currentMonth = new Date().getMonth(); // 0-11
 window.multiSelectMode = false;
 window.selectedDates = [];
 
+const $ctx = $("#location-meta");
+const baseUrl = $ctx.data("base-url");
+const locationId = $ctx.data("location-id");
+
 
 window.monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
     "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
@@ -11,7 +15,7 @@ window.monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
 
 // Takvim verisi çek
 function fetchCalendarData(workerId, year, month) {
-    $.get(`/LocationAdmin/GetWorkerWorkingHours/${workerId}/${year}/${month}`, function (data) {
+    $.get(`${baseUrl}/GetWorkerWorkingHours/${workerId}/${year}/${month}`, function (data) {
         renderCalendar(data);
     }).fail(function () {
         console.error("Çalışma saatleri yüklenemedi.");

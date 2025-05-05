@@ -28,12 +28,14 @@
 
         if (locationRole == "LocationAdmin")
         {
-            <li>
-                <a asp-controller="LocationAdmin" asp-action="Index"
-                   class="block px-4 py-1.5 border border-yellow-500 text-yellow-600 text-sm rounded hover:bg-yellow-500 hover:text-white transition">
-                    Lokasyon Yönetimi
-                </a>
-            </li>
+<li>
+    <a asp-controller="LocationAdmin" asp-action="Index" asp-fragment="services"
+       class="block px-4 py-1.5 border border-yellow-500 text-yellow-600 text-sm rounded hover:bg-yellow-500 hover:text-white transition">
+        Lokasyon Yönetimi
+    </a>
+
+
+</li>
         }
 
         <li>

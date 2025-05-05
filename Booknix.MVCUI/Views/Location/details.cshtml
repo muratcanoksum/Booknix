@@ -1,13 +1,14 @@
 ﻿@model Booknix.Domain.Entities.Location
-
 @{
     ViewData["Title"] = TempData["Title"];
+    var baseUrl = TempData["BaseUrl"]?.ToString() ?? "/LocationAdmin";
 }
 
-<h2 class="text-2xl font-bold text-gray-800 mb-4">
+<h2 class="text-2xl font-bold text-gray-800 mb-4"
     <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
     Lokasyon Bilgileri
 </h2>
+
 
 <div class="bg-white shadow rounded-lg p-6 space-y-4 text-sm">
     <div>
@@ -42,19 +43,25 @@
 
 
     <div class="flex flex-wrap gap-2 mb-4">
-        <button data-url="/LocationAdmin/GetServicesByLocation/@Model.Id"
+        <button data-url="@baseUrl/GetServicesByLocation/@Model.Id" data-tag="services"
                 class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
             Servisleri Göster
         </button>
-        <button data-url="/LocationAdmin/GetWorkersByLocation/@Model.Id"
+        <button data-url="@baseUrl/GetWorkersByLocation/@Model.Id" data-tag="workers"
                 class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
             Çalışanları Göster
         </button>
-        <button data-url="/LocationAdmin/GetWorkingHoursByLocation/@Model.Id"
+        <button data-url="@baseUrl/GetWorkingHoursByLocation/@Model.Id" data-tag="workinghour"
                 class="operation-tab px-4 py-2 bg-gray-100 hover:bg-indigo-100 text-gray-800 rounded transition text-sm">
             Çalışma Saatleri
         </button>
     </div>
+
+    <div id="location-meta" class="hidden"
+         data-base-url="@TempData["BaseUrl"]"
+         data-location-id="@Model.Id">
+    </div>
+
 
     <!-- Görsel Ayraç -->
     <div class="flex items-center">
@@ -68,7 +75,7 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/locationAdmin/details.js" asp-append-version="true"></script>
+    <script src="~/js/location/details.js" asp-append-version="true"></script>
 }
 
 

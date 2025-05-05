@@ -63,7 +63,7 @@ builder.Services.AddScoped<IServiceRepository, EfServiceRepository>();
 builder.Services.AddScoped<IWorkerWorkingHourRepository, EfWorkerWorkingHourRepository>();
 builder.Services.AddScoped<IAppointmentRepository, EfAppointmentRepository>();
 builder.Services.AddScoped<IAppointmentSlotRepository, EfAppointmentSlotRepository>();
-    
+
 
 
 // Unit of Work
@@ -74,7 +74,7 @@ builder.Services.AddScoped<IAuditLogger, AuditLogger>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
-builder.Services.AddScoped<ILocationAdminService, LocationAdminService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<IPublicService, PublicService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 

@@ -65,7 +65,7 @@ $(document).off("submit", "#day-form").on("submit", "#day-form", function (e) {
 
     $.ajax({
         type: "POST",
-        url: "/LocationAdmin/WorkerHour/Add",
+        url: `${baseUrl}/WorkerHour/Add`,
         data: $.param(filteredFormData),
         success: function (msg) {
             setTimeoutAlert("s", "#day-form-alert", msg, 5);
