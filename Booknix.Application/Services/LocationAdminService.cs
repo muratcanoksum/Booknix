@@ -189,6 +189,7 @@ namespace Booknix.Application.Services
                 Description = dto.Description?.Trim(),
                 Price = dto.Price,
                 Duration = dto.Duration,
+                ServiceGap = TimeSpan.FromMinutes(dto.ServiceGapMinutes),
                 LocationId = dto.LocationId
             };
 
@@ -242,6 +243,7 @@ namespace Booknix.Application.Services
             service.Description = dto.Description;
             service.Price = dto.Price;
             service.Duration = dto.Duration;
+            service.ServiceGap = TimeSpan.FromMinutes(dto.ServiceGapMinutes);
 
             // Servisi güncelle
             await _serviceRepo.UpdateAsync(service);
@@ -309,7 +311,7 @@ namespace Booknix.Application.Services
             var location = await _locationRepo.GetByIdAsync(locationId);
             return location != null;
         }
-        
+
         // Workers
         public async Task<IEnumerable<Worker>> GetAllWorkersAsync(Guid locationId)
         {
@@ -358,7 +360,7 @@ namespace Booknix.Application.Services
                         };
                     }
                 }
-                
+
                 // Use the existing user's name as the worker's name
                 dto.FullName = existingUser.FullName;
             }
@@ -518,7 +520,7 @@ namespace Booknix.Application.Services
         {
             return await _workerRepo.GetByIdWithDetailsAsync(id);
         }
-        
+
         // Helper methods for email notifications
         private async Task NotifyNewAccountWithAssignmentAsync(string email, string password, string companyName, string fullName, string position)
         {
@@ -646,17 +648,17 @@ namespace Booknix.Application.Services
 
             // Store the old email for notification
             string oldEmailAddress = worker.User.Email;
-            
+
             // Update the email
             worker.User.Email = newEmail;
-            
+
             try
             {
                 await _userRepo.UpdateAsync(worker.User);
-                
+
                 // Send notification emails
                 await NotifyEmailChangeAsync(newEmail, oldEmailAddress, fullName, locationName);
-                
+
                 return new RequestResult
                 {
                     Success = true,

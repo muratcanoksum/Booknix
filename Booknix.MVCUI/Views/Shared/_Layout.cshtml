@@ -21,7 +21,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <!-- Logo -->
-                <a asp-controller="Home" asp-action="Index" class="flex items-center space-x-2 no-underline">
+                <a asp-controller="Public" asp-action="Index" class="flex items-center space-x-2 no-underline">
                     <img src="~/images/logo_l.png" alt="Booknix Logo" class="h-12 w-auto" />
                 </a>
 
@@ -33,9 +33,9 @@
 
                 <!-- Main Navigation (Desktop) -->
                 <nav class="hidden md:flex space-x-6 items-center">
-                    <a asp-controller="Home" asp-action="Index"
+                    <a asp-controller="Public" asp-action="Index"
                        class="text-gray-700 hover:underline hover:text-blue-600 transition font-medium">Ana Sayfa</a>
-                    <a asp-controller="Home" asp-action="Privacy"
+                    <a asp-controller="Public" asp-action="Privacy"
                        class="text-gray-700 hover:underline hover:text-blue-600 transition font-medium">Gizlilik</a>
                 </nav>
 
@@ -65,7 +65,7 @@
     <footer class="bg-white border-t text-sm text-gray-500">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between">
             <span>&copy; 2025 - Booknix</span>
-            <a asp-controller="Home" asp-action="Privacy" class="hover:underline">Gizlilik</a>
+            <a asp-controller="Public" asp-action="Privacy" class="hover:underline">Gizlilik</a>
         </div>
     </footer>
 

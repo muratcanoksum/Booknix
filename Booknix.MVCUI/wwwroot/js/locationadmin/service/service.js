@@ -39,6 +39,15 @@ function loadServiceForEdit(serviceId) {
         $("#hour").val(duration.hours);
         $("#minute").val(duration.minutes);
 
+        const servicegapString = $formData.attr("data-servicegap"); // örnek: "01:20:00"
+        const parts = servicegapString.split(":");
+
+        const hours = parseInt(parts[0], 10);
+        const minutes = parseInt(parts[1], 10);
+        const totalMinutes = (hours * 60) + minutes;
+
+        $("#service-gap").val(totalMinutes);
+
         // Update duration input for form submission
         const hour = String(duration.hours).padStart(2, '0');
         const minute = String(duration.minutes).padStart(2, '0');
@@ -264,18 +273,18 @@ function toggleElementById(id) {
 }
 
 function setTimeoutAlert(type, selector, message) {
-    const alertClass = type === 'e' 
-        ? 'bg-red-100 border-red-400 text-red-700' 
+    const alertClass = type === 'e'
+        ? 'bg-red-100 border-red-400 text-red-700'
         : 'bg-green-100 border-green-400 text-green-700';
-        
-    const icon = type === 'e' 
-        ? '<i class="fas fa-exclamation-circle mr-2"></i>' 
+
+    const icon = type === 'e'
+        ? '<i class="fas fa-exclamation-circle mr-2"></i>'
         : '<i class="fas fa-check-circle mr-2"></i>';
-        
+
     const $alert = $(selector);
     $alert.removeClass('hidden bg-red-100 border-red-400 text-red-700 bg-green-100 border-green-400 text-green-700')
-          .addClass(`${alertClass} border rounded-lg p-4 mb-4 flex items-start`)
-          .html(`${icon} ${message}`);
-          
+        .addClass(`${alertClass} border rounded-lg p-4 mb-4 flex items-start`)
+        .html(`${icon} ${message}`);
+
     setTimeout(() => $alert.addClass('hidden'), 5000);
 } 

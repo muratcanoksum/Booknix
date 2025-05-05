@@ -137,7 +137,10 @@
                 </div>
                 <input type="hidden" id="duration-input" name="Duration" required />
             </div>
-
+            <div>
+                <label class="block text-sm mb-1 text-gray-700">Randevular Arası Bekleme Süresi (dakika)</label>
+                <input type="number" id="service-gap" name="ServiceGapMinutes" class="w-full border rounded px-3 py-2" min="0" step="5" value="15" required />
+            </div>
             <div>
                 <label class="block text-sm mb-1 text-gray-700">Servis Çalışanları</label>
                 <div class="max-h-48 overflow-y-auto border rounded p-2 space-y-2">

@@ -240,9 +240,13 @@ public class PublicService(
                 {
                     Date = baseDate,
                     Time = slotTime,
-                    IsAvailable = status == null,
+                    IsAvailable =
+                        status == null ||
+                        status == AppointmentStatus.Cancelled ||
+                        status == AppointmentStatus.NoShow,
                     Status = status
                 });
+
 
                 slotTime += service.Duration + serviceGap;
             }
