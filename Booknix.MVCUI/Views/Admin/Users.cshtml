@@ -11,9 +11,15 @@
         <h2 class="text-2xl font-semibold text-gray-800">
             <i class="fas fa-users text-indigo-500 mr-2"></i> Kullanıcı Yönetimi
         </h2>
-        <button 
-            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 flex items-center shadow-sm transition-all duration-200"
-            onclick="openNewUserModal()">
+
+        <div class="relative w-64">
+            <input type="text" id="user-search" placeholder="Kullanıcı ara..."
+                   class="w-full border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500" />
+            <i class="fa-solid fa-magnifying-glass absolute right-3 top-3 text-gray-400"></i>
+        </div>
+
+        <button class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 flex items-center shadow-sm transition-all duration-200"
+                onclick="openNewUserModal()">
             <i class="fas fa-plus mr-2"></i> Yeni Kullanıcı
         </button>
     </div>
@@ -39,10 +45,10 @@
                     </th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody id="userContainer" class="divide-y divide-gray-200">
                 @foreach (var user in Model)
                 {
-                    <tr class="hover:bg-gray-50 transition-colors duration-150">
+                    <tr id="userCard" class="hover:bg-gray-50 transition-colors duration-150">
                         <td class="py-4 px-4 text-sm">
                             <div class="flex items-center">
                                 <span class="font-medium text-gray-700">@user.FullName</span>
@@ -102,7 +108,7 @@
                         </td>
                     </tr>
                 }
-            </tbody>
+            </tbodyid="test">
         </table>
     </div>
 </div>

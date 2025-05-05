@@ -39,32 +39,32 @@ function closeDeleteUserModal() {
 
 function deleteUser() {
     const userId = document.getElementById('deleteUserId').value;
-    
+
     // Show loading
     toggleGlobalLoading(true);
-    
+
     // Add CSRF token to request
     const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-    
+
     axios.post(`/Admin/DeleteUser/${userId}`, {}, {
         headers: {
             'RequestVerificationToken': token
         }
     })
-    .then(response => {
-        closeDeleteUserModal();
-        location.reload();
-    })
-    .catch(error => {
-        alert(error.response?.data || 'Bir hata oluştu');
-    })
-    .finally(() => {
-        toggleGlobalLoading(false);
-    });
+        .then(response => {
+            closeDeleteUserModal();
+            location.reload();
+        })
+        .catch(error => {
+            alert(error.response?.data || 'Bir hata oluştu');
+        })
+        .finally(() => {
+            toggleGlobalLoading(false);
+        });
 }
 
 // Initialize event listeners when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Form submissions
     document.getElementById('editUserForm').addEventListener('submit', handleEditUserSubmit);
     document.getElementById('newUserForm').addEventListener('submit', handleNewUserSubmit);
@@ -73,23 +73,23 @@ document.addEventListener('DOMContentLoaded', function() {
 // Edit user form handler
 function handleEditUserSubmit(e) {
     e.preventDefault();
-    
+
     const userId = document.getElementById('editUserId').value;
     const fullName = document.getElementById('editFullName').value;
     const email = document.getElementById('editEmail').value;
     const roleId = document.getElementById('editRoleId').value;
-    
+
     if (!fullName || !email) {
         alert('Ad ve e-posta alanları zorunludur.');
         return;
     }
-    
+
     // Show loading
     toggleGlobalLoading(true);
-    
+
     // Add CSRF token to request
     const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-    
+
     axios.post('/Admin/EditUser', {
         id: userId,
         fullName: fullName,
@@ -100,38 +100,38 @@ function handleEditUserSubmit(e) {
             'RequestVerificationToken': token
         }
     })
-    .then(response => {
-        closeEditUserModal();
-        location.reload();
-    })
-    .catch(error => {
-        alert(error.response?.data || 'Bir hata oluştu');
-    })
-    .finally(() => {
-        toggleGlobalLoading(false);
-    });
+        .then(response => {
+            closeEditUserModal();
+            location.reload();
+        })
+        .catch(error => {
+            alert(error.response?.data || 'Bir hata oluştu');
+        })
+        .finally(() => {
+            toggleGlobalLoading(false);
+        });
 }
 
 // New user form handler
 function handleNewUserSubmit(e) {
     e.preventDefault();
-    
+
     const fullName = document.getElementById('newFullName').value;
     const email = document.getElementById('newEmail').value;
     const password = document.getElementById('newPassword').value;
     const roleId = document.getElementById('newRoleId').value;
-    
+
     if (!fullName || !email || !password) {
         alert('Lütfen tüm alanları doldurun');
         return;
     }
-    
+
     // Show loading
     toggleGlobalLoading(true);
-    
+
     // Add CSRF token to request
     const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-    
+
     axios.post('/Admin/CreateUser', {
         fullName: fullName,
         email: email,
@@ -142,14 +142,16 @@ function handleNewUserSubmit(e) {
             'RequestVerificationToken': token
         }
     })
-    .then(response => {
-        closeNewUserModal();
-        location.reload();
-    })
-    .catch(error => {
-        alert(error.response?.data || 'Bir hata oluştu');
-    })
-    .finally(() => {
-        toggleGlobalLoading(false);
-    });
-} 
+        .then(response => {
+            closeNewUserModal();
+            location.reload();
+        })
+        .catch(error => {
+            alert(error.response?.data || 'Bir hata oluştu');
+        })
+        .finally(() => {
+            toggleGlobalLoading(false);
+        });
+}
+
+attachSearchFilter("user-search", "#userContainer", "#userCard");
