@@ -37,7 +37,7 @@ namespace Booknix.Application.Services
 
         public async Task<Location?> GetLocationByIdAsync(Guid id)
         {
-            Console.WriteLine(IsInLocationAdminPanel);
+            Console.Write("asdghfdhgfdhgfdhgsgfgsfd " + IsInLocationAdminPanel);
             return await _locationRepo.GetByIdAsync(id);
         }
 

@@ -1,4 +1,12 @@
-﻿$(document).off("click", ".operation-tab").on("click", ".operation-tab", function () {
+﻿$(function () {
+    window.$ctx = $("#location-meta")
+    window.baseUrl = $ctx.data("base-url")
+    window.locationId = $ctx.data("location-id")
+
+})
+
+
+$(document).off("click", ".operation-tab").on("click", ".operation-tab", function () {
     const url = $(this).data("url");
     const tag = $(this).data("tag");
 

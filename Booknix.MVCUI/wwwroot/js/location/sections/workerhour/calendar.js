@@ -4,9 +4,6 @@ window.currentMonth = new Date().getMonth(); // 0-11
 window.multiSelectMode = false;
 window.selectedDates = [];
 
-const $ctx = $("#location-meta");
-const baseUrl = $ctx.data("base-url");
-const locationId = $ctx.data("location-id");
 
 
 window.monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",

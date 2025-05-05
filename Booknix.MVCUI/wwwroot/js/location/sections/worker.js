@@ -1,9 +1,5 @@
 ﻿window.pendingDeleteId = window.pendingDeleteId || null;
 
-const $ctx = $("#location-meta");
-const baseUrl = $ctx.data("base-url");
-const locationId = $ctx.data("location-id");
-
 // Çalışan Ekleme Modali
 $(document).off("click", "#show-add-worker-modal").on("click", "#show-add-worker-modal", () => showModal("add-worker-modal"));
 

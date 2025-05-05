@@ -1,10 +1,5 @@
 ﻿window.deleteAction = window.deleteAction || null;
 
-const $ctx = $("#location-meta");
-const baseUrl = $ctx.data("base-url");
-const locationId = $ctx.data("location-id");
-
-
 
 $(document).off("click", "#show-add-service-modal").on("click", "#show-add-service-modal", () => {
     resetServiceForm();

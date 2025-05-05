@@ -194,20 +194,20 @@ public class AdminController(IAdminService adminService) : Controller
         if (location == null)
             return NotFound("Lokasyon bulunamadı.");
 
-        // İlgili diğer veriler varsa burada alınabilir (Örneğin Çalışanlar)
-        // var employees = await _employeeService.GetByLocationIdAsync(id);
+        TempData["BaseUrl"] = "/Admin/Location";
 
-        return View("Location/Details", location);
+        return View("/Views/Location/details.cshtml", location);
     }
 
 
     // SERVICE OPERATIONS
 
     [HttpGet("/Admin/Location/GetServicesByLocation/{locationId}")]
+    [AjaxOnly]
     public async Task<IActionResult> GetServicesByLocation(Guid locationId)
     {
         var model = await _adminService.GetServicesByLocationAsync(locationId);
-        return PartialView("Location/LocationModules/Service/ServiceListPartial", model);
+        return PartialView("~/Views/Location/Sections/Service/PartialView.cshtml", model);
     }
 
 
@@ -232,6 +232,7 @@ public class AdminController(IAdminService adminService) : Controller
     }
 
     [HttpGet]
+    [AjaxOnly]
     [Route("Admin/Location/Service/Get/{id}")]
     public async Task<IActionResult> GetServiceById(Guid id)
     {
@@ -241,7 +242,7 @@ public class AdminController(IAdminService adminService) : Controller
             return NotFound("Servis bulunamadı.");
         }
 
-        return PartialView("Location/LocationModules/Service/ServiceDetailsPartial", service);
+        return PartialView("~/Views/Location/Sections/Service/_PartialHelper.cshtml", service);
     }
 
     [HttpPost]
@@ -306,11 +307,12 @@ public class AdminController(IAdminService adminService) : Controller
     // WORKER OPERATIONS
 
     [HttpGet("/Admin/Location/GetWorkersByLocation/{locationId}")]
+    [AjaxOnly]
     public async Task<IActionResult> GetWorkersByLocation(Guid LocationId)
     {
         var workers = await _adminService.GetAllWorkersAsync(LocationId);
         ViewBag.LocationId = LocationId;
-        return PartialView("Location/LocationModules/Worker/PartialView", workers);
+        return PartialView("~/Views/Location/Sections/Worker/PartialView.cshtml", workers);
     }
 
     [HttpPost]
@@ -353,15 +355,17 @@ public class AdminController(IAdminService adminService) : Controller
     // WORKER HOURS OPERATIONS
 
     [HttpGet]
+    [AjaxOnly]
     [Route("/Admin/Location/GetWorkingHoursByLocation/{locationId}")]
     public async Task<IActionResult> GetWorkingHoursByLocation(Guid locationId)
     {
         var workers = await _adminService.GetAllWorkersAsync(locationId);
         ViewBag.LocationId = locationId;
-        return PartialView("Location/LocationModules/WorkerHour/WorkerHourMainPartial", workers);
+        return PartialView("~/Views/Location/Sections/WorkerHour/WorkerHourMainPartial.cshtml", workers);
     }
 
     [HttpGet]
+    [AjaxOnly]
     [Route("/Admin/Location/GetWorkerWorkingHours/{workerId}/{year}/{month}")]
     public async Task<IActionResult> GetWorkerWorkingHours(Guid workerId, int year, int month)
     {
