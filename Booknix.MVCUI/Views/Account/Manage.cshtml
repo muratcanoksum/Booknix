@@ -2,49 +2,83 @@
     ViewData["Title"] = "Hesabım";
 }
 
-<div class="max-w-4xl mb-[150px] mx-auto mt-20 bg-white shadow rounded-lg flex p-5">
-    <!-- Sol Menü -->
-    <div class="w-1/4 border-r">
-        <ul class="space-y-2 p-4 text-sm">
-            <li>
-                <a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/Profile">
-                    <i class="fas fa-user mr-2"></i> Profil Bilgileri
+<div class="max-w-4xl mb-[150px] mx-auto mt-20 bg-white shadow rounded-lg p-5">
+    <!-- Tab Başlıkları -->
+    <div class="border-b mb-6">
+        <ul class="flex">
+            <li class="mr-2">
+                <a href="#" class="tab-link inline-block py-3 px-6 border-b-2 border-transparent hover:border-blue-400 hover:text-blue-600 font-medium text-gray-700 active" data-tab="profile">
+                    <i class="fas fa-user mr-2"></i> Profilim
                 </a>
             </li>
             <li>
-                <a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ProfilePhoto">
-                    <i class="fas fa-camera mr-2"></i> Profil Fotoğrafı
-                </a>
-            </li>
-            <li>
-                <a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ChangePassword">
-                    <i class="fas fa-key mr-2"></i> Şifre Değiştir
-                </a>
-            </li>
-            <li>
-                <a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ChangeEmail">
-                    <i class="fas fa-envelope mr-2"></i> E-Posta Değiştir
-                </a>
-            </li>
-            <li>
-                <a href="#" class="menu-link block py-2 px-3 hover:bg-red-50 text-red-600 font-semibold" data-url="/Account/Delete">
-                    <i class="fas fa-trash-alt mr-2"></i> Hesabı Sil
+                <a href="#" class="tab-link inline-block py-3 px-6 border-b-2 border-transparent hover:border-blue-400 hover:text-blue-600 font-medium text-gray-700" data-tab="appointments">
+                    <i class="fas fa-calendar-check mr-2"></i> Randevularım
                 </a>
             </li>
         </ul>
     </div>
 
+    <!-- Tab İçerikleri -->
+    <div class="tab-content">
+        <!-- Profil Tab İçeriği -->
+        <div id="profile-tab" class="tab-pane active">
+            <div class="flex">
+                <!-- Sol Menü -->
+                <div class="w-1/4 border-r">
+                    <ul class="space-y-2 p-4 text-sm">
+                        <li>
+                            <a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/Profile">
+                                <i class="fas fa-user mr-2"></i> Profil Bilgileri
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ProfilePhoto">
+                                <i class="fas fa-camera mr-2"></i> Profil Fotoğrafı
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ChangePassword">
+                                <i class="fas fa-key mr-2"></i> Şifre Değiştir
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="menu-link block py-2 px-3 hover:bg-gray-100 font-medium text-gray-700" data-url="/Account/ChangeEmail">
+                                <i class="fas fa-envelope mr-2"></i> E-Posta Değiştir
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="menu-link block py-2 px-3 hover:bg-red-50 text-red-600 font-semibold" data-url="/Account/Delete">
+                                <i class="fas fa-trash-alt mr-2"></i> Hesabı Sil
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
-    <!-- Sağ İçerik -->
-    <div id="content-panel" class="w-3/4 p-6">
-        <div class="text-sm text-gray-500">Yükleniyor...</div>
+                <!-- Sağ İçerik -->
+                <div id="content-panel" class="w-3/4 p-6">
+                    <div class="text-sm text-gray-500">Yükleniyor...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Randevularım Tab İçeriği -->
+        <div id="appointments-tab" class="tab-pane hidden">
+            <div class="p-4">
+                <h3 class="text-lg font-semibold mb-4">Randevularım</h3>
+                <div id="appointments-content">
+                    <div class="text-sm text-gray-500">Randevu bilgileri yükleniyor...</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
+<!-- Modal Container -->
+<div id="modal-container" class="hidden"></div>
+
 @section Scripts {
-
     <script src="~/js/account/manage.js" asp-append-version="true"></script>
-
 }
 
 

@@ -10,11 +10,16 @@ namespace Booknix.MVCUI.Controllers
     {
         private readonly IProfileService _profileService;
         private readonly IAuthService _authService;
+        private readonly IAppointmentService _appointmentService;
 
-        public AccountController(IProfileService profileService, IAuthService authService)
+        public AccountController(
+            IProfileService profileService, 
+            IAuthService authService,
+            IAppointmentService appointmentService)
         {
             _profileService = profileService;
             _authService = authService;
+            _appointmentService = appointmentService;
         }
 
         [HttpGet]
@@ -187,6 +192,43 @@ namespace Booknix.MVCUI.Controllers
             }
             return Ok(result.Message);
 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Appointments()
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var appointments = await _appointmentService.GetUserAppointmentsAsync(userId);
+            return PartialView("_AppointmentsPartial", appointments);
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> AppointmentDetail(Guid id)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var appointmentDetail = await _appointmentService.GetAppointmentDetailAsync(userId, id);
+            
+            if (appointmentDetail == null)
+            {
+                return NotFound("Randevu bulunamadı veya erişim izniniz yok.");
+            }
+            
+            return PartialView("_AppointmentDetailPartial", appointmentDetail);
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelAppointment(Guid id)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var success = await _appointmentService.CancelAppointmentAsync(userId, id);
+            
+            if (!success)
+            {
+                return BadRequest("Randevu iptal edilemedi.");
+            }
+            
+            return Ok("Randevu başarıyla iptal edildi.");
         }
     }
 }

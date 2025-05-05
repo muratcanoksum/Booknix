@@ -29,7 +29,7 @@ else
     Env.Load();
 }
 
-// PostgreSQL ba�lant� c�mlesini olu�tur
+// PostgreSQL bağlantı cümlesini oluştur
 var connectionString = $"Host={Env.GetString("DB_HOST")};" +
                        $"Port={Env.GetString("DB_PORT")};" +
                        $"Database={Env.GetString("DB_NAME")};" +
@@ -76,6 +76,7 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ILocationAdminService, LocationAdminService>();
 builder.Services.AddScoped<IPublicService, PublicService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 
 builder.Services.AddSingleton<IAppSettings, AppSettings>();
@@ -93,7 +94,7 @@ builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
-// Token s�resi yap�land�rmas� (EmailHelper'a aktar)
+// Token süresi yapılandırması (EmailHelper'a aktar)
 var appSettings = app.Services.GetRequiredService<IAppSettings>();
 EmailHelper.Configure(appSettings.TokenExpireMinutes, appSettings.BaseUrl);
 
