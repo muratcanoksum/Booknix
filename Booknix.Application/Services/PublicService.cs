@@ -16,8 +16,7 @@ public class PublicService(
     ILocationRepository locationRepo,
     IWorkerWorkingHourRepository workingHourRepo,
     IWorkerRepository workerRepo,
-    IUserRepository userRepo,
-    IUnitOfWork unitOfWork
+    IUserRepository userRepo
         ) : IPublicService
 {
     private readonly ISectorRepository _sectorRepo = sectorRepo;
@@ -29,7 +28,6 @@ public class PublicService(
     private readonly ILocationRepository _locationRepo = locationRepo;
     private readonly IWorkerWorkingHourRepository _workingHourRepo = workingHourRepo;
     private readonly IWorkerRepository _workerRepo = workerRepo;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
 
     public async Task<HomePageDto> GetHomePageDataAsync()

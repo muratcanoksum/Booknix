@@ -25,11 +25,14 @@ public class EfAppointmentRepository : IAppointmentRepository
 
     public List<Appointment> GetByWorkerBetweenDates(Guid workerId, DateTime start, DateTime end)
     {
+        start = DateTime.SpecifyKind(start, DateTimeKind.Utc);
+        end = DateTime.SpecifyKind(end, DateTimeKind.Utc);
+
         return _context.Appointments
             .Include(a => a.AppointmentSlot)
-            .Where(a => 
-                a.AppointmentSlot.AssignerWorkerId == workerId && 
-                a.AppointmentSlot.StartTime >= start && 
+            .Where(a =>
+                a.AppointmentSlot!.AssignerWorkerId == workerId &&
+                a.AppointmentSlot.StartTime >= start &&
                 a.AppointmentSlot.StartTime <= end)
             .ToList();
     }
@@ -47,7 +50,6 @@ public class EfAppointmentRepository : IAppointmentRepository
         await _context.SaveChangesAsync();
     }
 
-
     public async Task UpdateAsync(Appointment appointment)
     {
         _context.Appointments.Update(appointment);
@@ -62,6 +64,8 @@ public class EfAppointmentRepository : IAppointmentRepository
             _context.Appointments.Remove(appointment);
             await _context.SaveChangesAsync();
         }
+    }
+
     public async Task<List<Appointment>> GetByUserIdAsync(Guid userId)
     {
         return await _context.Appointments

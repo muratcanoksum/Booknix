@@ -1,36 +1,36 @@
 ﻿// Tab değiştirme işlevselliği
-$(function() {
+$(function () {
     // Tab tıklama olayını dinle
-    $(".tab-link").on("click", function(e) {
+    $(".tab-link").on("click", function (e) {
         e.preventDefault();
         const tabId = $(this).data("tab");
-        
+
         // Tüm tabları ve linkleri deaktif et
         $(".tab-link").removeClass("active border-blue-500 text-blue-700").addClass("border-transparent");
         $(".tab-pane").removeClass("active").addClass("hidden");
-        
+
         // Tıklanan tabı ve linkini aktif et
         $(this).addClass("active border-blue-500 text-blue-700").removeClass("border-transparent");
         $("#" + tabId + "-tab").addClass("active").removeClass("hidden");
-        
+
         // Eğer profil tabı seçiliyse, ilk menü linkini tıkla
         if (tabId === "profile" && !$(".menu-link.bg-blue-100").length) {
             $(".menu-link").first().trigger("click");
         }
-        
+
         // Eğer randevular tabı seçiliyse, randevu içeriğini yükle
         if (tabId === "appointments") {
             loadAppointments();
         }
     });
-    
+
     // Randevu içeriğini yükleme fonksiyonu
     function loadAppointments() {
         $("#appointments-content").html("<div class='text-sm text-gray-500'>Randevu bilgileri yükleniyor...</div>");
-        
-        $.get("/Account/Appointments", function(html) {
+
+        $.get("/Account/Appointments", function (html) {
             $("#appointments-content").html(html);
-        }).fail(function() {
+        }).fail(function () {
             $("#appointments-content").html(`
                 <div class="flex flex-col items-center justify-center text-center space-y-4 py-8">
                     <i class="fas fa-calendar-times text-4xl text-gray-400"></i>
@@ -168,4 +168,14 @@ $(document).off('paste', '.verify-input').on('paste', '.verify-input', function 
     }
 
     e.preventDefault(); // Varsayılan yapıştırmayı engelle
+});
+
+// Sayfa ilk yüklendiğinde hash varsa (örneğin: #appointments), o tabı aç
+$(function () {
+    const hash = window.location.hash;
+
+    if (hash === "#appointments") {
+        // Aktif tabı değiştir
+        $('.tab-link[data-tab="appointments"]').trigger("click");
+    }
 });

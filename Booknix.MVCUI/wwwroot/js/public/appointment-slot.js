@@ -38,10 +38,9 @@ $(document).off("submit", "#confirm-form").on("submit", "#confirm-form", functio
         url: "/Public/ConfirmAppointment",
         data: $(this).serialize(),
         success: function (msg) {
-            alert(msg);
+            window.location.href = "/Account/Manage#appointments";
         },
         error: function (xhr) {
-            // Hata durumunda yapılacak işlemler
             msg = xhr.responseText || "Randevu oluşturulurken hata oluştu.";
             alert(msg);
         }
