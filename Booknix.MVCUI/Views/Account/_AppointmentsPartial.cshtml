@@ -61,17 +61,30 @@
                                         "Tamamlandı" => "bg-blue-100 text-blue-800",
                                         _ => "bg-gray-100 text-gray-800"
                                     };
+                                    
+                                    // Check if appointment can be cancelled (status is not Completed or Cancelled, and date is in future)
+                                    bool canCancel = (appointment.Status != "Tamamlandı" && 
+                                                      appointment.Status != "İptal Edildi" &&
+                                                      appointment.Status != "Completed" && 
+                                                      appointment.Status != "Cancelled" &&
+                                                      appointment.AppointmentDate > DateTime.Now);
                                 }
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full @statusClass">
                                     @appointment.Status
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3" data-id="@appointment.Id">Detay</a>
-                                @if (appointment.Status == "Bekliyor" || appointment.Status == "Onaylandı")
-                                {
-                                    <a href="#" class="text-red-600 hover:text-red-900 cancel-appointment" data-id="@appointment.Id">İptal Et</a>
-                                }
+                                <div class="flex items-center gap-3">
+                                    <a href="#" class="text-indigo-600 hover:text-indigo-900 inline-flex items-center whitespace-nowrap" data-id="@appointment.Id">
+                                        <i class="fas fa-info-circle mr-1"></i> Detay
+                                    </a>
+                                    @if (canCancel)
+                                    {
+                                        <a href="#" class="text-red-600 hover:text-red-900 cancel-appointment inline-flex items-center whitespace-nowrap" data-id="@appointment.Id">
+                                            <i class="fas fa-times-circle mr-1"></i> İptal Et
+                                        </a>
+                                    }
+                                </div>
                             </td>
                         </tr>
                     }
@@ -91,5 +104,29 @@
         </div>
     }
 </div>
+
+<!-- Silme Onay Modalı -->
+<div id="confirm-cancel-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md text-center">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Randevu İptali</h2>
+        <p class="text-sm text-gray-600 mb-6">Bu randevuyu iptal etmek istediğinize emin misiniz?</p>
+        <div class="flex justify-center gap-4">
+            <button id="confirm-cancel-yes" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Evet</button>
+            <button id="confirm-cancel-no" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">İptal</button>
+        </div>
+    </div>
+</div>
+
+<!-- Onay için CSRF token -->
+@if (ViewContext.HttpContext.Request.HasFormContentType && 
+     ViewContext.HttpContext.Request.Form.ContainsKey("__RequestVerificationToken"))
+{
+    <input type="hidden" name="__RequestVerificationToken" 
+           value="@ViewContext.HttpContext.Request.Form["__RequestVerificationToken"]" />
+}
+else
+{
+    @Html.AntiForgeryToken()
+}
 
 <script src="~/js/account/appointments.js" asp-append-version="true"></script> 
