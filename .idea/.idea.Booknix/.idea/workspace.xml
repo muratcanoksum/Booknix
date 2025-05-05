@@ -11,13 +11,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="96c8b308-4f34-45ec-85e1-130b97399079" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Booknix/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Booknix/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.Application/DTOs/AppointmentDetailDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/DTOs/AppointmentDetailDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.Application/Services/AppointmentService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/Services/AppointmentService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Account/_AppointmentDetailPartial.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Account/_AppointmentDetailPartial.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Account/_AppointmentsPartial.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Account/_AppointmentsPartial.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/wwwroot/js/account/appointments.js" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/wwwroot/js/account/appointments.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Worker/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Worker/Index.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

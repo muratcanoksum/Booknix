@@ -34,6 +34,7 @@ namespace Booknix.Persistence.Repositories
         public async Task<Worker?> GetByUserIdAsync(Guid userId)
         {
             return await _context.Workers
+                .Include(w => w.User)
                 .Include(w => w.Location)
                 .FirstOrDefaultAsync(w => w.UserId == userId);
         }

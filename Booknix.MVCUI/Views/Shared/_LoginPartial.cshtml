@@ -38,6 +38,17 @@
 </li>
         }
 
+        @* Çalışan Paneli sadece LocationEmployee rolü için gösterilir *@
+        if (locationRole == "LocationEmployee")
+        {
+            <li>
+                <a asp-controller="Worker" asp-action="Index"
+                   class="block px-4 py-1.5 border border-teal-500 text-teal-600 text-sm rounded hover:bg-teal-500 hover:text-white transition">
+                    Çalışan Paneli
+                </a>
+            </li>
+        }
+
         <li>
             <a asp-controller="Account" asp-action="Manage"
                class="block px-4 py-1.5 border border-indigo-500 text-indigo-500 text-sm rounded hover:bg-indigo-500 hover:text-white transition">

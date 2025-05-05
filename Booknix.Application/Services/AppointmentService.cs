@@ -104,5 +104,23 @@ namespace Booknix.Application.Services
             
             return true;
         }
+
+        public async Task<List<AppointmentDto>> GetWorkerAppointmentsAsync(Guid workerId)
+        {
+            var appointments = await _appointmentRepository.GetByWorkerIdAsync(workerId);
+            
+            return appointments.Select(a => new AppointmentDto
+            {
+                Id = a.Id,
+                AppointmentDate = a.AppointmentSlot?.StartTime.Date ?? DateTime.MinValue,
+                StartTime = a.AppointmentSlot?.StartTime.ToString("HH:mm") ?? string.Empty,
+                EndTime = a.AppointmentSlot?.EndTime.ToString("HH:mm") ?? string.Empty,
+                LocationName = a.Service?.Location?.Name ?? string.Empty,
+                WorkerName = a.AppointmentSlot?.AssignerWorker?.User?.FullName ?? "Belirtilmemiş",
+                UserName = a.User?.FullName ?? "Belirtilmemiş",
+                Status = a.Status.ToString(),
+                ServiceName = a.Service?.Name ?? string.Empty
+            }).ToList();
+        }
     }
 } 

@@ -89,4 +89,18 @@ public class EfAppointmentRepository : IAppointmentRepository
                 .ThenInclude(s => s.Location)
             .FirstOrDefaultAsync(a => a.Id == id);
     }
+
+    public async Task<List<Appointment>> GetByWorkerIdAsync(Guid workerId)
+    {
+        return await _context.Appointments
+            .Include(a => a.AppointmentSlot)
+                .ThenInclude(s => s.AssignerWorker)
+                    .ThenInclude(w => w.User)
+            .Include(a => a.Service)
+                .ThenInclude(s => s.Location)
+            .Include(a => a.User)
+            .Where(a => a.AppointmentSlot.AssignerWorkerId == workerId)
+            .OrderByDescending(a => a.AppointmentSlot.StartTime)
+            .ToListAsync();
+    }
 }
