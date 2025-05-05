@@ -25,6 +25,13 @@
                 @TempData["Info"]
             </div>
         }
+        @if (Context.Request.Query["sessionExpired"] == "true")
+        {
+            <div class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-4 py-3 rounded mb-4 text-sm text-center">
+                Oturumunuz güvenlik nedeniyle sonlandırıldı. Lütfen tekrar giriş yapınız.
+            </div>
+        }
+
 
 
         <div id="login-alert" class="hidden"></div>

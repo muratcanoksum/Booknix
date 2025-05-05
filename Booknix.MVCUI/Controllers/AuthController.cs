@@ -40,6 +40,7 @@ public class AuthController(
         HttpContext.Session.SetString("Email", result.Email);
         HttpContext.Session.SetString("LocationId", result.LocationId?.ToString() ?? "");
         HttpContext.Session.SetString("LocationRole", result.LocationRole?.ToString() ?? "");
+        HttpContext.Session.SetString("SessionKey", result.SessionKey);
 
 
 
@@ -73,16 +74,26 @@ public class AuthController(
         return Ok(); // AJAX success
     }
 
-    // LOGOUT
     [Auth]
     [HttpGet]
-    public IActionResult Logout()
+    public async Task<IActionResult> Logout()
     {
+        var sessionKey = HttpContext.Session.GetString("SessionKey");
+        var userIdStr = HttpContext.Session.GetString("UserId");
+
+        if (!string.IsNullOrEmpty(sessionKey) && Guid.TryParse(userIdStr, out var userId))
+        {
+            await _authService.LogoutAsync(userId, sessionKey);
+        }
+
         HttpContext.Session.Clear();
+        Response.Cookies.Delete("PersistentSessionKey");
         Response.Cookies.Delete("RememberMe");
 
         return RedirectToAction("Login");
     }
+
+
 
     // VERIFY EMAIL
     [UnAuth]

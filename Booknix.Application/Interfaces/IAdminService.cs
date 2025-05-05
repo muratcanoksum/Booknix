@@ -43,5 +43,18 @@ namespace Booknix.Application.Interfaces
         Task<List<WorkerWorkingHour>> GetWorkerWorkingHoursAsync(Guid workerId, int year, int month);
         Task<RequestResult> AddWorkerWorkingHourAsync(WorkerWorkingHourDto dto);
 
+        // User
+        Task<List<User>> GetAllUsersAsync();
+        Task<List<Role>> GetAllRolesAsync();
+        Task<RequestResult> UpdateUserAsync(UserUpdateDto model);
+        Task<RequestResult> DeleteUserAsync(Guid id, string currentUserId);
+        Task<RequestResult> CreateUserAsync(UserCreateDto model);
+
+        // Session
+        Task<List<UserSession>> GetActiveSessionsAsync(Guid userId);
+        Task<RequestResult> TerminateSessionAsync(Guid userId, string sessionKey);
+        Task<RequestResult> TerminateAllSessionsAsync(Guid userId);
+
+
     }
 }

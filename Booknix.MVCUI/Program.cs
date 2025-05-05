@@ -12,6 +12,7 @@ using Booknix.Application.Helpers; // EmailHelper burada
 using System.IO;
 using Booknix.Infrastructure.Logging;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Booknix.Infrastructure.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,7 +64,7 @@ builder.Services.AddScoped<IServiceRepository, EfServiceRepository>();
 builder.Services.AddScoped<IWorkerWorkingHourRepository, EfWorkerWorkingHourRepository>();
 builder.Services.AddScoped<IAppointmentRepository, EfAppointmentRepository>();
 builder.Services.AddScoped<IAppointmentSlotRepository, EfAppointmentSlotRepository>();
-
+builder.Services.AddScoped<IUserSessionRepository, EfUserSessionRepository>();
 
 
 // Unit of Work
@@ -104,6 +105,8 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.UseSession();
+app.UseMiddleware<SessionValidationMiddleware>();
+
 
 app.UseExceptionHandler("/Error/500"); // sunucu hataları (500+)
 app.UseStatusCodePages(context =>

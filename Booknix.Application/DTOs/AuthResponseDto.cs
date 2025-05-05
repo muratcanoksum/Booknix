@@ -10,5 +10,6 @@ namespace Booknix.Application.DTOs
         public string Role { get; set; } = null!;
         public Guid? LocationId { get; set; } = null!;
         public LocationRole? LocationRole { get; set; } = null!;
+        public string SessionKey { get; set; } = null!;
     }
 }

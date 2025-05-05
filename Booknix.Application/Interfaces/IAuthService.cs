@@ -16,5 +16,7 @@ namespace Booknix.Application.Interfaces
         Task<RequestResult> DeleteAccount(Guid userId, string password);
         Task<RequestResult> DeleteAccountVerify(Guid userId, string token);
         Task<RequestResult> ApproveIpAsync(string token);
+        Task LogoutAsync(Guid userId, string sessionKey);
+
     }
 }

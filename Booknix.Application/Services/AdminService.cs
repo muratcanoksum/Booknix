@@ -22,7 +22,8 @@ namespace Booknix.Application.Services
         IAuditLogger auditLogger,
         IEmailSender emailSender,
         IServiceEmployeeRepository serviceEmployeeRepo,
-        IWorkerWorkingHourRepository workerWorkingHourRepo
+        IWorkerWorkingHourRepository workerWorkingHourRepo,
+        IUserSessionRepository userSessionRepo
             ) : IAdminService
     {
         private readonly ISectorRepository _sectorRepo = sectorRepo;
@@ -35,6 +36,7 @@ namespace Booknix.Application.Services
         private readonly IEmailSender _emailSender = emailSender;
         private readonly IServiceEmployeeRepository _serviceEmployeeRepo = serviceEmployeeRepo;
         private readonly IWorkerWorkingHourRepository _workerWorkingHourRepo = workerWorkingHourRepo;
+        private readonly IUserSessionRepository _userSessionRepo = userSessionRepo;
 
         // Sectors
 
@@ -889,6 +891,230 @@ namespace Booknix.Application.Services
                 Success = true,
                 Message = "Çalışma saatleri başarıyla kaydedildi."
             };
+        }
+
+        // User
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return (await _userRepo.GetAllAsync()).ToList();
+        }
+
+        public async Task<List<Role>> GetAllRolesAsync()
+        {
+            return (await _roleRepo.GetAllAsync()).ToList();
+        }
+
+        public async Task<RequestResult> UpdateUserAsync(UserUpdateDto model)
+        {
+            if (string.IsNullOrWhiteSpace(model.FullName) || string.IsNullOrWhiteSpace(model.Email))
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Ad ve e-posta alanları boş bırakılamaz."
+                };
+            }
+
+            var user = await _userRepo.GetByIdAsync(model.Id);
+            if (user == null)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Kullanıcı bulunamadı."
+                };
+            }
+
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.RoleId = model.RoleId;
+
+            try
+            {
+                await _userRepo.UpdateAsync(user);
+                return new RequestResult
+                {
+                    Success = true,
+                    Message = "Kullanıcı başarıyla güncellendi."
+                };
+            }
+            catch (Exception)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Güncelleme sırasında hata oluştu."
+                };
+            }
+        }
+
+        public async Task<RequestResult> DeleteUserAsync(Guid id, string currentUserId)
+        {
+            var user = await _userRepo.GetByIdAsync(id);
+            if (user == null)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Kullanıcı bulunamadı."
+                };
+            }
+
+            if (currentUserId == id.ToString() && user.Role?.Name == "Admin")
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Kendinizi silemezsiniz."
+                };
+            }
+
+            try
+            {
+                await _userRepo.DeleteAsync(user);
+                return new RequestResult
+                {
+                    Success = true,
+                    Message = "Kullanıcı başarıyla silindi."
+                };
+            }
+            catch (Exception)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Silme işlemi sırasında hata oluştu."
+                };
+            }
+        }
+
+        public async Task<RequestResult> CreateUserAsync(UserCreateDto model)
+        {
+            if (string.IsNullOrWhiteSpace(model.FullName) ||
+                string.IsNullOrWhiteSpace(model.Email) ||
+                string.IsNullOrWhiteSpace(model.Password))
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Ad, e-posta ve şifre alanları boş bırakılamaz."
+                };
+            }
+
+            var existingUser = await _userRepo.GetByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Bu e-posta adresi zaten kullanılıyor."
+                };
+            }
+
+            var role = await _roleRepo.GetByIdAsync(model.RoleId);
+            if (role == null)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Geçersiz rol seçildi."
+                };
+            }
+
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                FullName = model.FullName,
+                Email = model.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
+                RoleId = model.RoleId,
+                IsEmailConfirmed = true
+            };
+
+            try
+            {
+                await _userRepo.AddAsync(user);
+                return new RequestResult
+                {
+                    Success = true,
+                    Message = "Kullanıcı başarıyla oluşturuldu."
+                };
+            }
+            catch (Exception)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Kullanıcı oluşturulurken bir hata oluştu."
+                };
+            }
+        }
+
+        // Session
+        public async Task<List<UserSession>> GetActiveSessionsAsync(Guid userId)
+        {
+            return await _userSessionRepo.GetActiveSessionsByUserIdAsync(userId);
+        }
+
+        public async Task<RequestResult> TerminateSessionAsync(Guid UserId,string sessionKey)
+        {
+            if (string.IsNullOrWhiteSpace(sessionKey))
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Geçersiz oturum anahtarı."
+                };
+            }
+
+            try
+            {
+                await _userSessionRepo.DeactivateBySessionKeyAsync(UserId, sessionKey);
+                return new RequestResult
+                {
+                    Success = true,
+                    Message = "Oturum sonlandırıldı."
+                };
+            }
+            catch (Exception)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Oturum sonlandırılırken hata oluştu."
+                };
+            }
+        }
+
+        public async Task<RequestResult> TerminateAllSessionsAsync(Guid userId)
+        {
+            if (userId == Guid.Empty)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Geçersiz kullanıcı."
+                };
+            }
+
+            try
+            {
+                await _userSessionRepo.DeactivateAllByUserIdAsync(userId);
+                return new RequestResult
+                {
+                    Success = true,
+                    Message = "Tüm oturumlar sonlandırıldı."
+                };
+            }
+            catch (Exception)
+            {
+                return new RequestResult
+                {
+                    Success = false,
+                    Message = "Oturumlar sonlandırılırken hata oluştu."
+                };
+            }
         }
 
     }

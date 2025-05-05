@@ -5,15 +5,17 @@ using Booknix.Application.Interfaces;
 using Booknix.Application.DTOs;
 using Booknix.Domain.Interfaces;
 using Booknix.Domain.Entities;
+using Booknix.Persistence.Repositories;
 
 namespace Booknix.MVCUI.Controllers;
 
 [Admin]
-public class AdminController(IAdminService adminService, IUserRepository userRepository, IRoleRepository roleRepository) : Controller
+public class AdminController(IAdminService adminService, IUserRepository userRepository, IRoleRepository roleRepository, IUserSessionRepository userSessionRepository) : Controller
 {
     private readonly IAdminService _adminService = adminService;
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IRoleRepository _roleRepository = roleRepository;
+    private readonly IUserSessionRepository _userSessionRepo = userSessionRepository;
 
     [HttpGet]
     public IActionResult Index()
@@ -400,100 +402,105 @@ public class AdminController(IAdminService adminService, IUserRepository userRep
     }
 
     // USER OPERATIONS
-    
+
     [HttpGet]
     public async Task<IActionResult> Users()
     {
-        var users = await _userRepository.GetAllAsync();
-        var roles = await _roleRepository.GetAllAsync();
-        
+        var users = await _adminService.GetAllUsersAsync();
+        var roles = await _adminService.GetAllRolesAsync();
+
         ViewBag.Roles = roles;
-        
+
         return View(users);
-    }
-    
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditUser([FromBody] UserUpdateDto model)
-    {
-        if (string.IsNullOrEmpty(model.FullName) || string.IsNullOrEmpty(model.Email))
-        {
-            return BadRequest("Ad ve e-posta alanları boş bırakılamaz.");
-        }
-        
-        var user = await _userRepository.GetByIdAsync(model.Id);
-        if (user == null)
-        {
-            return NotFound("Kullanıcı bulunamadı.");
-        }
-        
-        user.FullName = model.FullName;
-        user.Email = model.Email;
-        user.RoleId = model.RoleId;
-        
-        await _userRepository.UpdateAsync(user);
-        
-        return Ok("Kullanıcı başarıyla güncellendi.");
-    }
-    
-    [HttpPost("Admin/DeleteUser/{id}")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteUser(Guid id)
-    {
-        var user = await _userRepository.GetByIdAsync(id);
-        if (user == null)
-        {
-            return NotFound("Kullanıcı bulunamadı.");
-        }
-        
-        // Check if this is the admin user who is trying to delete themselves
-        var currentUserId = HttpContext.Session.GetString("UserId");
-        if (currentUserId == id.ToString() && user.Role?.Name == "Admin")
-        {
-            return BadRequest("Kendinizi silemezsiniz.");
-        }
-        
-        await _userRepository.DeleteAsync(user);
-        
-        return Ok("Kullanıcı başarıyla silindi.");
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateUser([FromBody] UserCreateDto model)
+    public async Task<IActionResult> EditUser([FromBody] UserUpdateDto model)
     {
-        if (string.IsNullOrEmpty(model.FullName) || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
-        {
-            return BadRequest("Ad, e-posta ve şifre alanları boş bırakılamaz.");
-        }
-        
-        // Check if the email already exists
-        var existingUser = await _userRepository.GetByEmailAsync(model.Email);
-        if (existingUser != null)
-        {
-            return BadRequest("Bu e-posta adresi zaten kullanılıyor.");
-        }
-        
-        // Check if the role exists
-        var role = await _roleRepository.GetByIdAsync(model.RoleId);
-        if (role == null)
-        {
-            return BadRequest("Geçersiz rol seçildi.");
-        }
-        
-        // Create the user
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            FullName = model.FullName,
-            Email = model.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
-            RoleId = model.RoleId,
-            IsEmailConfirmed = true // Admin tarafından oluşturulan kullanıcılar doğrulanmış kabul edilir
-        };
-        
-        await _userRepository.AddAsync(user);
-        
-        return Ok("Kullanıcı başarıyla oluşturuldu.");
+        var result = await _adminService.UpdateUserAsync(model);
+
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok(result.Message);
     }
+
+    [HttpPost("Admin/DeleteUser/{id}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteUser(Guid id)
+    {
+        var currentUserId = HttpContext.Session.GetString("UserId");
+
+        var result = await _adminService.DeleteUserAsync(id, currentUserId!);
+
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok(result.Message);
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateUser(UserCreateDto model)
+    {
+        var result = await _adminService.CreateUserAsync(model);
+
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok(result.Message);
+    }
+
+
+
+    [HttpGet("Admin/UserSessions/{userId}")]
+    [AjaxOnly]
+    public async Task<IActionResult> UserSessions(Guid userId)
+    {
+        var sessions = await _adminService.GetActiveSessionsAsync(userId);
+
+        if (sessions == null || !sessions.Any())
+        {
+            return Content("Aktif oturum bulunamadı.");
+        }
+
+        return PartialView("~/Views/Admin/_UserSessionPartial.cshtml", sessions);
+    }
+
+
+    [HttpPost("Admin/Session/Terminate")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> TerminateSession(Guid UserId, string SessionKey)
+    {
+        var result = await _adminService.TerminateSessionAsync(UserId, SessionKey);
+
+
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok(result.Message);
+    }
+
+
+
+    [HttpPost("Admin/Session/TerminateAll")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> TerminateAllSessions(Guid userId)
+    {
+        var result = await _adminService.TerminateAllSessionsAsync(userId);
+
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok(result.Message);
+    }
+
+
+
+
+
+
+
 }

@@ -16,7 +16,8 @@ namespace Booknix.Application.Services
         IAuditLogger auditLogger,
         ITrustedIpRepository trustedIpRepo,
         IWorkerRepository workerRepo,
-        IHttpContextAccessor httpContextAccessor
+        IHttpContextAccessor httpContextAccessor,
+        IUserSessionRepository userSessionRepo
             ) : IAuthService
     {
         private readonly IUserRepository _userRepo = userRepo;
@@ -26,6 +27,7 @@ namespace Booknix.Application.Services
         private readonly ITrustedIpRepository _trustedIpRepo = trustedIpRepo;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly IWorkerRepository _workerRepo = workerRepo;
+        private readonly IUserSessionRepository _userSessionRepo = userSessionRepo;
 
         public async Task<bool> RegisterAsync(RegisterRequestDto request, string roleName)
         {
@@ -103,6 +105,8 @@ namespace Booknix.Application.Services
                     return (null, ipCheckMessage);
             }
 
+            var sessionKey = await CreateUserSessionAsync(user);
+
             await _auditLogger.LogAsync(user.Id, "Login", "User", user.Id.ToString(), null, "Kullanıcı başarılı şekilde giriş yaptı.");
             var worker = await _workerRepo.GetByUserIdAsync(user.Id); // Kullanıcıyı yükle
 
@@ -113,7 +117,8 @@ namespace Booknix.Application.Services
                 Email = user.Email,
                 Role = user.Role?.Name ?? "Unknown",
                 LocationId = worker?.LocationId,
-                LocationRole = worker?.RoleInLocation
+                LocationRole = worker?.RoleInLocation,
+                SessionKey = sessionKey,
             }, "");
         }
 
@@ -216,6 +221,46 @@ namespace Booknix.Application.Services
 
             return "Yeni bir IP adresinden giriş algılandı. Onay maili gönderildi.";
         }
+
+        private async Task<string> CreateUserSessionAsync(User user)
+        {
+            var context = _httpContextAccessor.HttpContext!;
+            var request = context.Request;
+            var response = context.Response;
+
+            // 1. SessionKey Cookie kontrolü
+            string sessionKey;
+            if (request.Cookies.ContainsKey("PersistentSessionKey"))
+            {
+                sessionKey = request.Cookies["PersistentSessionKey"]!;
+            }
+            else
+            {
+                sessionKey = Guid.NewGuid().ToString();
+                response.Cookies.Append("PersistentSessionKey", sessionKey, new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(7),
+                    HttpOnly = true,
+                    IsEssential = true
+                });
+            }
+
+            // 2. IP / User-Agent bilgisi al
+            var ip = context.Connection.RemoteIpAddress?.ToString();
+            var ua = request.Headers["User-Agent"].ToString();
+
+            // 3. UserSession tablosuna kaydet
+            await _userSessionRepo.AddAsync(new UserSession
+            {
+                UserId = user.Id,
+                SessionKey = sessionKey,
+                IpAddress = ip,
+                UserAgent = ua
+            });
+
+            return sessionKey;
+        }
+
 
         // Yardımcı Fonksiyonlar
 
@@ -635,6 +680,10 @@ namespace Booknix.Application.Services
             };
         }
 
+        public async Task LogoutAsync(Guid userId, string sessionKey)
+        {
+            await _userSessionRepo.DeactivateBySessionKeyAsync(userId, sessionKey);
+        }
 
     }
 }

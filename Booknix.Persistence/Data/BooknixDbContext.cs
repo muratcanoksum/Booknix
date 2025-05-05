@@ -24,6 +24,7 @@ namespace Booknix.Persistence.Data
         public DbSet<MediaFile> MediaFiles => Set<MediaFile>();
         public DbSet<TrustedIp> TrustedIps => Set<TrustedIp>();
         public DbSet<WorkerWorkingHour> WorkerWorkingHours => Set<WorkerWorkingHour>();
+        public DbSet<UserSession> UserSessions { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

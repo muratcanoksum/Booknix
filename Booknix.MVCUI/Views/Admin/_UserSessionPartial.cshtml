@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Booknix.Domain.Entities.UserSession>
+@Html.AntiForgeryToken()
+
+@if (!Model.Any())
+{
+    <div class="text-sm text-gray-500">Aktif oturum bulunamadı.</div>
+}
+else
+{
+    <div class="flex justify-end mb-2">
+        <button onclick="terminateAllSessions('@Model.First().UserId')" class="text-xs px-3 py-1 bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200 transition">
+            <i class="fas fa-power-off mr-1"></i> Tümünü Sonlandır
+        </button>
+    </div>
+
+    <table class="w-full text-sm text-left text-gray-700 mt-2">
+        <thead>
+            <tr class="border-b text-xs uppercase text-gray-500">
+                <th class="px-4 py-2">IP</th>
+                <th class="px-4 py-2">Tarayıcı</th>
+                <th class="px-4 py-2">Son Erişim</th>
+                <th class="px-4 py-2">İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var session in Model)
+            {
+                <tr>
+                    <td class="px-4 py-2 break-all">@session.IpAddress</td>
+                    <td class="px-4 py-2 break-words">@session.UserAgent</td>
+                    <td class="px-4 py-2">@session.LastAccessedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                    <td class="px-4 py-2">
+                        <button onclick="terminateSession('@session.UserId','@session.SessionKey')" class="text-xs px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition">
+                            <i class="fas fa-times mr-1"></i> Sonlandır
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
