@@ -63,7 +63,7 @@ builder.Services.AddScoped<IServiceRepository, EfServiceRepository>();
 builder.Services.AddScoped<IWorkerWorkingHourRepository, EfWorkerWorkingHourRepository>();
 builder.Services.AddScoped<IAppointmentRepository, EfAppointmentRepository>();
 builder.Services.AddScoped<IAppointmentSlotRepository, EfAppointmentSlotRepository>();
-
+    
 
 
 // Unit of Work

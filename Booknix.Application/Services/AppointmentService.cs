@@ -44,6 +44,17 @@ namespace Booknix.Application.Services
                 return null;
             }
             
+            // Check if the appointment can be cancelled
+            bool canCancel = false;
+            if (appointment.Status != AppointmentStatus.Completed && 
+                appointment.Status != AppointmentStatus.Cancelled &&
+                appointment.Status != AppointmentStatus.NoShow)
+            {
+                // Check if appointment date is in the future
+                var appointmentDate = appointment.AppointmentSlot?.StartTime ?? DateTime.MinValue;
+                canCancel = appointmentDate > DateTime.Now;
+            }
+            
             return new AppointmentDetailDto
             {
                 Id = appointment.Id,
@@ -57,21 +68,31 @@ namespace Booknix.Application.Services
                 WorkerName = appointment.AppointmentSlot?.AssignerWorker?.User?.FullName ?? "Belirtilmemiş",
                 Status = appointment.Status.ToString(),
                 Notes = appointment.Notes,
-                CreatedAt = appointment.CreatedAt
+                CreatedAt = appointment.CreatedAt,
+                CanCancel = canCancel
             };
         }
 
         public async Task<bool> CancelAppointmentAsync(Guid userId, Guid appointmentId)
         {
-            var appointment = await _appointmentRepository.GetByIdAsync(appointmentId);
+            var appointment = await _appointmentRepository.GetByIdWithDetailsAsync(appointmentId);
             
             if (appointment == null || appointment.UserId != userId)
             {
                 return false;
             }
             
-            if (appointment.Status != AppointmentStatus.Pending && 
-                appointment.Status != AppointmentStatus.Approved)
+            // Cannot cancel if status is Completed, Cancelled, or NoShow
+            if (appointment.Status == AppointmentStatus.Completed || 
+                appointment.Status == AppointmentStatus.Cancelled ||
+                appointment.Status == AppointmentStatus.NoShow)
+            {
+                return false;
+            }
+            
+            // Cannot cancel if appointment date has passed
+            var appointmentDate = appointment.AppointmentSlot?.StartTime ?? DateTime.MinValue;
+            if (appointmentDate <= DateTime.Now)
             {
                 return false;
             }
