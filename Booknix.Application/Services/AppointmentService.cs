@@ -22,7 +22,7 @@ namespace Booknix.Application.Services
         {
             var appointments = await _appointmentRepository.GetByUserIdAsync(userId);
             
-            return appointments.Select(a => new AppointmentDto
+            var result = appointments.Select(a => new AppointmentDto
             {
                 Id = a.Id,
                 AppointmentDate = a.AppointmentSlot?.StartTime.Date ?? DateTime.MinValue,
@@ -33,6 +33,8 @@ namespace Booknix.Application.Services
                 Status = a.Status.ToString(),
                 ServiceName = a.Service?.Name ?? string.Empty
             }).ToList();
+
+            return result;
         }
 
         public async Task<AppointmentDetailDto?> GetAppointmentDetailAsync(Guid userId, Guid appointmentId)

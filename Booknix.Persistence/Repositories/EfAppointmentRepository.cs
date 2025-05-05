@@ -72,11 +72,13 @@ public class EfAppointmentRepository : IAppointmentRepository
             .Where(a => a.UserId == userId)
             .Include(a => a.AppointmentSlot)
                 .ThenInclude(s => s.AssignerWorker)
+                    .ThenInclude(w => w.User) // eksik olan burasıydı
             .Include(a => a.Service)
                 .ThenInclude(s => s.Location)
             .OrderByDescending(a => a.AppointmentSlot.StartTime)
             .ToListAsync();
     }
+
 
     public async Task<Appointment?> GetByIdWithDetailsAsync(Guid id)
     {
