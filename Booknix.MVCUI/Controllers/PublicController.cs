@@ -84,26 +84,15 @@ public class PublicController(IPublicService publicService) : Controller
         if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
             return RedirectToAction("Login", "Auth", new { returnUrl = Request.Path });
 
-        //var result = await _publicService.CreateAppointmentAsync(userId, dto);
+        var result = await _publicService.CreateAppointmentAsync(userId, dto);
 
-        var result = new RequestResult
-        {
-            Success = true,
-            Message = "Randevu baþarýyla oluþturuldu."
-        };
-        {
-
-        }
 
         if (!result.Success)
         {
-            TempData["Error"] = result.Message;
-            //return RedirectToAction("ServiceDetails", new { slug = dto.Slug, id = dto.ServiceId });
             BadRequest(result.Message);
         }
 
-        TempData["Success"] = "Randevunuz baþarýyla oluþturuldu.";
-        //return RedirectToAction("MyAppointments", "Account");
+        TempData["SuccessAppointment"] = result.Message;
         return Ok(result.Message);
     }
 

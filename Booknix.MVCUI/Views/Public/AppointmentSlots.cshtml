@@ -79,7 +79,7 @@
 
 
 
-            <form id="confirm-form" method="post" asp-action="ConfirmAppointment" asp-controller="Public">
+            <form id="confirm-form">
                 @Html.AntiForgeryToken()
 
                 <input type="hidden" name="ServiceId" value="@serviceId" />

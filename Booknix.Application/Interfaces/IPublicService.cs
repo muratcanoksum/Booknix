@@ -10,5 +10,6 @@ public interface IPublicService
     LocationDetailsDto? GetLocationDetails(string slug);
     ServiceDetailsDto? GetServiceDetails(string locationSlug, Guid serviceId);
     Task<AppointmentSlotPageDto> GetAppointmentSlotPageData(Guid workerId, Guid serviceId, DateTime startDate, DateTime endDate, TimeSpan currentTime);
+    Task<RequestResult> CreateAppointmentAsync(Guid userId, CreateAppointmentDto dto);
 
 }

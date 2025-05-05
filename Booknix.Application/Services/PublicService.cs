@@ -1,5 +1,6 @@
 ﻿using Booknix.Application.DTOs;
 using Booknix.Application.Interfaces;
+using Booknix.Domain.Entities;
 using Booknix.Domain.Entities.Enums;
 using Booknix.Domain.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
@@ -9,20 +10,27 @@ namespace Booknix.Application.Services;
 public class PublicService(
     ISectorRepository sectorRepo,
     IAppointmentRepository appointmentRepo,
+    IAppointmentSlotRepository appointmentSlotRepo,
     IServiceRepository serviceRepo,
     IMemoryCache cache,
     ILocationRepository locationRepo,
     IWorkerWorkingHourRepository workingHourRepo,
-    IWorkerRepository workerRepo
+    IWorkerRepository workerRepo,
+    IUserRepository userRepo,
+    IUnitOfWork unitOfWork
         ) : IPublicService
 {
     private readonly ISectorRepository _sectorRepo = sectorRepo;
+    private readonly IUserRepository _userRepo = userRepo;
+    private readonly IAppointmentSlotRepository _appointmentSlotRepo = appointmentSlotRepo;
     private readonly IAppointmentRepository _appointmentRepo = appointmentRepo;
     private readonly IServiceRepository _serviceRepo = serviceRepo;
     private readonly IMemoryCache _cache = cache;
     private readonly ILocationRepository _locationRepo = locationRepo;
     private readonly IWorkerWorkingHourRepository _workingHourRepo = workingHourRepo;
     private readonly IWorkerRepository _workerRepo = workerRepo;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+
 
     public async Task<HomePageDto> GetHomePageDataAsync()
     {
@@ -250,6 +258,85 @@ public class PublicService(
         return result;
     }
 
+    public async Task<RequestResult> CreateAppointmentAsync(Guid userId, CreateAppointmentDto dto)
+    {
+        var user = await _userRepo.GetByIdAsync(userId);
+        if (user == null)
+            return new RequestResult(false, "Kullanıcı bulunamadı");
+
+        var worker = await _workerRepo.GetByIdAsync(dto.WorkerId);
+        if (worker == null)
+            return new RequestResult(false, "Çalışan bulunamadı");
+
+        var service = await _serviceRepo.GetByIdAsync(dto.ServiceId);
+        if (service == null)
+            return new RequestResult(false, "Hizmet bulunamadı");
+
+        var location = await _locationRepo.GetByIdAsync(service.LocationId);
+        if (location == null)
+            return new RequestResult(false, "Lokasyon bulunamadı");
+
+        var serviceSlots = await GetAppointmentSlotPageData(
+            dto.WorkerId,
+            dto.ServiceId,
+            dto.Date,
+            dto.Date.AddDays(1),
+            TimeSpan.Zero
+        );
+
+        var slot = serviceSlots.Slots.FirstOrDefault(x => x.Date == dto.Date && x.Time == dto.Time);
+        if (slot == null)
+            return new RequestResult(false, "Randevu bulunamadı");
+
+        if (!slot.IsAvailable)
+            return new RequestResult(false, "Randevu dolu");
+
+        var startTime = DateTime.SpecifyKind(dto.Date.Date.Add(dto.Time), DateTimeKind.Utc);
+        var endTime = startTime.Add(service.Duration);
+
+
+        var appointmentSlot = new AppointmentSlot
+        {
+            Id = Guid.NewGuid(),
+            StartTime = startTime,
+            EndTime = endTime,
+            ServiceId = dto.ServiceId,
+            LocationId = service.LocationId,
+            AssignerWorkerId = dto.WorkerId,
+            Status = SlotStatus.Booked
+        };
+
+        try
+        {
+            await _appointmentSlotRepo.AddAsync(appointmentSlot);
+        }
+        catch (Exception ex)
+        {
+            return new RequestResult(false, $"Slot oluşturulamadı. Hata: {ex.Message}");
+        }
+
+        var appointment = new Appointment
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            ServiceId = dto.ServiceId,
+            AppointmentSlotId = appointmentSlot.Id,
+            Notes = dto.Notes,
+            Status = AppointmentStatus.Pending
+        };
+
+        try
+        {
+            await _appointmentRepo.AddAsync(appointment);
+        }
+        catch (Exception ex)
+        {
+            await _appointmentSlotRepo.DeleteAsync(appointmentSlot.Id);
+            return new RequestResult(false, $"Randevu oluşturulamadı, slot geri alındı. Hata: {ex.Message}");
+        }
+
+        return new RequestResult(true, "Randevu başarıyla oluşturuldu");
+    }
 
 
 

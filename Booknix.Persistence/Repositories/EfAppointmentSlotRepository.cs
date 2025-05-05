@@ -18,4 +18,29 @@ public class EfAppointmentSlotRepository : IAppointmentSlotRepository
             .Where(x => x.AssignerWorkerId == workerId)
             .ToListAsync();
     }
+
+    public async Task AddAsync(AppointmentSlot appointmentSlot)
+    {
+        _context.AppointmentSlots.Add(appointmentSlot);
+        await _context.SaveChangesAsync();
+    }
+
+
+    public async Task UpdateAsync(AppointmentSlot appointmentSlot)
+    {
+        _context.AppointmentSlots.Update(appointmentSlot);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var appointmentSlot = await _context.AppointmentSlots.FindAsync(id);
+        if (appointmentSlot != null)
+        {
+            _context.AppointmentSlots.Remove(appointmentSlot);
+            await _context.SaveChangesAsync();
+        }
+    }
+
 }
+

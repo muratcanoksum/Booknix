@@ -27,24 +27,25 @@ $(document).off("click", ".slot-button").on("click", ".slot-button", function ()
 });
 
 $(document).off("submit", "#confirm-form").on("submit", "#confirm-form", function (e) {
-    if (!$("#Time").val() || !$("#Date").val()) {
-        e.preventDefault();
-        alert("Lütfen bir saat seçiniz.");
-    }
+    e.preventDefault();
 
-    // // AJAX ile gönderme örneği:
-    // e.preventDefault();
-    // $.ajax({
-    //     type: "POST",
-    //     url: "/Public/ConfirmAppointment",
-    //     data: $(this).serialize(),
-    //     success: function (msg) {
-    //         alert("Randevu oluşturuldu!");
-    //     },
-    //     error: function () {
-    //         alert("Randevu oluşturulurken hata oluştu.");
-    //     }
-    // });
+    console.log($(this).serializeArray());
+
+    // AJAX ile gönderme örneği:
+
+    $.ajax({
+        type: "POST",
+        url: "/Public/ConfirmAppointment",
+        data: $(this).serialize(),
+        success: function (msg) {
+            alert(msg);
+        },
+        error: function (xhr) {
+            // Hata durumunda yapılacak işlemler
+            msg = xhr.responseText || "Randevu oluşturulurken hata oluştu.";
+            alert(msg);
+        }
+    });
 });
 
 const card = document.getElementById("infoCard");
