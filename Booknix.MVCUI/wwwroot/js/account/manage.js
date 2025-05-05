@@ -1,4 +1,48 @@
-﻿// Menü tıklama olayını dinle
+﻿// Tab değiştirme işlevselliği
+$(function() {
+    // Tab tıklama olayını dinle
+    $(".tab-link").on("click", function(e) {
+        e.preventDefault();
+        const tabId = $(this).data("tab");
+        
+        // Tüm tabları ve linkleri deaktif et
+        $(".tab-link").removeClass("active border-blue-500 text-blue-700").addClass("border-transparent");
+        $(".tab-pane").removeClass("active").addClass("hidden");
+        
+        // Tıklanan tabı ve linkini aktif et
+        $(this).addClass("active border-blue-500 text-blue-700").removeClass("border-transparent");
+        $("#" + tabId + "-tab").addClass("active").removeClass("hidden");
+        
+        // Eğer profil tabı seçiliyse, ilk menü linkini tıkla
+        if (tabId === "profile" && !$(".menu-link.bg-blue-100").length) {
+            $(".menu-link").first().trigger("click");
+        }
+        
+        // Eğer randevular tabı seçiliyse, randevu içeriğini yükle
+        if (tabId === "appointments") {
+            loadAppointments();
+        }
+    });
+    
+    // Randevu içeriğini yükleme fonksiyonu
+    function loadAppointments() {
+        $("#appointments-content").html("<div class='text-sm text-gray-500'>Randevu bilgileri yükleniyor...</div>");
+        
+        $.get("/Account/Appointments", function(html) {
+            $("#appointments-content").html(html);
+        }).fail(function() {
+            $("#appointments-content").html(`
+                <div class="flex flex-col items-center justify-center text-center space-y-4 py-8">
+                    <i class="fas fa-calendar-times text-4xl text-gray-400"></i>
+                    <h2 class="text-xl font-bold text-gray-700">Randevu Bulunamadı</h2>
+                    <p class="text-sm text-gray-500">Henüz bir randevu kaydınız bulunmamaktadır.</p>
+                </div>
+            `);
+        });
+    }
+});
+
+// Menü tıklama olayını dinle
 $(function () {
     $(".menu-link").on("click", function (e) {
         e.preventDefault();

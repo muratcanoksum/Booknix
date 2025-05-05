@@ -1,4 +1,8 @@
-﻿using Booknix.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Booknix.Domain.Entities;
 using Booknix.Domain.Interfaces;
 using Booknix.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
@@ -21,15 +25,12 @@ public class EfAppointmentRepository : IAppointmentRepository
 
     public List<Appointment> GetByWorkerBetweenDates(Guid workerId, DateTime start, DateTime end)
     {
-        var startUtc = DateTime.SpecifyKind(start, DateTimeKind.Utc);
-        var endUtc = DateTime.SpecifyKind(end, DateTimeKind.Utc);
-
         return _context.Appointments
             .Include(a => a.AppointmentSlot)
-            .Where(a =>
-                a.AppointmentSlot!.AssignerWorkerId == workerId &&
-                a.AppointmentSlot.StartTime >= startUtc &&
-                a.AppointmentSlot.StartTime <= endUtc)
+            .Where(a => 
+                a.AppointmentSlot.AssignerWorkerId == workerId && 
+                a.AppointmentSlot.StartTime >= start && 
+                a.AppointmentSlot.StartTime <= end)
             .ToList();
     }
 
@@ -61,7 +62,25 @@ public class EfAppointmentRepository : IAppointmentRepository
             _context.Appointments.Remove(appointment);
             await _context.SaveChangesAsync();
         }
+    public async Task<List<Appointment>> GetByUserIdAsync(Guid userId)
+    {
+        return await _context.Appointments
+            .Where(a => a.UserId == userId)
+            .Include(a => a.AppointmentSlot)
+                .ThenInclude(s => s.AssignerWorker)
+            .Include(a => a.Service)
+                .ThenInclude(s => s.Location)
+            .OrderByDescending(a => a.AppointmentSlot.StartTime)
+            .ToListAsync();
     }
 
-
+    public async Task<Appointment?> GetByIdWithDetailsAsync(Guid id)
+    {
+        return await _context.Appointments
+            .Include(a => a.AppointmentSlot)
+                .ThenInclude(s => s.AssignerWorker)
+            .Include(a => a.Service)
+                .ThenInclude(s => s.Location)
+            .FirstOrDefaultAsync(a => a.Id == id);
+    }
 }
