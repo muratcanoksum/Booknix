@@ -8,5 +8,6 @@ namespace Booknix.Application.Interfaces
         Task<List<AppointmentDto>> GetUserAppointmentsAsync(Guid userId);
         Task<AppointmentDetailDto?> GetAppointmentDetailAsync(Guid userId, Guid appointmentId);
         Task<bool> CancelAppointmentAsync(Guid userId, Guid appointmentId);
+        Task<List<AppointmentDto>> GetWorkerAppointmentsAsync(Guid workerId);
     }
 } 

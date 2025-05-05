@@ -12,12 +12,14 @@
   <component name="ChangeListManager">
     <list default="true" id="96c8b308-4f34-45ec-85e1-130b97399079" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Booknix/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Booknix/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.Application/DTOs/AppointmentDetailDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/DTOs/AppointmentDetailDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Application/DTOs/AppointmentDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/DTOs/AppointmentDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Application/Interfaces/IAppointmentService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/Interfaces/IAppointmentService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Booknix.Application/Services/AppointmentService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/Services/AppointmentService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Domain/Interfaces/IAppointmentRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Domain/Interfaces/IAppointmentRepository.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Account/_AppointmentDetailPartial.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Account/_AppointmentDetailPartial.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Account/_AppointmentsPartial.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Account/_AppointmentsPartial.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/wwwroot/js/account/appointments.js" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/wwwroot/js/account/appointments.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Shared/_LoginPartial.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Shared/_LoginPartial.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfAppointmentRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfAppointmentRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfWorkerRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfWorkerRepository.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -6,6 +6,7 @@ public interface IAppointmentRepository
 {
     Task<List<Appointment>> GetAllAsync();
     List<Appointment> GetByWorkerBetweenDates(Guid workerId, DateTime start, DateTime end);
+    Task<List<Appointment>> GetByWorkerIdAsync(Guid workerId);
 
     Task<Appointment?> GetByIdAsync(Guid id);
     Task AddAsync(Appointment appointment);

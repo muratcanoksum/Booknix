@@ -10,6 +10,7 @@ namespace Booknix.Application.DTOs
         public string EndTime { get; set; } = string.Empty;
         public string LocationName { get; set; } = string.Empty;
         public string WorkerName { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public string ServiceName { get; set; } = string.Empty;
     }

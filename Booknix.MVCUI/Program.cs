@@ -77,7 +77,7 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ILocationAdminService, LocationAdminService>();
 builder.Services.AddScoped<IPublicService, PublicService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-
+builder.Services.AddScoped<IWorkerService, WorkerService>();
 
 builder.Services.AddSingleton<IAppSettings, AppSettings>();
 
