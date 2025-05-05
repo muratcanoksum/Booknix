@@ -24,5 +24,11 @@ namespace Booknix.Persistence.Repositories
         {
             return await _context.Roles.ToListAsync();
         }
+        
+        public async Task<Role?> GetByIdAsync(Guid id)
+        {
+            return await _context.Roles
+                .FirstOrDefaultAsync(r => r.Id == id);
+        }
     }
 }

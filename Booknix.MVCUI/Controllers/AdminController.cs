@@ -3,13 +3,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Booknix.Infrastructure.Filters;
 using Booknix.Application.Interfaces;
 using Booknix.Application.DTOs;
+using Booknix.Domain.Interfaces;
+using Booknix.Domain.Entities;
 
 namespace Booknix.MVCUI.Controllers;
 
 [Admin]
-public class AdminController(IAdminService adminService) : Controller
+public class AdminController(IAdminService adminService, IUserRepository userRepository, IRoleRepository roleRepository) : Controller
 {
     private readonly IAdminService _adminService = adminService;
+    private readonly IUserRepository _userRepository = userRepository;
+    private readonly IRoleRepository _roleRepository = roleRepository;
 
     [HttpGet]
     public IActionResult Index()
@@ -395,6 +399,101 @@ public class AdminController(IAdminService adminService) : Controller
         return Ok(result.Message);
     }
 
+    // USER OPERATIONS
+    
+    [HttpGet]
+    public async Task<IActionResult> Users()
+    {
+        var users = await _userRepository.GetAllAsync();
+        var roles = await _roleRepository.GetAllAsync();
+        
+        ViewBag.Roles = roles;
+        
+        return View(users);
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditUser([FromBody] UserUpdateDto model)
+    {
+        if (string.IsNullOrEmpty(model.FullName) || string.IsNullOrEmpty(model.Email))
+        {
+            return BadRequest("Ad ve e-posta alanları boş bırakılamaz.");
+        }
+        
+        var user = await _userRepository.GetByIdAsync(model.Id);
+        if (user == null)
+        {
+            return NotFound("Kullanıcı bulunamadı.");
+        }
+        
+        user.FullName = model.FullName;
+        user.Email = model.Email;
+        user.RoleId = model.RoleId;
+        
+        await _userRepository.UpdateAsync(user);
+        
+        return Ok("Kullanıcı başarıyla güncellendi.");
+    }
+    
+    [HttpPost("Admin/DeleteUser/{id}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteUser(Guid id)
+    {
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user == null)
+        {
+            return NotFound("Kullanıcı bulunamadı.");
+        }
+        
+        // Check if this is the admin user who is trying to delete themselves
+        var currentUserId = HttpContext.Session.GetString("UserId");
+        if (currentUserId == id.ToString() && user.Role?.Name == "Admin")
+        {
+            return BadRequest("Kendinizi silemezsiniz.");
+        }
+        
+        await _userRepository.DeleteAsync(user);
+        
+        return Ok("Kullanıcı başarıyla silindi.");
+    }
 
-
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateUser([FromBody] UserCreateDto model)
+    {
+        if (string.IsNullOrEmpty(model.FullName) || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
+        {
+            return BadRequest("Ad, e-posta ve şifre alanları boş bırakılamaz.");
+        }
+        
+        // Check if the email already exists
+        var existingUser = await _userRepository.GetByEmailAsync(model.Email);
+        if (existingUser != null)
+        {
+            return BadRequest("Bu e-posta adresi zaten kullanılıyor.");
+        }
+        
+        // Check if the role exists
+        var role = await _roleRepository.GetByIdAsync(model.RoleId);
+        if (role == null)
+        {
+            return BadRequest("Geçersiz rol seçildi.");
+        }
+        
+        // Create the user
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            FullName = model.FullName,
+            Email = model.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
+            RoleId = model.RoleId,
+            IsEmailConfirmed = true // Admin tarafından oluşturulan kullanıcılar doğrulanmış kabul edilir
+        };
+        
+        await _userRepository.AddAsync(user);
+        
+        return Ok("Kullanıcı başarıyla oluşturuldu.");
+    }
 }
