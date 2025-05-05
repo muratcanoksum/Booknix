@@ -11,7 +11,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="96c8b308-4f34-45ec-85e1-130b97399079" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Worker/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Worker/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Booknix/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Booknix/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Domain/Interfaces/IRoleRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Domain/Interfaces/IRoleRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AdminController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AdminController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Admin/_Layout.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Admin/_Layout.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfRoleRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfRoleRepository.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,6 +105,7 @@
       <updated>1744898026135</updated>
       <workItem from="1744898027498" duration="10538000" />
       <workItem from="1746430580129" duration="3188000" />
+      <workItem from="1746470265891" duration="1649000" />
     </task>
     <servers />
   </component>
