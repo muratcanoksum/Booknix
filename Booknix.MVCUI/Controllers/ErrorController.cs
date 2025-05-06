@@ -12,12 +12,14 @@ public class ErrorController : Controller
     [Route("Error/{code:int}")]
     public IActionResult General(int code)
     {
+        var requestedUrl = HttpContext.Request.Query["url"]; // URL parametresini al
         if (code == 404)
             return RedirectToAction("Error404");
 
         ViewData["Title"] = $"Hata Kodu: {code}";
         ViewBag.Error = "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz.";
-        ViewBag.Details = HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error.ToString(); // detay
+        ViewBag.Details = HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error.ToString(); // Hata detayları
+        ViewBag.RequestedUrl = requestedUrl; // Hata yapılan URL'yi View'a geçir
 
         return View("Error");
     }
@@ -28,12 +30,5 @@ public class ErrorController : Controller
         ViewData["Title"] = "Erişim Reddedildi - 403";
         return View();
     }
-
-
-    [Route("test-error")]
-    public IActionResult ThrowError()
-    {
-        throw new Exception("Test hatası: Veritabanı bağlantısı başarısız oldu.");
-    }
-
 }
+

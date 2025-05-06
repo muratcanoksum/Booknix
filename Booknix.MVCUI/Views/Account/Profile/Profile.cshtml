@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Profilim";
+    Layout = null;
+}
+
+<div class="max-w-4xl my-10 bg-white shadow rounded-lg px-2">
+    <!-- Tab Başlıkları -->
+    <div class="flex">
+        <div class="w-1/4 border-r">
+            <ul class="space-y-4 text-sm">
+                <li>
+                    <a href="#profile-information" class="stab-link block py-2 px-4 hover:bg-gray-100 text-gray-700 font-medium" data-url="/Account/Profile">
+                        Profil Bilgileri
+                    </a>
+                </li>
+                <li>
+                    <a href="#profile-photo" class="stab-link block py-2 px-4 hover:bg-gray-100 text-gray-700 font-medium" data-url="/Account/ProfilePhoto">
+                        Profil Fotoğrafı
+                    </a>
+                </li>
+                <li>
+                    <a href="#profile-password" class="stab-link block py-2 px-4 hover:bg-gray-100 text-gray-700 font-medium" data-url="/Account/ChangePassword">
+                        Şifre Değiştir
+                    </a>
+                </li>
+                <li>
+                    <a href="#profile-email" class="stab-link block py-2 px-4 hover:bg-gray-100 text-gray-700 font-medium" data-url="/Account/ChangeEmail">
+                        E-Posta Değiştir
+                    </a>
+                </li>
+                <li>
+                    <a href="#profile-delete" class="stab-link block py-2 px-4 hover:bg-gray-100 text-red-600 font-medium" data-url="/Account/Delete">
+                        Hesabı Sil
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Sağ İçerik Alanı -->
+        <div id="profile-loader" class="w-3/4 p-6 pt-0">
+            <div class="text-center py-8">
+                <i class="fas fa-info-circle text-4xl text-gray-400"></i> <!-- Bilgilendirme ikonu -->
+                <h2 class="text-xl font-bold text-gray-700 mt-4">İçerik Seçimi Yapılmadı</h2>
+                <p class="text-sm text-gray-500 mt-2">İlgili işlemi sol menüden seçebilirsiniz. Profil bilgilerinizi güncelleyebilir veya şifrenizi değiştirebilirsiniz.</p>
+                <p class="text-sm text-gray-500 mt-2">Lütfen sol menüden bir seçenek seçin ve işlem başlatın.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="~/js/account/profile/profile.js" asp-append-version="true"></script>

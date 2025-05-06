@@ -30,7 +30,8 @@ namespace Booknix.Infrastructure.Middleware
                 {
                     context.Session.Clear();
                     context.Response.Cookies.Delete("PersistentSessionKey");
-                    context.Response.Redirect("/Auth/Login?sessionExpired=true");
+                    var currentUrl = context.Request.Path + context.Request.QueryString;
+                    context.Response.Redirect($"/Auth/Login?sessionExpired=true&returnUrl={Uri.EscapeDataString(currentUrl)}");
                     return;
                 }
 

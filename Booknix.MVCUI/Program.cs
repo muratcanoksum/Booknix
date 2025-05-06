@@ -108,7 +108,7 @@ app.UseSession();
 app.UseMiddleware<SessionValidationMiddleware>();
 
 
-app.UseExceptionHandler("/Error/500"); // sunucu hataları (500+)
+app.UseExceptionHandler("/Error/500"); // Sunucu hataları (500+)
 app.UseStatusCodePages(context =>
 {
     var request = context.HttpContext.Request;
@@ -117,11 +117,15 @@ app.UseStatusCodePages(context =>
         !request.Headers.Accept.ToString().Contains("application/json"))
     {
         var statusCode = context.HttpContext.Response.StatusCode;
-        context.HttpContext.Response.Redirect($"/Error/{statusCode}");
+        var requestedUrl = request.Path; // Hatalı istek yapılan URL'yi al
+
+        // Yönlendirme ve URL'yi detaylara ekleyerek hatayı daha anlamlı hale getir
+        context.HttpContext.Response.Redirect($"/Error/{statusCode}?url={requestedUrl}");
     }
 
     return Task.CompletedTask;
 });
+
 
 
 

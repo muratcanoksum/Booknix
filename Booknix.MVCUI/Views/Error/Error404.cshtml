@@ -2,35 +2,37 @@
     ViewData["Title"] = "Sayfa Bulunamadı - 404";
     Layout = null;
 }
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+    <title>@ViewData["Title"] - Booknix</title>
 
     <link href="~/css/site.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50 font-sans flex items-center justify-center min-h-screen px-4">
+<body class="bg-gray-50 font-sans text-gray-800">
 
-    <div class="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full text-center space-y-6 border border-gray-100">
-        <img src="/images/logo.png" alt="Booknix Logo" class="w-20 h-20 mx-auto" />
+    <div class="flex items-center justify-center py-28 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full text-center space-y-6 border border-gray-100">
+            <img src="~/images/logo_l.png" alt="Booknix Logo" class="h-12 w-auto mx-auto" />
+            <div class="space-y-2">
+                <h1 class="text-2xl font-semibold text-gray-800">
+                    <span class="block text-4xl font-extrabold text-red-600">404</span>
+                    Sayfa Bulunamadı
+                </h1>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    Aradığınız sayfa silinmiş olabilir veya hiç var olmamış olabilir.
+                </p>
+            </div>
 
-        <div class="space-y-2">
-            <h1 class="text-2xl font-semibold text-gray-800">
-                <span class="block text-4xl font-extrabold text-red-600">404</span>
-                Sayfa Bulunamadı
-            </h1>
-            <p class="text-sm text-gray-600 leading-relaxed">
-                Aradığınız sayfa silinmiş olabilir veya hiç var olmamış olabilir.
-            </p>
+            <a href="/" class="inline-block bg-black hover:bg-blue-700 text-white font-medium text-sm px-5 py-2.5 rounded-lg transition duration-200">
+                Ana Sayfaya Dön
+            </a>
         </div>
-
-
-        <a href="/" class="inline-block bg-black hover:bg-blue-700 text-white font-medium text-sm px-5 py-2.5 rounded-lg transition duration-200">
-            Ana Sayfaya Dön
-        </a>
     </div>
 
 </body>

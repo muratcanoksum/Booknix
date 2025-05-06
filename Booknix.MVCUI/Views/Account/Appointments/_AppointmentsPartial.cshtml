@@ -1,6 +1,6 @@
 @model List<Booknix.Application.DTOs.AppointmentDto>
 
-<div class="space-y-4">
+<div class="space-y-4 my-10">
     @if (TempData["SuccessAppointment"] is string successMsg)
     {
         <div id="succes-appointment-msg" class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-100 border border-green-300 flex items-center gap-3" role="alert">
@@ -96,4 +96,4 @@
 
 @Html.AntiForgeryToken()
 
-<script src="~/js/account/appointments.js" asp-append-version="true"></script>
+<script src="~/js/account/appointments/appointments.js" asp-append-version="true"></script>

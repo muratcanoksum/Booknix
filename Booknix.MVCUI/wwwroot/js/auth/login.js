@@ -25,6 +25,19 @@
     });
 });
 
+$(function () {
+    // URL'deki hash kısmını alıyoruz
+    var hash = window.location.hash;
+
+    if (hash) {
+        // Eğer hash varsa, returnUrl'yi gizli inputtan alıyoruz
+        var returnUrl = $("#returnUrl").val();
+
+        // returnUrl'nin sonuna hash'i ekliyoruz
+        $("#returnUrl").val(returnUrl + hash);
+    }
+});
+
 // ✅ 10 saniye sonra TempData Success mesajını gizle
 setTimeout(() => {
     const $success = $("#success-message");

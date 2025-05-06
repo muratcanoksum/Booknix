@@ -1,10 +1,10 @@
-﻿@using Microsoft.AspNetCore.Http
-@{
-    Layout = null;
+﻿@{
+    ViewData["Title"] = "Hata - " + ViewData["Title"];
     var errorMessage = ViewBag.Error ?? "Bir hata oluştu.";
     var errorDetails = ViewBag.Details as string;
+    var requestedUrl = ViewBag.RequestedUrl as string; // Hatalı URL
     var role = Context.Session.GetString("Role");
-    var isAdmin = role == "Admin";
+    var isAdmin = role == "Admin"; // Admin kontrolü
 }
 
 <!DOCTYPE html>
@@ -12,15 +12,12 @@
 <head>
     <meta charset="utf-8" />
     <title>@ViewData["Title"]</title>
-
     <link href="~/css/site.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-50 font-sans flex items-center justify-center min-h-screen px-4">
-
     <div class="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full text-center space-y-6 border border-gray-100">
-        <img src="/images/logo.png" alt="Booknix Logo" class="w-20 h-20 mx-auto" />
-
+        <img src="/images/logo.png" alt="Logo" class="w-20 h-20 mx-auto" />
         <div class="space-y-2">
             <h1 class="text-2xl font-semibold text-gray-800">
                 <span class="block text-4xl font-extrabold text-red-600">@ViewData["Title"]</span>
@@ -30,10 +27,18 @@
             </p>
         </div>
 
+        @if (!string.IsNullOrEmpty(requestedUrl))
+        {
+            <div class="text-sm text-gray-500 mt-4">
+                <strong>Hata Yapılan Sayfa:</strong> <br />
+                <code>@requestedUrl</code>
+            </div>
+        }
+
         @if (isAdmin && !string.IsNullOrEmpty(errorDetails))
         {
-            <div class="text-left">
-                <button type="button" onclick="document.getElementById('errorDetails').classList.toggle('hidden')" class="text-sm text-blue-600 hover:underline mt-2">
+            <div class="text-left mt-4">
+                <button type="button" onclick="document.getElementById('errorDetails').classList.toggle('hidden')" class="text-sm text-blue-600 hover:underline">
                     🔍 Hata detaylarını göster / gizle
                 </button>
                 <pre id="errorDetails" class="hidden mt-2 p-3 text-xs bg-gray-100 rounded overflow-auto max-h-64 text-left text-red-600 whitespace-pre-wrap">@errorDetails</pre>
@@ -44,6 +49,5 @@
             Ana Sayfaya Dön
         </a>
     </div>
-
 </body>
 </html>

@@ -13,7 +13,7 @@ namespace Booknix.MVCUI.Controllers
         private readonly IAppointmentService _appointmentService;
 
         public AccountController(
-            IProfileService profileService, 
+            IProfileService profileService,
             IAuthService authService,
             IAppointmentService appointmentService)
         {
@@ -31,11 +31,20 @@ namespace Booknix.MVCUI.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> ProfileView()
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var profile = await _profileService.GetProfileAsync(userId);
+            return View("Profile/Profile", profile);
+        }
+
+        [HttpGet]
+        [AjaxOnly]
         public async Task<IActionResult> Profile()
         {
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             var profile = await _profileService.GetProfileAsync(userId);
-            return PartialView("_ProfilePartial", profile);
+            return PartialView("Profile/Sections/_ProfilePartial", profile);
         }
 
         [HttpPost]
@@ -52,11 +61,12 @@ namespace Booknix.MVCUI.Controllers
         }
 
         [HttpGet]
+        [AjaxOnly]
         public async Task<IActionResult> ProfilePhoto()
         {
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             var profile = await _profileService.GetProfileAsync(userId);
-            return PartialView("_ProfilePhotoPartial", profile);
+            return PartialView("Profile/Sections/_ProfilePhotoPartial", profile);
         }
 
         [HttpPost]
@@ -100,11 +110,12 @@ namespace Booknix.MVCUI.Controllers
         }
 
         [HttpGet]
+        [AjaxOnly]
         public async Task<IActionResult> ChangePassword()
         {
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             var profile = await _profileService.GetProfileAsync(userId);
-            return PartialView("_ChangePasswordPartial", profile);
+            return PartialView("Profile/Sections/_ChangePasswordPartial", profile);
         }
 
         [HttpPost]
@@ -128,10 +139,11 @@ namespace Booknix.MVCUI.Controllers
         }
 
         [HttpGet]
+        [AjaxOnly]
         public IActionResult ChangeEmail()
         {
             var userEmail = HttpContext.Session.GetString("Email")!;
-            return PartialView("_ChangeEmailPartial", userEmail);
+            return PartialView("Profile/Sections/_ChangeEmailPartial", userEmail);
         }
 
         [HttpPost]
@@ -162,9 +174,10 @@ namespace Booknix.MVCUI.Controllers
         }
 
         [HttpGet]
+        [AjaxOnly]
         public IActionResult Delete()
         {
-            return PartialView("_DeletePartial");
+            return PartialView("Profile/Sections/_DeletePartial");
         }
 
         [HttpPost]
@@ -195,39 +208,41 @@ namespace Booknix.MVCUI.Controllers
         }
 
         [HttpGet]
+        [AjaxOnly]
         public async Task<IActionResult> Appointments()
         {
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             var appointments = await _appointmentService.GetUserAppointmentsAsync(userId);
-            return PartialView("_AppointmentsPartial", appointments);
+            return PartialView("Appointments/_AppointmentsPartial", appointments);
         }
-        
+
         [HttpGet]
+        [AjaxOnly]
         public async Task<IActionResult> AppointmentDetail(Guid id)
         {
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             var appointmentDetail = await _appointmentService.GetAppointmentDetailAsync(userId, id);
-            
+
             if (appointmentDetail == null)
             {
                 return NotFound("Randevu bulunamadı veya erişim izniniz yok.");
             }
-            
-            return PartialView("_AppointmentDetailPartial", appointmentDetail);
+
+            return PartialView("Appointments/_AppointmentDetailPartial", appointmentDetail);
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CancelAppointment(Guid id)
         {
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             var success = await _appointmentService.CancelAppointmentAsync(userId, id);
-            
+
             if (!success)
             {
                 return BadRequest("Randevu iptal edilemedi.");
             }
-            
+
             return Ok("Randevu başarıyla iptal edildi.");
         }
     }
