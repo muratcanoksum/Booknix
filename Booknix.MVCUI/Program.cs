@@ -65,6 +65,7 @@ builder.Services.AddScoped<IWorkerWorkingHourRepository, EfWorkerWorkingHourRepo
 builder.Services.AddScoped<IAppointmentRepository, EfAppointmentRepository>();
 builder.Services.AddScoped<IAppointmentSlotRepository, EfAppointmentSlotRepository>();
 builder.Services.AddScoped<IUserSessionRepository, EfUserSessionRepository>();
+builder.Services.AddScoped<IAuditLogRepository, EfAuditLogRepository>();
 
 
 // Unit of Work

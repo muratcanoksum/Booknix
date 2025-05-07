@@ -245,5 +245,34 @@ namespace Booknix.MVCUI.Controllers
 
             return Ok("Randevu başarıyla iptal edildi.");
         }
+
+        // Security
+
+        [HttpGet]
+        [AjaxOnly]
+        public async Task<IActionResult> Security()
+        {
+            var userId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var result = await _profileService.GetSecurityDataAsync(Guid.Parse(userId));
+            return PartialView("Security/Security", result);
+        }
+
+        [HttpGet]
+        [AjaxOnly]
+        public async Task<IActionResult> GetAuditLogs(int page = 1, int pageSize = 10)
+        {
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdStr))
+                return Unauthorized();
+
+            var userId = Guid.Parse(userIdStr);
+            var result = await _profileService.GetAuditLogsPagedAsync(userId, page, pageSize);
+
+            return Json(result); // { logs: [...], currentPage: 1, totalPages: 5 }
+        }
+
+
     }
 }

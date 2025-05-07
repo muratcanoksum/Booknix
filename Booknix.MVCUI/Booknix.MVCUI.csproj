@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\profile_images\" />
-    <Folder Include="wwwroot\js\account\security\" />
   </ItemGroup>
 
 </Project>
