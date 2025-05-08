@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "E-Posta Doğrulama";
     var status = ViewBag.Status as string;
+    Layout = null; // Set layout to null to avoid using the default layout
 }
 
 <!DOCTYPE html>
@@ -11,35 +12,37 @@
     <title>@ViewData["Title"]</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css">
 </head>
-<body class="bg-gray-50 font-sans min-h-screen">
-    <div class="m-36 flex items-center justify-center px-4">
-        <!-- KART -->
-        <div class="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full text-center space-y-6 border border-gray-100">
-            <img src="/images/logo.png" alt="Booknix Logo" class="w-20 h-20 mx-auto" />
 
-            <!-- Mesaj -->
-            <div class="space-y-4">
-                @if (status == "error")
-                {
-                    <p class="text-sm text-red-500 bg-red-100 px-4 py-2 rounded-lg">
-                        @ViewBag.Message
-                    </p>
-                }
-                else if (status == "success")
-                {
-                    <p class="text-sm text-green-500 bg-green-100 px-4 py-2 rounded-lg">
-                        @ViewBag.Message
-                    </p>
-                }
+<body class="bg-gray-50 font-sans min-h-screen flex items-center justify-center px-4">
+    <div class="bg-white shadow-xl rounded-xl p-8 max-w-md w-full text-center border border-gray-100">
+        <img src="/images/logo.png" alt="Booknix Logo" class="w-20 h-20 mx-auto mb-4" />
 
-                <a href="/Auth/Login"
-                   class="inline-block bg-primary hover:bg-blue-700 text-white font-medium text-sm px-10 py-2.5 rounded-lg transition duration-200">
-                    Giriş Yap
-                </a>
-            </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">E-Posta Doğrulama</h2>
+
+        <div class="my-6">
+            @if (status == "error")
+            {
+                <div class="bg-red-100 text-red-600 px-4 py-3 rounded-md flex items-center gap-2 justify-center">
+                    <i class="fa-solid fa-circle-xmark text-lg"></i>
+                    <span>@ViewBag.Message</span>
+                </div>
+            }
+            else if (status == "success")
+            {
+                <div class="bg-green-100 text-green-600 px-4 py-3 rounded-md flex items-center gap-2 justify-center">
+                    <i class="fa-solid fa-circle-check text-lg"></i>
+                    <span>@ViewBag.Message</span>
+                </div>
+            }
         </div>
+
+        <a href="/Auth/Login"
+           class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm px-6 py-2 rounded-lg shadow transition duration-200">
+            Giriş Yap
+        </a>
     </div>
 </body>
 </html>

@@ -2,58 +2,64 @@
 using Booknix.Domain.Entities;
 using Booknix.Persistence.Data;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace Booknix.Infrastructure.Logging
 {
-    public class AuditLogger : IAuditLogger
+    public class AuditLogger(BooknixDbContext context, IHttpContextAccessor httpContextAccessor) : IAuditLogger
     {
-        private readonly BooknixDbContext _context;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly BooknixDbContext _context = context;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-        public AuditLogger(BooknixDbContext context, IHttpContextAccessor httpContextAccessor)
+        public async Task LogAsync(
+            Guid? userId = null,
+            string? action = null,
+            string? sourcePage = null,
+            Guid? adminUserId = null,
+            string? sessionKey = null,
+            string? ipAddress = null,
+            string? description = null)
         {
-            _context = context;
-            _httpContextAccessor = httpContextAccessor;
-        }
+            var context = _httpContextAccessor.HttpContext;
 
-        public async Task LogAsync(Guid? adminUserId, string action, string entity, string? entityId = null, string? ipAddress = null, string? description = null)
-        {
-            var ip = ipAddress ?? _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+            // IP adresi
+            var ip = ipAddress ?? context?.Connection.RemoteIpAddress?.ToString();
 
-            // Varsayılan açıklamalar
-            if (string.IsNullOrEmpty(description))
+            // SessionKey (cookie'den otomatik çekilir)
+            if (string.IsNullOrEmpty(sessionKey))
             {
-                description = action switch
-                {
-                    "Login" => "Kullanıcı başarılı şekilde giriş yaptı.",
-                    "Logout" => "Kullanıcı sistemden çıkış yaptı.",
-                    "FailedLogin" => "Başarısız giriş denemesi yapıldı.",
-                    "PasswordChange" => "Şifre başarıyla değiştirildi.",
-                    "PasswordReset" => "Şifre sıfırlama işlemi tamamlandı.",
-                    "PasswordResetRequest" => "Şifre sıfırlama isteği gönderildi.",
-                    "EmailChange" => "E-posta adresi değiştirildi.",
-                    "EmailVerified" => "E-posta doğrulandı.",
-                    "UnverifiedLoginAttempt" => "Doğrulanmamış e-posta ile giriş denemesi yapıldı.",
-                    "AccountDeleted" => "Kullanıcı hesabı silindi.",
-                    _ => $"{action} işlemi gerçekleştirildi."
-                };
+                sessionKey = context?.Request.Cookies["PersistentSessionKey"];
+            }
+
+            // Kullanıcı kontrolü
+            Guid? validUserId = null;
+            if (userId != Guid.Empty && await _context.Users.AnyAsync(u => u.Id == userId))
+            {
+                validUserId = userId;
+            }
+
+            // Admin kullanıcı kontrolü
+            Guid? validAdminUserId = null;
+            if (adminUserId.HasValue && await _context.Users.AnyAsync(u => u.Id == adminUserId.Value))
+            {
+                validAdminUserId = adminUserId;
             }
 
             var log = new AuditLog
             {
                 Id = Guid.NewGuid(),
-                AdminUserId = adminUserId,
-                Action = action,
-                Entity = entity,
-                EntityId = entityId,
-                Timestamp = DateTime.UtcNow,
+                UserId = validUserId,
+                AdminUserId = validAdminUserId,
+                Action = action ?? "",
+                SourcePage = sourcePage,
+                SessionKey = sessionKey,
                 IPAddress = ip,
-                Description = description
+                Timestamp = DateTime.UtcNow,
+                Description = description ?? $"{action} işlemi gerçekleştirildi."
             };
 
             _context.AuditLogs.Add(log);
             await _context.SaveChangesAsync();
         }
-
     }
 }

@@ -36,7 +36,6 @@ namespace Booknix.Domain.Entities
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
-        public ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
         public ICollection<MediaFile> MediaFiles { get; set; } = new List<MediaFile>();
         public ICollection<TrustedIp> TrustedIps { get; set; } = new List<TrustedIp>();
 

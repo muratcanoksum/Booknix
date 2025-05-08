@@ -6,18 +6,19 @@ namespace Booknix.Domain.Entities
     {
         public Guid Id { get; set; }
 
-        public Guid? AdminUserId { get; set; }   // İşlemi yapan kullanıcı (null olabilir)
-        public string Action { get; set; } = null!; // "Login", "Logout", "PasswordChange" gibi
-        public string? Entity { get; set; }         // "User", "Appointment" vb.
-        public string? EntityId { get; set; }       // Örn: kullanıcı ID'si
+        public Guid? UserId { get; set; }
+        public User? User { get; set; }
+
+        public Guid? AdminUserId { get; set; }
+        public User? AdminUser { get; set; }
+
+        public string Action { get; set; } = null!;
+        public string? SourcePage { get; set; }
+        public string? SessionKey { get; set; }
+
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         public string? IPAddress { get; set; }
 
-        // 💬 Açıklayıcı bilgi eklemek için:
         public string? Description { get; set; }
-
-        // Navigation
-        public User? AdminUser { get; set; }
     }
-
 }

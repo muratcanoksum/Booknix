@@ -1,5 +1,4 @@
-﻿
-namespace Booknix.Domain.Entities
+﻿namespace Booknix.Domain.Entities
 {
     public class UserSession
     {
@@ -9,6 +8,7 @@ namespace Booknix.Domain.Entities
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime LastAccessedAt { get; set; } = DateTime.UtcNow;
+        public DateTime ExpiresAt { get; set; } // ✅ Yeni alan
         public string? UserAgent { get; set; }
         public string? IpAddress { get; set; }
 

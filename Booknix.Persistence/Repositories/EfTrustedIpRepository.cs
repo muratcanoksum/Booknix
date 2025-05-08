@@ -18,6 +18,7 @@ namespace Booknix.Persistence.Repositories
         public async Task<TrustedIp?> GetByVerificationTokenAsync(string token)
         {
             return await _context.TrustedIps
+                .Include(t => t.User)
                 .FirstOrDefaultAsync(t => t.Token == token);
         }
 

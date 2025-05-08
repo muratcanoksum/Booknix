@@ -175,6 +175,37 @@ namespace Booknix.Persistence.Data
                 .HasColumnType("time");
 
 
+            modelBuilder.Entity<AuditLog>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Action)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.SourcePage)
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.SessionKey)
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.IPAddress)
+                    .HasMaxLength(45); // IPv6 için yeterli
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(500);
+
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.AdminUser)
+                    .WithMany()
+                    .HasForeignKey(e => e.AdminUserId)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
+
 
 
 

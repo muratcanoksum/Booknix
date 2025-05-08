@@ -71,5 +71,16 @@ namespace Booknix.Persistence.Repositories
                 .OrderByDescending(s => s.LastAccessedAt)
                 .ToListAsync();
         }
+
+        public async Task ExtendSessionExpirationAsync(Guid userId, string sessionKey, DateTime newExpiresAt)
+        {
+            var session = await _sessions.FirstOrDefaultAsync(s => s.UserId == userId && s.SessionKey == sessionKey && s.IsActive);
+            if (session != null)
+            {
+                session.ExpiresAt = newExpiresAt;
+                await _context.SaveChangesAsync();
+            }
+        }
+
     }
 }

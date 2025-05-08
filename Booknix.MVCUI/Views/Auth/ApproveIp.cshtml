@@ -1,0 +1,82 @@
+﻿@model Booknix.Application.DTOs.ApproveIpResultViewModel
+@using Booknix.Application.Helpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>IP Adresi Onayı - Booknix</title>
+    <link rel="stylesheet" href="~/css/site.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="~/js/site.js"></script>
+</head>
+
+<body class="bg-gray-50 font-sans">
+
+    @if (!Model.Success)
+    {
+        <div class="min-h-screen flex items-center justify-center">
+            <div class="bg-white shadow-xl rounded-lg p-8 max-w-lg w-full text-center">
+                <i class="fa-solid fa-circle-exclamation text-5xl text-red-500 mb-4"></i>
+                <h2 class="text-2xl font-semibold text-red-600">Bağlantı Geçersiz</h2>
+                <p class="text-gray-600 mt-2">@Model.Message</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="min-h-screen flex items-center justify-center">
+            <div class="max-w-lg w-full bg-white shadow-xl rounded-xl p-8">
+                <h2 class="text-2xl font-bold text-gray-700 text-center mb-6">Yeni IP Adresi Onayı</h2>
+
+                <div class="mb-6 border rounded-lg p-4 bg-indigo-50 text-indigo-800 space-y-2 text-sm">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-network-wired"></i>
+                        <span><strong>IP Adresi:</strong> @Model.IpAddress</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-user"></i>
+                        <span><strong>Talep Eden:</strong> @Model.User!.FullName (@Model.User.Email)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-clock"></i>
+                        <span><strong>Talep Tarihi:</strong> @DateHelper.ToLocal(Model.RequestedAt)</span>
+                    </div>
+                </div>
+
+                <form id="approveForm" class="space-y-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Token" value="@Model.Token" />
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Admin E-posta</label>
+                        <input name="AdminEmail" type="email" placeholder="admin@booknix.com"
+                               class="mt-1 w-full border rounded-md px-4 py-2 bg-gray-50 focus:border-indigo-400 focus:ring-indigo-400" required />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Şifre</label>
+                        <input name="AdminPassword" type="password" placeholder="********"
+                               class="mt-1 w-full border rounded-md px-4 py-2 bg-gray-50 focus:border-indigo-400 focus:ring-indigo-400" required />
+                    </div>
+
+                    <button type="submit"
+                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow-md transition duration-200">
+                        IP Onayla
+                    </button>
+                </form>
+
+                <div id="resultMessage" class="mt-4 text-center"></div>
+            </div>
+        </div>
+    }
+
+<script src="~/js/auth/approveIp.js"></script>
+
+</body>
+</html>

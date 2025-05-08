@@ -6,21 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace Booknix.MVCUI.Controllers
 {
     [Auth]
-    public class AccountController : Controller
+    public class AccountController(
+        IProfileService profileService,
+        IAuthService authService,
+        IAppointmentService appointmentService,
+        ISecurityService securityService) : Controller
     {
-        private readonly IProfileService _profileService;
-        private readonly IAuthService _authService;
-        private readonly IAppointmentService _appointmentService;
-
-        public AccountController(
-            IProfileService profileService,
-            IAuthService authService,
-            IAppointmentService appointmentService)
-        {
-            _profileService = profileService;
-            _authService = authService;
-            _appointmentService = appointmentService;
-        }
+        private readonly IProfileService _profileService = profileService;
+        private readonly IAuthService _authService = authService;
+        private readonly IAppointmentService _appointmentService = appointmentService;
+        private readonly ISecurityService _securityService = securityService;
 
         [HttpGet]
         public async Task<IActionResult> Manage()
@@ -255,7 +250,7 @@ namespace Booknix.MVCUI.Controllers
             var userId = HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-            var result = await _profileService.GetSecurityDataAsync(Guid.Parse(userId));
+            var result = await _securityService.GetSecurityDataAsync(Guid.Parse(userId));
             return PartialView("Security/Security", result);
         }
 
@@ -268,7 +263,7 @@ namespace Booknix.MVCUI.Controllers
                 return Unauthorized();
 
             var userId = Guid.Parse(userIdStr);
-            var result = await _profileService.GetAuditLogsPagedAsync(userId, page, pageSize);
+            var result = await _securityService.GetAuditLogsPagedAsync(userId, page, pageSize);
 
             return Json(result); // { logs: [...], currentPage: 1, totalPages: 5 }
         }

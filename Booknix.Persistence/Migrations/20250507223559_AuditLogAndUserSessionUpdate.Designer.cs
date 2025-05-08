@@ -3,6 +3,7 @@ using System;
 using Booknix.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Booknix.Persistence.Migrations
 {
     [DbContext(typeof(BooknixDbContext))]
-    partial class BooknixDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250507223559_AuditLogAndUserSessionUpdate")]
+    partial class AuditLogAndUserSessionUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -696,12 +699,12 @@ namespace Booknix.Persistence.Migrations
                     b.HasOne("Booknix.Domain.Entities.User", "AdminUser")
                         .WithMany()
                         .HasForeignKey("AdminUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Booknix.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("AdminUser");
 

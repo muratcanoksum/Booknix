@@ -3,7 +3,6 @@ using Booknix.Domain.Interfaces;
 using Booknix.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace Booknix.Persistence.Repositories
 {
     public class EfAuditLogRepository : IAuditLogRepository
@@ -15,13 +14,12 @@ namespace Booknix.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<List<AuditLog>> GetLogsByEntityIdAsync(string entityId)
+        public async Task<List<AuditLog>> GetLogsByUserIdAsync(Guid userId)
         {
             return await _context.Set<AuditLog>()
-                .Where(l => l.EntityId == entityId)
+                .Where(l => l.UserId == userId)
                 .OrderByDescending(l => l.Timestamp)
                 .ToListAsync();
         }
     }
-
 }

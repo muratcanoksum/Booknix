@@ -157,16 +157,24 @@ public class AuthController(
         return Ok();
     }
 
-    [UnAuth]
     [HttpGet]
     public async Task<IActionResult> ApproveIp(string token)
     {
-        var result = await _authService.ApproveIpAsync(token);
-
-        ViewBag.Status = result.Success ? "success" : "error";
-        ViewBag.Message = result.Message;
-
-        return View("VerifyResult"); // Basit bir sonuç sayfası gösterebiliriz
+        var model = await _authService.GetIpApprovalDetailsAsync(token);
+        return View(model);
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ApproveIpAjax(string AdminEmail, string AdminPassword, string Token)
+    {
+        var result = await _authService.ApproveIpAsync(Token, AdminEmail, AdminPassword);
+
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok(result.Message);
+    }
+
 
 }

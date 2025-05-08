@@ -5,6 +5,13 @@ namespace Booknix.Application.Interfaces
 {
     public interface IAuditLogger
     {
-        Task LogAsync(Guid? adminUserId, string action, string entity, string? entityId = null, string? ipAddress = null, string? description = null);
+        Task LogAsync(
+            Guid? userId = null,
+            string? action = null,
+            string? sourcePage = null,
+            Guid? adminUserId = null,
+            string? sessionKey = null,
+            string? ipAddress = null,
+            string? description = null);
     }
 }
