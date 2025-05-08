@@ -2,12 +2,11 @@
 using Booknix.Application.DTOs;
 using Booknix.Domain.Entities;
 using Booknix.Domain.Interfaces;
-using Booknix.Shared.Interfaces;
 using Booknix.Shared.Helpers;
 using Booknix.Application.Helpers;
 using Booknix.Domain.Entities.Enums;
 using Booknix.Application.ViewModels;
-using System.Text.Json; // En üste ekle
+using System.Text.Json;
 
 
 namespace Booknix.Application.Services
@@ -24,7 +23,8 @@ namespace Booknix.Application.Services
         IServiceEmployeeRepository serviceEmployeeRepo,
         IWorkerWorkingHourRepository workerWorkingHourRepo,
         IUserSessionRepository userSessionRepo,
-        IEmailQueueRepository emailQueueRepo
+        IEmailQueueRepository emailQueueRepo,
+        IEmailQueueNotifier emailQueueNotifier
             ) : IAdminService
     {
         private readonly ISectorRepository _sectorRepo = sectorRepo;
@@ -39,6 +39,7 @@ namespace Booknix.Application.Services
         private readonly IWorkerWorkingHourRepository _workerWorkingHourRepo = workerWorkingHourRepo;
         private readonly IUserSessionRepository _userSessionRepo = userSessionRepo;
         private readonly IEmailQueueRepository _emailQueueRepo = emailQueueRepo;
+        private readonly IEmailQueueNotifier _emailQueueNotifier = emailQueueNotifier;
 
         // Sectors
 
@@ -1137,11 +1138,16 @@ namespace Booknix.Application.Services
             if (email == null)
                 return new RequestResult(false, "Kuyruk işlemi bulunamadı.");
 
+            var oldStatus = email.Status.ToString();
             email.Status = EmailQueueStatus.Cancelled;
+            email.UpdatedAt = DateTime.UtcNow;
             await _emailQueueRepo.UpdateAsync(email);
+
+            await _emailQueueNotifier.NotifyStatusChangedAsync(email, oldStatus);
 
             return new RequestResult(true, "E-posta başarıyla iptal edildi.");
         }
+
 
         public async Task<RequestResult> RetryEmailAsync(Guid id)
         {
@@ -1149,13 +1155,18 @@ namespace Booknix.Application.Services
             if (email == null)
                 return new RequestResult(false, "Kuyruk işlemi bulunamadı.");
 
+            var oldStatus = email.Status.ToString();
             email.Status = EmailQueueStatus.Pending;
             email.ErrorMessage = null;
             email.SentAt = null;
+            email.UpdatedAt = DateTime.UtcNow;
             await _emailQueueRepo.UpdateAsync(email);
+
+            await _emailQueueNotifier.NotifyStatusChangedAsync(email, oldStatus);
 
             return new RequestResult(true, "E-posta yeniden kuyruğa alındı.");
         }
+
 
 
     }

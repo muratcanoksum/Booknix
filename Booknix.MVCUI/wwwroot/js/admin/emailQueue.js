@@ -1,33 +1,22 @@
 ﻿$(function () {
     const initialStatus = "Pending";
     $(`.tab-btn[data-status='${initialStatus}']`).attr("data-active", "true");
-    if (initialStatus === "Pending") {
-        startPendingLiveRefresh();
-    }
+    loadEmailQueue(initialStatus);
 
     $(".tab-btn").on("click", function () {
         const status = $(this).data("status");
         $(".tab-btn").attr("data-active", "false");
         $(this).attr("data-active", "true");
-        if (status === "Pending") {
-            startPendingLiveRefresh();
-        } else {
-            stopPendingLiveRefresh();
-            loadEmailQueue(status);
-        }
-
+        loadEmailQueue(status);
     });
 });
 
 function loadEmailQueue(status, silent = false) {
-
     if (!silent) showLoading();
 
     $.get(`/Admin/GetEmailsByStatus?status=${status}`, function (data) {
         if (!data || data.length === 0) {
-            $("#emailQueueContainer").html(`
-                <div class="text-center text-sm text-gray-400 py-6">Bu statüde e-posta bulunamadı.</div>
-            `);
+            $("#emailQueueContainer").html(`<div class="text-center text-sm text-gray-400 py-6">Bu statüde e-posta bulunamadı.</div>`);
             if (!silent) hideLoading();
             return;
         }
@@ -38,14 +27,8 @@ function loadEmailQueue(status, silent = false) {
 
             if (e.status === "Sent" && e.sentAt) {
                 extraInfo = `<div class="text-xs text-gray-400 mt-1">Gönderildi: ${formatDate(e.sentAt)}</div>`;
-            }
-            else if (e.status === "Failed" && e.errorMessage) {
-                extraInfo = `
-                    <div class="mt-2">
-                        <div class="text-xs text-red-700 bg-red-50 border border-red-200 px-2 py-1 rounded-md break-words max-w-xs">
-                            Hata: ${escapeHtml(e.errorMessage)}
-                        </div>
-                    </div>`;
+            } else if (e.status === "Failed" && e.errorMessage) {
+                extraInfo = `<div class="mt-2"><div class="text-xs text-red-700 bg-red-50 border border-red-200 px-2 py-1 rounded-md break-words max-w-xs">Hata: ${escapeHtml(e.errorMessage)}</div></div>`;
             }
 
             let actionButtons = `
@@ -57,8 +40,7 @@ function loadEmailQueue(status, silent = false) {
                         data-sent="${e.sentAt ? formatDate(e.sentAt) : ""}"
                         onclick="showEmailBodyFromBtn(this)">
                     <i class="fas fa-envelope-open-text"></i>
-                </button>
-            `;
+                </button>`;
 
             if (e.status === "Pending") {
                 actionButtons += `
@@ -66,8 +48,7 @@ function loadEmailQueue(status, silent = false) {
                             title="İptal Et" onclick="cancelEmail('${e.id}')">
                         <i class="fas fa-circle-pause"></i>
                     </button>`;
-            }
-            else if (e.status === "Failed" || e.status === "Cancelled") {
+            } else if (e.status === "Failed" || e.status === "Cancelled") {
                 actionButtons += `
                     <button class="text-yellow-600 hover:text-yellow-800 text-sm p-2 rounded-md hover:bg-gray-100 ml-1"
                             title="Yeniden Dene" onclick="retryEmail('${e.id}')">
@@ -76,6 +57,7 @@ function loadEmailQueue(status, silent = false) {
             }
 
             if (!silent) hideLoading();
+
             return `
                 <tr>
                     <td class="py-4 px-4 text-sm break-words">${e.to}</td>
@@ -89,12 +71,12 @@ function loadEmailQueue(status, silent = false) {
                         ${extraInfo}
                     </td>
                     <td class="py-4 px-4 text-sm">${e.tryCount}</td>
+                    <td class="py-4 px-4 text-sm">${formatDate(e.updatedAt)}</td>
                     <td class="py-4 px-4 text-sm">
                         <div class="flex flex-wrap gap-2 items-center justify-start min-w-[120px]">
                             ${actionButtons}
                         </div>
                     </td>
-
                 </tr>`;
         }).join("");
 
@@ -108,38 +90,49 @@ function loadEmailQueue(status, silent = false) {
                             <th class="py-3 px-4 text-left">Oluşturulma</th>
                             <th class="py-3 px-4 text-left">Durum</th>
                             <th class="py-3 px-4 text-left">Deneme</th>
+                            <th class="py-3 px-4 text-left">Güncellenme</th>
                             <th class="py-3 px-4 text-left">İşlem</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        ${rows}
-                    </tbody>
+                    <tbody class="divide-y divide-gray-200">${rows}</tbody>
                 </table>
-            </div>
-        `);
+            </div>`);
     }).fail(function () {
-        $("#emailQueueContainer").html(`
-            <div class="text-center text-red-500 text-sm py-6">E-postalar yüklenemedi.</div>
-        `);
+        $("#emailQueueContainer").html(`<div class="text-center text-red-500 text-sm py-6">E-postalar yüklenemedi.</div>`);
     });
 }
 
-function getStatusBadgeClass(status) {
-    switch (status) {
-        case "Pending": return "bg-yellow-100 text-yellow-800 border-yellow-300";
-        case "Sent": return "bg-green-100 text-green-800 border-green-300";
-        case "Failed": return "bg-red-100 text-red-800 border-red-300";
-        case "Cancelled": return "bg-gray-100 text-gray-800 border-gray-300";
-        default: return "bg-gray-100 text-gray-800 border-gray-300";
-    }
+
+function cancelEmail(id) {
+    if (!confirm("Bu e-postayı iptal etmek istediğinizden emin misiniz?")) return;
+
+    $.post(`/Admin/CancelEmail`, {
+        id: id,
+        __RequestVerificationToken: getCsrfToken()
+    }, function (res) {
+        if (res.success) {
+            setTimeoutAlert("s", "#emailQueueAlert", res.message || "E-posta iptal edildi", 5);
+        } else {
+            setTimeoutAlert("e", "#emailQueueAlert", res.message || "İşlem başarısız", 5);
+        }
+    }).fail(() => {
+        setTimeoutAlert("e", "#emailQueueAlert", "Sunucu hatası oluştu", 5);
+    });
 }
 
-function formatDate(utcStr) {
-    const date = new Date(utcStr);
-    return new Intl.DateTimeFormat("tr-TR", {
-        dateStyle: "medium",
-        timeStyle: "short"
-    }).format(date);
+function retryEmail(id) {
+    $.post(`/Admin/RetryEmail`, {
+        id: id,
+        __RequestVerificationToken: getCsrfToken()
+    }, function (res) {
+        if (res.success) {
+            setTimeoutAlert("s", "#emailQueueAlert", res.message || "Yeniden kuyruğa alındı", 5);
+        } else {
+            setTimeoutAlert("e", "#emailQueueAlert", res.message || "İşlem başarısız", 5);
+        }
+    }).fail(() => {
+        setTimeoutAlert("e", "#emailQueueAlert", "Sunucu hatası oluştu", 5);
+    });
 }
 
 function showEmailBodyFromBtn(btn) {
@@ -157,10 +150,33 @@ function showEmailBodyFromBtn(btn) {
     $("#emailBodyModal").removeClass("hidden");
 }
 
-
 function closeEmailBodyModal() {
     $("#emailBodyModal").addClass("hidden");
 }
+
+function getStatusBadgeClass(status) {
+    switch (status) {
+        case "Pending": return "bg-yellow-100 text-yellow-800 border-yellow-300";
+        case "Sent": return "bg-green-100 text-green-800 border-green-300";
+        case "Failed": return "bg-red-100 text-red-800 border-red-300";
+        case "Cancelled": return "bg-gray-100 text-gray-800 border-gray-300";
+        default: return "bg-gray-100 text-gray-800 border-gray-300";
+    }
+}
+
+function formatDate(utcStr) {
+    const date = new Date(utcStr);
+    return new Intl.DateTimeFormat("tr-TR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+    }).format(date);
+}
+
 
 function escapeBackticks(str) {
     return str?.replace(/`/g, "\\`") ?? "";
@@ -170,81 +186,25 @@ function escapeHtml(str) {
     return str?.replace(/"/g, "&quot;").replace(/'/g, "&#39;") ?? "";
 }
 
-function cancelEmail(id) {
-    if (!confirm("Bu e-postayı iptal etmek istediğinizden emin misiniz?")) return;
-
-    $.post(`/Admin/CancelEmail`, {
-        id: id,
-        __RequestVerificationToken: getCsrfToken()
-    }, function (res) {
-        if (res.success) {
-            setTimeoutAlert("s", "#emailQueueAlert", res.message || "E-posta iptal edildi", 5);
-            const activeTab = $(".tab-btn[data-active='true']").data("status");
-            loadEmailQueue(activeTab);
-        } else {
-            setTimeoutAlert("e", "#emailQueueAlert", res.message || "İşlem başarısız", 5);
-        }
-    }).fail(() => {
-        setTimeoutAlert("e", "#emailQueueAlert", "Sunucu hatası oluştu", 5);
-    });
-}
-function cancelEmail(id) {
-    if (!confirm("Bu e-postayı iptal etmek istediğinizden emin misiniz?")) return;
-
-    $.post(`/Admin/CancelEmail`, {
-        id: id,
-        __RequestVerificationToken: getCsrfToken()
-    }, function (res) {
-        if (res.success) {
-            setTimeoutAlert("s", "#emailQueueAlert", res.message || "E-posta iptal edildi", 5);
-            const activeTab = $(".tab-btn[data-active='true']").data("status");
-            loadEmailQueue(activeTab);
-        } else {
-            setTimeoutAlert("e", "#emailQueueAlert", res.message || "İşlem başarısız", 5);
-        }
-    }).fail(() => {
-        setTimeoutAlert("e", "#emailQueueAlert", "Sunucu hatası oluştu", 5);
-    });
-}
-
-
-function retryEmail(id) {
-    $.post(`/Admin/RetryEmail`, {
-        id: id,
-        __RequestVerificationToken: getCsrfToken()
-    }, function (res) {
-        if (res.success) {
-            setTimeoutAlert("s", "#emailQueueAlert", res.message || "Yeniden kuyruğa alındı", 5);
-            // Tab durumlarını güncelle
-            $(".tab-btn").attr("data-active", "false");
-            $(`.tab-btn[data-status='Pending']`).attr("data-active", "true");
-            startPendingLiveRefresh();
-        } else {
-            setTimeoutAlert("e", "#emailQueueAlert", res.message || "İşlem başarısız", 5);
-        }
-    }).fail(() => {
-        setTimeoutAlert("e", "#emailQueueAlert", "Sunucu hatası oluştu", 5);
-    });
-}
-
 function getCsrfToken() {
     return $('input[name="__RequestVerificationToken"]').val();
 }
 
-let pendingInterval = null;
+// SignalR bağlantısı
+let notificationConnection = new signalR.HubConnectionBuilder()
+    .withUrl("/hubs/notifications")
+    .withAutomaticReconnect()
+    .build();
 
-function startPendingLiveRefresh() {
-    if (pendingInterval) return;
+notificationConnection.start().then(() => {
+    console.log("SignalR bağlantısı kuruldu.");
+}).catch(err => {
+    console.error("SignalR bağlantı hatası:", err);
+});
 
-    pendingInterval = setInterval(() => {
-        const activeTab = $(".tab-btn[data-active='true']").data("status");
-        if (activeTab === "Pending") {
-            loadEmailQueue("Pending", true); // sessiz güncelleme
-        }
-    }, 1000); // ⏱ her 1 saniyede bir çek
-}
-
-function stopPendingLiveRefresh() {
-    clearInterval(pendingInterval);
-    pendingInterval = null;
-}
+notificationConnection.on("emailQueueUpdated", (status) => {
+    const activeTab = $(".tab-btn[data-active='true']").data("status");
+    if (activeTab === status) {
+        loadEmailQueue(status, true); // sessiz güncelle
+    }
+});

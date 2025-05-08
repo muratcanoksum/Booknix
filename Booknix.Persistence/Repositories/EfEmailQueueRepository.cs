@@ -39,7 +39,7 @@ namespace Booknix.Persistence.Repositories
         public async Task<List<EmailQueue>> GetAllAsync()
         {
             return await _context.EmailQueues
-                .OrderByDescending(e => e.CreatedAt)
+                .OrderByDescending(e => e.UpdatedAt)
                 .ToListAsync();
         }
 
@@ -47,7 +47,7 @@ namespace Booknix.Persistence.Repositories
         {
             return await _context.EmailQueues
                 .Where(e => e.Status == status)
-                .OrderByDescending(e => e.CreatedAt)
+                .OrderByDescending(e => e.UpdatedAt)
                 .ToListAsync();
         }
 

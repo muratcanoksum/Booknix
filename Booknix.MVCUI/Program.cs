@@ -13,6 +13,7 @@ using Booknix.Infrastructure.Logging;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Booknix.Infrastructure.Middleware;
 using Booknix.Infrastructure.Interfaces;
+using Booknix.MVCUI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,8 +53,7 @@ builder.Logging.SetMinimumLevel(LogLevel.Warning);
 
 // Dependency Injection
 
-
-
+builder.Services.AddSignalR();
 
 // Repositories
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();
@@ -83,6 +83,8 @@ builder.Services.AddScoped<IEmailQueueRepository, EfEmailQueueRepository>();
 builder.Services.AddScoped<IEmailSender, QueuedEmailSender>();
 builder.Services.AddScoped<IAuditLogger, AuditLogger>();
 builder.Services.AddScoped<IRawSmtpSender, SmtpEmailSender>();
+builder.Services.AddScoped<IEmailQueueNotifier, EmailQueueNotifier>();
+builder.Services.AddScoped<INotificationDispatcher, SignalRNotificationDispatcher>();
 
 
 // Services
@@ -94,6 +96,8 @@ builder.Services.AddScoped<IPublicService, PublicService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IWorkerService, WorkerService>();
 builder.Services.AddScoped<ISecurityService, SecurityService>();
+
+
 
 // Hosted
 builder.Services.AddHostedService<EmailQueueProcessor>();
@@ -124,6 +128,7 @@ app.UseRouting();
 app.UseAuthorization();
 app.UseSession();
 app.UseMiddleware<SessionValidationMiddleware>();
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 
 app.UseExceptionHandler("/Error/500"); // Sunucu hataları (500+)

@@ -524,6 +524,7 @@ public class AdminController(IAdminService adminService, IUserRepository userRep
             e.Subject,
             e.Body,
             e.CreatedAt,
+            e.UpdatedAt,
             Status = e.Status.ToString(),
             e.TryCount,
             e.SentAt, // sadece Sent için dolu
