@@ -1,6 +1,7 @@
 ﻿using Booknix.Domain.Entities;
 using Booknix.Application.DTOs;
 using Booknix.Application.ViewModels;
+using Booknix.Domain.Entities.Enums;
 
 namespace Booknix.Application.Interfaces
 {
@@ -54,6 +55,13 @@ namespace Booknix.Application.Interfaces
         Task<List<UserSession>> GetActiveSessionsAsync(Guid userId);
         Task<RequestResult> TerminateSessionAsync(Guid userId, string sessionKey);
         Task<RequestResult> TerminateAllSessionsAsync(Guid userId);
+
+
+        // EmailQueue
+        Task<List<EmailQueue>> GetAllEmailQueuesAsync();
+        Task<List<EmailQueue>> GetEmailsByStatusAsync(EmailQueueStatus status);
+        Task<RequestResult> CancelEmailAsync(Guid id);
+        Task<RequestResult> RetryEmailAsync(Guid id);
 
 
     }

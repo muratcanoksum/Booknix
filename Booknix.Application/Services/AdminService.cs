@@ -23,7 +23,8 @@ namespace Booknix.Application.Services
         IEmailSender emailSender,
         IServiceEmployeeRepository serviceEmployeeRepo,
         IWorkerWorkingHourRepository workerWorkingHourRepo,
-        IUserSessionRepository userSessionRepo
+        IUserSessionRepository userSessionRepo,
+        IEmailQueueRepository emailQueueRepo
             ) : IAdminService
     {
         private readonly ISectorRepository _sectorRepo = sectorRepo;
@@ -37,6 +38,7 @@ namespace Booknix.Application.Services
         private readonly IServiceEmployeeRepository _serviceEmployeeRepo = serviceEmployeeRepo;
         private readonly IWorkerWorkingHourRepository _workerWorkingHourRepo = workerWorkingHourRepo;
         private readonly IUserSessionRepository _userSessionRepo = userSessionRepo;
+        private readonly IEmailQueueRepository _emailQueueRepo = emailQueueRepo;
 
         // Sectors
 
@@ -1057,7 +1059,7 @@ namespace Booknix.Application.Services
             return await _userSessionRepo.GetActiveSessionsByUserIdAsync(userId);
         }
 
-        public async Task<RequestResult> TerminateSessionAsync(Guid UserId,string sessionKey)
+        public async Task<RequestResult> TerminateSessionAsync(Guid UserId, string sessionKey)
         {
             if (string.IsNullOrWhiteSpace(sessionKey))
             {
@@ -1116,6 +1118,45 @@ namespace Booknix.Application.Services
                 };
             }
         }
+
+
+        // EmailQueue
+        public async Task<List<EmailQueue>> GetAllEmailQueuesAsync()
+        {
+            return await _emailQueueRepo.GetAllAsync();
+        }
+
+        public async Task<List<EmailQueue>> GetEmailsByStatusAsync(EmailQueueStatus status)
+        {
+            return await _emailQueueRepo.GetByStatusAsync(status);
+        }
+
+        public async Task<RequestResult> CancelEmailAsync(Guid id)
+        {
+            var email = await _emailQueueRepo.GetByIdAsync(id);
+            if (email == null)
+                return new RequestResult(false, "Kuyruk işlemi bulunamadı.");
+
+            email.Status = EmailQueueStatus.Cancelled;
+            await _emailQueueRepo.UpdateAsync(email);
+
+            return new RequestResult(true, "E-posta başarıyla iptal edildi.");
+        }
+
+        public async Task<RequestResult> RetryEmailAsync(Guid id)
+        {
+            var email = await _emailQueueRepo.GetByIdAsync(id);
+            if (email == null)
+                return new RequestResult(false, "Kuyruk işlemi bulunamadı.");
+
+            email.Status = EmailQueueStatus.Pending;
+            email.ErrorMessage = null;
+            email.SentAt = null;
+            await _emailQueueRepo.UpdateAsync(email);
+
+            return new RequestResult(true, "E-posta yeniden kuyruğa alındı.");
+        }
+
 
     }
 }

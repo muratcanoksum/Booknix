@@ -9,10 +9,10 @@ using Booknix.Infrastructure.Email;
 using Booknix.Shared.Configuration;
 using Booknix.Shared.Interfaces;
 using Booknix.Application.Helpers; // EmailHelper burada
-using System.IO;
 using Booknix.Infrastructure.Logging;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Booknix.Infrastructure.Middleware;
+using Booknix.Infrastructure.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +44,16 @@ builder.Services.AddDbContext<BooknixDbContext>(options =>
     .ConfigureWarnings(w => w.Ignore(RelationalEventId.MultipleCollectionIncludeWarning))
 );
 
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning);
+builder.Logging.SetMinimumLevel(LogLevel.Warning);
+
 // Dependency Injection
+
+
+
 
 // Repositories
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();
@@ -66,11 +75,15 @@ builder.Services.AddScoped<IAppointmentRepository, EfAppointmentRepository>();
 builder.Services.AddScoped<IAppointmentSlotRepository, EfAppointmentSlotRepository>();
 builder.Services.AddScoped<IUserSessionRepository, EfUserSessionRepository>();
 builder.Services.AddScoped<IAuditLogRepository, EfAuditLogRepository>();
+builder.Services.AddScoped<IEmailQueueRepository, EfEmailQueueRepository>();
+
 
 
 // Unit of Work
-builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+builder.Services.AddScoped<IEmailSender, QueuedEmailSender>();
 builder.Services.AddScoped<IAuditLogger, AuditLogger>();
+builder.Services.AddScoped<IRawSmtpSender, SmtpEmailSender>();
+
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -81,6 +94,9 @@ builder.Services.AddScoped<IPublicService, PublicService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IWorkerService, WorkerService>();
 builder.Services.AddScoped<ISecurityService, SecurityService>();
+
+// Hosted
+builder.Services.AddHostedService<EmailQueueProcessor>();
 
 builder.Services.AddSingleton<IAppSettings, AppSettings>();
 

@@ -2,11 +2,12 @@
     e.preventDefault();
 
     const $btn = $(this).find("button[type='submit']");
-    const $alert = $("#login-alert");
 
     $("#success-message").remove();
 
     $btn.prop("disabled", true).text("Yükleniyor...");
+
+    // ✅ Force serialize güncellemesi için tüm inputlara change tetikle
 
     $.ajax({
         type: "POST",
@@ -16,8 +17,16 @@
             window.location.href = redirectUrl;
         },
         error: function (xhr) {
+            console.log(xhr)
             const msg = xhr.responseText || "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz veya sistem yöneticisine başvurunuz.";
             setTimeoutAlert("e", "#login-alert", msg, 30)
+
+            // ✅ CSRF token yenile (örnek: formu yeniden al)
+            $.get("/Auth/Login", function (html) {
+                const newToken = $(html).find("input[name='__RequestVerificationToken']").val();
+                $("input[name='__RequestVerificationToken']").val(newToken);
+            });
+
         },
         complete: function () {
             $btn.prop("disabled", false).text("Giriş Yap");

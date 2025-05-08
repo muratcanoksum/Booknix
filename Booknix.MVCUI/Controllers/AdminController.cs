@@ -6,6 +6,7 @@ using Booknix.Application.DTOs;
 using Booknix.Domain.Interfaces;
 using Booknix.Domain.Entities;
 using Booknix.Persistence.Repositories;
+using Booknix.Domain.Entities.Enums;
 
 namespace Booknix.MVCUI.Controllers;
 
@@ -411,7 +412,7 @@ public class AdminController(IAdminService adminService, IUserRepository userRep
 
         ViewBag.Roles = roles;
 
-        return View(users);
+        return View("Users/Users", users);
     }
 
     [HttpPost]
@@ -466,7 +467,7 @@ public class AdminController(IAdminService adminService, IUserRepository userRep
             return Content("Aktif oturum bulunamadı.");
         }
 
-        return PartialView("~/Views/Admin/_UserSessionPartial.cshtml", sessions);
+        return PartialView("Users/_UserSessionPartial.cshtml", sessions);
     }
 
 
@@ -497,10 +498,56 @@ public class AdminController(IAdminService adminService, IUserRepository userRep
         return Ok(result.Message);
     }
 
+    // Email Queueu
 
 
+    [HttpGet]
+    public IActionResult EmailQueue()
+    {
+        return View("EmailQueue/Index");
+    }
 
 
+    [HttpGet]
+    [AjaxOnly]
+    public async Task<IActionResult> GetEmailsByStatus(string status)
+    {
+        if (!Enum.TryParse<EmailQueueStatus>(status, out var parsedStatus))
+            return BadRequest("Geçersiz durum.");
 
+        var emails = await _adminService.GetEmailsByStatusAsync(parsedStatus);
+
+        var result = emails.Select(e => new
+        {
+            e.Id,
+            e.To,
+            e.Subject,
+            e.Body,
+            e.CreatedAt,
+            Status = e.Status.ToString(),
+            e.TryCount,
+            e.SentAt, // sadece Sent için dolu
+            e.ErrorMessage // sadece Failed için dolu
+        });
+
+        return Json(result);
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CancelEmail(Guid id)
+    {
+        var result = await _adminService.CancelEmailAsync(id);
+        return Json(result);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RetryEmail(Guid id)
+    {
+        var result = await _adminService.RetryEmailAsync(id);
+        return Json(result);
+    }
 
 }

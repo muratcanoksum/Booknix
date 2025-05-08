@@ -23,9 +23,6 @@ public class AuthController(
         // Full URL'yi alıp hash kısmını ekleyelim
         var fullUrl = Request.Path + Request.QueryString;  // Path + QueryString kısmı
 
-
-
-        Console.WriteLine(fullUrl);
         ViewBag.ReturnUrl = returnUrl;
         return View();
     }

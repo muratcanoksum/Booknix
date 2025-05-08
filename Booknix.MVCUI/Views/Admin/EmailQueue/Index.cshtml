@@ -1,0 +1,54 @@
+﻿@{
+    ViewData["Title"] = "E-Posta Kuyruğu";
+}
+@Html.AntiForgeryToken()
+
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+        <h2 class="text-2xl font-semibold text-gray-800">
+            <i class="fas fa-envelope-circle-check text-indigo-500 mr-2"></i> E-Posta Kuyruğu
+        </h2>
+        <div class="flex gap-2 text-sm font-medium border rounded-md overflow-hidden">
+            <button class="tab-btn px-4 py-2 hover:bg-indigo-100 data-[active=true]:bg-indigo-500 data-[active=true]:text-white" data-status="Pending">
+                <i class="fas fa-spinner mr-1"></i> Beklemede
+            </button>
+            <button class="tab-btn px-4 py-2 hover:bg-green-100 data-[active=true]:bg-green-500 data-[active=true]:text-white" data-status="Sent">
+                <i class="fas fa-check-circle mr-1"></i> Gönderildi
+            </button>
+            <button class="tab-btn px-4 py-2 hover:bg-red-100 data-[active=true]:bg-red-500 data-[active=true]:text-white" data-status="Failed">
+                <i class="fas fa-exclamation-circle mr-1"></i> Hatalı
+            </button>
+            <button class="tab-btn px-4 py-2 hover:bg-gray-100 data-[active=true]:bg-gray-500 data-[active=true]:text-white" data-status="Cancelled">
+                <i class="fas fa-pause-circle mr-1"></i> İptal
+            </button>
+        </div>
+    </div>
+
+    <div id="emailQueueAlert" class="hidden"></div>
+
+    <div id="emailQueueContainer" class="overflow-x-auto w-full">
+        <div class="text-center text-sm text-gray-500 py-6">Yükleniyor...</div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="emailBodyModal" class="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center hidden">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-xl p-6 relative border border-gray-200">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800" id="emailBodyModalTitle">Başlık</h3>
+                <p class="text-sm text-gray-500 mt-1" id="emailBodyModalMeta"></p>
+            </div>
+            <button onclick="closeEmailBodyModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+        <iframe id="emailBodyIframe" class="w-full border rounded-md max-h-[60vh]" style="min-height:400px;"></iframe>
+    </div>
+</div>
+
+
+<!-- Stil override -->
+@section Scripts {
+<script src="~/js/admin/emailQueue.js" asp-append-version="true"></script>
+}
