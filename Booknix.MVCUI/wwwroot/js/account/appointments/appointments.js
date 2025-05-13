@@ -81,6 +81,7 @@ $(document).off("click", "a[data-id]").on("click", "a[data-id]:not(.cancel-appoi
         alert("Randevu bilgisi bulunamadı!");
         return;
     }
+    console.log("test")
 
     // Detay modal'ı aç
     $.get("/Account/AppointmentDetail/" + appointmentId, function (html) {

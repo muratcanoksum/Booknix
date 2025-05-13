@@ -32,7 +32,7 @@ namespace Booknix.Application.Services
                 EndTime = a.AppointmentSlot?.EndTime.ToString("HH:mm") ?? string.Empty,
                 LocationName = a.Service?.Location?.Name ?? string.Empty,
                 WorkerName = a.AppointmentSlot?.AssignerWorker?.User?.FullName ?? "Belirtilmemiş",
-                Status = a.Status.ToString(),
+                Status = a.Status,
                 ServiceName = a.Service?.Name ?? string.Empty,
                 ServiceId = a.ServiceId,
                 ReviewRating = a.Review?.Rating
@@ -72,7 +72,7 @@ namespace Booknix.Application.Services
                 LocationPhone = appointment.Service?.Location?.PhoneNumber ?? string.Empty,
                 ServiceName = appointment.Service?.Name ?? string.Empty,
                 WorkerName = appointment.AppointmentSlot?.AssignerWorker?.User?.FullName ?? "Belirtilmemiş",
-                Status = appointment.Status.ToString(),
+                Status = appointment.Status,
                 Notes = appointment.Notes,
                 CreatedAt = appointment.CreatedAt,
                 CanCancel = canCancel
@@ -128,7 +128,7 @@ namespace Booknix.Application.Services
                 LocationName = a.Service?.Location?.Name ?? string.Empty,
                 WorkerName = a.AppointmentSlot?.AssignerWorker?.User?.FullName ?? "Belirtilmemiş",
                 UserName = a.User?.FullName ?? "Belirtilmemiş",
-                Status = a.Status.ToString(),
+                Status = a.Status,
                 ServiceName = a.Service?.Name ?? string.Empty,
                 ServiceId = a.ServiceId,
                 ReviewRating = reviews.FirstOrDefault(r => r.AppointmentId == a.Id)?.Rating

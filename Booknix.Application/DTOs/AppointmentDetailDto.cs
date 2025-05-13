@@ -1,3 +1,4 @@
+using Booknix.Domain.Entities.Enums;
 using System;
 
 namespace Booknix.Application.DTOs
@@ -13,7 +14,7 @@ namespace Booknix.Application.DTOs
         public string LocationPhone { get; set; } = string.Empty;
         public string ServiceName { get; set; } = string.Empty;
         public string WorkerName { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
+        public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
         public string? Notes { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool CanCancel { get; set; }
