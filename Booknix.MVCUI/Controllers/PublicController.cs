@@ -87,7 +87,7 @@ public class PublicController(IPublicService publicService) : Controller
         var result = await _publicService.CreateAppointmentAsync(userId, dto);
 
 
-        if (!result.Success)
+        if (!result.IsSuccess)
         {
             BadRequest(result.Message);
         }

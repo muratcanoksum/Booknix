@@ -13,5 +13,8 @@ namespace Booknix.Application.DTOs
         public string UserName { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public string ServiceName { get; set; } = string.Empty;
+        public Guid ServiceId { get; set; }
+        public int? ReviewRating { get; set; }
+
     }
 } 

@@ -19,6 +19,8 @@ namespace Booknix.Domain.Entities
         public User? User { get; set; }
         public Service? Service { get; set; }
         public AppointmentSlot? AppointmentSlot { get; set; }
+        public Review? Review { get; set; } 
+        
     }
 
 }

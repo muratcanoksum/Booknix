@@ -105,7 +105,7 @@ public class AuthController(
     {
         var result = await _authService.VerifyEmailAsync(token);
 
-        ViewBag.Status = result.Success ? "success" : "error";
+        ViewBag.Status = result.IsSuccess ? "success" : "error";
         ViewBag.Message = result.Message;
 
         return View("VerifyResult"); // Basit bir sonuç sayfası gösterebiliriz
@@ -147,7 +147,7 @@ public class AuthController(
     public async Task<IActionResult> ResetPassword(ResetPasswordRequestDto dto)
     {
         var result = await _authService.ResetPasswordAsync(dto.Token, dto.NewPassword);
-        if (!result.Success)
+        if (!result.IsSuccess)
             return BadRequest(result.Message);
 
         TempData["Success"] = result.Message;
@@ -167,7 +167,7 @@ public class AuthController(
     {
         var result = await _authService.ApproveIpAsync(Token, AdminEmail, AdminPassword);
 
-        if (!result.Success)
+        if (!result.IsSuccess)
             return BadRequest(result.Message);
 
         return Ok(result.Message);

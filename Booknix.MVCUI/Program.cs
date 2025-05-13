@@ -97,6 +97,7 @@ builder.Services.AddScoped<IPublicService, PublicService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IWorkerService, WorkerService>();
 builder.Services.AddScoped<ISecurityService, SecurityService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 
 

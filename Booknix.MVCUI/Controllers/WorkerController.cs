@@ -10,13 +10,16 @@ namespace Booknix.MVCUI.Controllers
     {
         private readonly IAppointmentService _appointmentService;
         private readonly IWorkerService _workerService;
+        private readonly IReviewService _reviewService;
 
         public WorkerController(
             IAppointmentService appointmentService,
-            IWorkerService workerService)
+            IWorkerService workerService,
+            IReviewService reviewService)
         {
             _appointmentService = appointmentService;
             _workerService = workerService;
+            _reviewService = reviewService;
         }
 
         [HttpGet]
@@ -49,34 +52,71 @@ namespace Booknix.MVCUI.Controllers
                 var userId = Guid.Parse(HttpContext.Session.GetString("UserId") ?? Guid.Empty.ToString());
                 if (userId == Guid.Empty)
                 {
-                    return BadRequest("Kullanıcı oturumu bulunamadı.");
+                    return BadRequest(new { success = false, message = "Kullanıcı oturumu bulunamadı." });
                 }
 
                 var worker = await _workerService.GetWorkerByUserIdAsync(userId);
                 if (worker == null)
                 {
-                    return BadRequest("Çalışan bilgileri bulunamadı.");
+                    return BadRequest(new { success = false, message = "Çalışan bilgileri bulunamadı." });
                 }
 
                 // Parse the status string to appointment status enum
                 if (!Enum.TryParse<AppointmentStatus>(status, out var appointmentStatus))
                 {
-                    return BadRequest("Geçersiz randevu durumu.");
+                    return BadRequest(new { success = false, message = "Geçersiz randevu durumu." });
                 }
 
                 // Call service to update the appointment status
                 var result = await _workerService.UpdateAppointmentStatusAsync(worker.Id, appointmentId, appointmentStatus);
                 if (!result)
                 {
-                    return BadRequest("Randevu durumu güncellenemedi.");
+                    return BadRequest(new { success = false, message = "Randevu durumu güncellenemedi." });
                 }
 
                 TempData["SuccessMessage"] = "Randevu durumu başarıyla güncellendi.";
-                return Ok("Randevu durumu başarıyla güncellendi.");
+                return Ok(new { success = true, message = "Randevu durumu başarıyla güncellendi." });
             }
             catch (Exception ex)
             {
-                return BadRequest($"İşlem sırasında bir hata oluştu: {ex.Message}");
+                return BadRequest(new { success = false, message = $"İşlem sırasında bir hata oluştu: {ex.Message}" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAppointmentReview(Guid appointmentId)
+        {
+            try
+            {
+                var userId = Guid.Parse(HttpContext.Session.GetString("UserId") ?? Guid.Empty.ToString());
+                if (userId == Guid.Empty)
+                {
+                    return BadRequest(new { success = false, message = "Kullanıcı oturumu bulunamadı." });
+                }
+
+                var worker = await _workerService.GetWorkerByUserIdAsync(userId);
+                if (worker == null)
+                {
+                    return BadRequest(new { success = false, message = "Çalışan bilgileri bulunamadı." });
+                }
+
+                // Randevu değerlendirmesini service üzerinden al
+                var review = await _reviewService.GetReviewByAppointmentIdAsync(appointmentId);
+                if (review == null)
+                {
+                    return NotFound(new { success = false, message = "Değerlendirme bulunamadı." });
+                }
+
+                // Başarılı sonuç döndür
+                return Ok(new { 
+                    success = true, 
+                    data = review,
+                    message = "Değerlendirme başarıyla getirildi."
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = $"İşlem sırasında bir hata oluştu: {ex.Message}" });
             }
         }
     }

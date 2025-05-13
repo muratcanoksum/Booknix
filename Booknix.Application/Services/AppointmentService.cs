@@ -12,10 +12,12 @@ namespace Booknix.Application.Services
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IReviewRepository _reviewRepository;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository)
+        public AppointmentService(IAppointmentRepository appointmentRepository, IReviewRepository reviewRepository)
         {
             _appointmentRepository = appointmentRepository;
+            _reviewRepository = reviewRepository;
         }
 
         public async Task<List<AppointmentDto>> GetUserAppointmentsAsync(Guid userId)
@@ -31,7 +33,9 @@ namespace Booknix.Application.Services
                 LocationName = a.Service?.Location?.Name ?? string.Empty,
                 WorkerName = a.AppointmentSlot?.AssignerWorker?.User?.FullName ?? "Belirtilmemiş",
                 Status = a.Status.ToString(),
-                ServiceName = a.Service?.Name ?? string.Empty
+                ServiceName = a.Service?.Name ?? string.Empty,
+                ServiceId = a.ServiceId,
+                ReviewRating = a.Review?.Rating
             }).ToList();
 
             return result;
@@ -109,6 +113,12 @@ namespace Booknix.Application.Services
         {
             var appointments = await _appointmentRepository.GetByWorkerIdAsync(workerId);
             
+            // Randevuların ID'lerini al
+            var appointmentIds = appointments.Select(a => a.Id).ToList();
+            
+            // Bu ID'lere ait yorumları getir
+            var reviews = await _reviewRepository.GetByAppointmentIdsAsync(appointmentIds);
+            
             return appointments.Select(a => new AppointmentDto
             {
                 Id = a.Id,
@@ -119,7 +129,9 @@ namespace Booknix.Application.Services
                 WorkerName = a.AppointmentSlot?.AssignerWorker?.User?.FullName ?? "Belirtilmemiş",
                 UserName = a.User?.FullName ?? "Belirtilmemiş",
                 Status = a.Status.ToString(),
-                ServiceName = a.Service?.Name ?? string.Empty
+                ServiceName = a.Service?.Name ?? string.Empty,
+                ServiceId = a.ServiceId,
+                ReviewRating = reviews.FirstOrDefault(r => r.AppointmentId == a.Id)?.Rating
             }).ToList();
         }
     }
