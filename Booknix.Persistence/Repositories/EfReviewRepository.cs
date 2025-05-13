@@ -97,5 +97,36 @@ namespace Booknix.Persistence.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.AppointmentId == appointmentId);
         }
+
+        public async Task<(int Count, double AverageRating)> GetWorkerReviewStatsAsync(Guid workerId)
+        {
+            // First, get all appointments handled by this worker
+            var appointments = await _context.AppointmentSlots
+                .Where(a => a.AssignerWorkerId == workerId)
+                .Select(a => a.Id)
+                .ToListAsync();
+
+            if (!appointments.Any())
+                return (0, 0);
+
+            // Then get appointments that reference these slots
+            var appointmentIds = await _context.Appointments
+                .Where(a => appointments.Contains(a.AppointmentSlotId) && a.Status == Domain.Entities.Enums.AppointmentStatus.Completed)
+                .Select(a => a.Id)
+                .ToListAsync();
+
+            if (!appointmentIds.Any())
+                return (0, 0);
+
+            // Get reviews for these appointments
+            var reviews = await _context.Reviews
+                .Where(r => appointmentIds.Contains(r.AppointmentId))
+                .ToListAsync();
+
+            int count = reviews.Count;
+            double avgRating = count > 0 ? reviews.Average(r => r.Rating) : 0;
+
+            return (count, avgRating);
+        }
     }
 }

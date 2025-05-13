@@ -10,6 +10,8 @@ namespace Booknix.Application.DTOs
     {
         public Guid Id { get; set; }
         public string? FullName { get; set; }
+        public int ReviewCount { get; set; }
+        public double AverageRating { get; set; }
     }
 
 }

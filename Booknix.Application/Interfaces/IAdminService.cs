@@ -35,6 +35,7 @@ namespace Booknix.Application.Interfaces
 
         // Workers
         Task<IEnumerable<Worker>> GetAllWorkersAsync(Guid locationId);
+        Task<IEnumerable<WorkerWithReviewsDto>> GetWorkersWithReviewsAsync(Guid locationId);
         Task<RequestResult> AddWorkerToLocationAsync(WorkerAddDto dto);
         Task<RequestResult> DeleteWorkerAsync(Guid id);
         Task<RequestResult> UpdateWorkerAsync(Guid id, WorkerAddDto dto);

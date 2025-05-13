@@ -24,7 +24,8 @@ namespace Booknix.Application.Services
         IWorkerWorkingHourRepository workerWorkingHourRepo,
         IUserSessionRepository userSessionRepo,
         IEmailQueueRepository emailQueueRepo,
-        IEmailQueueNotifier emailQueueNotifier
+        IEmailQueueNotifier emailQueueNotifier,
+        IReviewRepository reviewRepo
             ) : IAdminService
     {
         private readonly ISectorRepository _sectorRepo = sectorRepo;
@@ -40,6 +41,7 @@ namespace Booknix.Application.Services
         private readonly IUserSessionRepository _userSessionRepo = userSessionRepo;
         private readonly IEmailQueueRepository _emailQueueRepo = emailQueueRepo;
         private readonly IEmailQueueNotifier _emailQueueNotifier = emailQueueNotifier;
+        private readonly IReviewRepository _reviewRepo = reviewRepo;
 
         // Sectors
 
@@ -504,6 +506,23 @@ namespace Booknix.Application.Services
         public async Task<IEnumerable<Worker>> GetAllWorkersAsync(Guid locationId)
         {
             return await _workerRepo.GetByLocationIdAsync(locationId);
+        }
+
+        public async Task<IEnumerable<WorkerWithReviewsDto>> GetWorkersWithReviewsAsync(Guid locationId)
+        {
+            // Get all workers for this location
+            var workers = await _workerRepo.GetByLocationIdAsync(locationId);
+            var workerDtos = workers.Select(WorkerWithReviewsDto.FromWorker).ToList();
+
+            // For each worker, fetch their review stats
+            foreach (var workerDto in workerDtos)
+            {
+                var stats = await _reviewRepo.GetWorkerReviewStatsAsync(workerDto.Id);
+                workerDto.ReviewCount = stats.Count;
+                workerDto.AverageRating = stats.AverageRating;
+            }
+
+            return workerDtos;
         }
 
         public async Task<RequestResult> AddWorkerToLocationAsync(WorkerAddDto dto)

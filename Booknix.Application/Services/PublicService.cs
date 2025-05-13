@@ -16,7 +16,8 @@ public class PublicService(
     ILocationRepository locationRepo,
     IWorkerWorkingHourRepository workingHourRepo,
     IWorkerRepository workerRepo,
-    IUserRepository userRepo
+    IUserRepository userRepo,
+    IReviewRepository reviewRepo
         ) : IPublicService
 {
     private readonly ISectorRepository _sectorRepo = sectorRepo;
@@ -28,6 +29,7 @@ public class PublicService(
     private readonly ILocationRepository _locationRepo = locationRepo;
     private readonly IWorkerWorkingHourRepository _workingHourRepo = workingHourRepo;
     private readonly IWorkerRepository _workerRepo = workerRepo;
+    private readonly IReviewRepository _reviewRepo = reviewRepo;
 
 
     public async Task<HomePageDto> GetHomePageDataAsync()
@@ -149,6 +151,22 @@ public class PublicService(
         var service = _serviceRepo.GetByIdWithLocationAndEmployees(serviceId);
         if (service == null || service.Location?.Slug != locationSlug) return null;
 
+        var workers = service.ServiceEmployees.Select(se => new WorkerMiniDto
+        {
+            FullName = se.Worker!.User.FullName,
+            Id = se.Worker.Id,
+            ReviewCount = 0,
+            AverageRating = 0
+        }).ToList();
+
+        // Get review statistics for each worker
+        foreach (var worker in workers)
+        {
+            var stats = _reviewRepo.GetWorkerReviewStatsAsync(worker.Id).GetAwaiter().GetResult();
+            worker.ReviewCount = stats.Count;
+            worker.AverageRating = stats.AverageRating;
+        }
+
         return new ServiceDetailsDto
         {
             ServiceName = service.Name,
@@ -158,11 +176,7 @@ public class PublicService(
             Duration = service.Duration,
             LocationSlug = service.Location.Slug,
             LocationName = service.Location.Name,
-            Workers = service.ServiceEmployees.Select(se => new WorkerMiniDto
-            {
-                FullName = se.Worker!.User.FullName,
-                Id = se.Worker.Id
-            }).ToList()
+            Workers = workers
         };
     }
 

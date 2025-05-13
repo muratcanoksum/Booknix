@@ -21,11 +21,44 @@
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
             @foreach (var worker in Model.Workers!)
             {
-                <a href="/randevu/@worker.Id?sid=@Model.ServiceId" class="bg-white border rounded-xl shadow-sm hover:shadow-md p-4 flex items-center gap-4 transition-all">
-                    <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold">
-                        @worker.FullName!.Substring(0, 1)
+                <a href="/randevu/@worker.Id?sid=@Model.ServiceId" class="bg-white border rounded-xl shadow-sm hover:shadow-md p-4 flex flex-col transition-all">
+                    <div class="flex items-center gap-4 mb-2">
+                        <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold">
+                            @worker.FullName!.Substring(0, 1)
+                        </div>
+                        <span class="text-sm font-medium text-gray-800">@worker.FullName</span>
                     </div>
-                    <span class="text-sm font-medium text-gray-800">@worker.FullName</span>
+                    
+                    @if (worker.ReviewCount > 0)
+                    {
+                        <div class="flex items-center space-x-1 ml-16">
+                            <div class="flex items-center text-yellow-500">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Round(worker.AverageRating))
+                                    {
+                                        <i class="fas fa-star text-xs"></i>
+                                    }
+                                    else if (i - 0.5 <= worker.AverageRating)
+                                    {
+                                        <i class="fas fa-star-half-alt text-xs"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="far fa-star text-xs"></i>
+                                    }
+                                }
+                            </div>
+                            <span class="text-gray-600 text-xs">(@worker.AverageRating.ToString("0.0"))</span>
+                            <span class="text-gray-500 text-xs">@worker.ReviewCount değerlendirme</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="ml-16">
+                            <span class="text-gray-500 text-xs">Henüz değerlendirme yok</span>
+                        </div>
+                    }
                 </a>
             }
         </div>
