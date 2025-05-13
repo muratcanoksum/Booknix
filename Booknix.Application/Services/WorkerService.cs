@@ -10,13 +10,16 @@ namespace Booknix.Application.Services
     {
         private readonly IWorkerRepository _workerRepository;
         private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IReviewRepository _reviewRepository;
 
         public WorkerService(
             IWorkerRepository workerRepository,
-            IAppointmentRepository appointmentRepository)
+            IAppointmentRepository appointmentRepository,
+            IReviewRepository reviewRepository) // 🔥 Injection ekle
         {
             _workerRepository = workerRepository;
             _appointmentRepository = appointmentRepository;
+            _reviewRepository = reviewRepository; // 🔥 Atama yap
         }
 
         public async Task<Worker?> GetWorkerByIdAsync(Guid id)
@@ -33,6 +36,9 @@ namespace Booknix.Application.Services
         {
             // Get appointments where this worker is assigned
             var appointments = await _appointmentRepository.GetByWorkerIdAsync(workerId);
+            var appointmentIds = appointments.Select(a => a.Id).ToList(); 
+
+            var reviews = await _reviewRepository.GetByAppointmentIdsAsync(appointmentIds);
             
             return appointments.Select(a => new AppointmentDto
             {
@@ -44,8 +50,10 @@ namespace Booknix.Application.Services
                 WorkerName = a.AppointmentSlot?.AssignerWorker?.User?.FullName ?? "Belirtilmemiş",
                 UserName = a.User?.FullName ?? "Belirtilmemiş",
                 Status = a.Status.ToString(),
-                ServiceName = a.Service?.Name ?? string.Empty
+                ServiceName = a.Service?.Name ?? string.Empty,
+                ReviewRating = reviews.FirstOrDefault(r => r.AppointmentId == a.Id)?.Rating // ⭐️ Burayı da tam ekle
             }).ToList();
+
         }
 
         public async Task<bool> UpdateAppointmentStatusAsync(Guid workerId, Guid appointmentId, AppointmentStatus newStatus)

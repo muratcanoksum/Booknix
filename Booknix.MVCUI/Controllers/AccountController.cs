@@ -10,12 +10,14 @@ namespace Booknix.MVCUI.Controllers
         IProfileService profileService,
         IAuthService authService,
         IAppointmentService appointmentService,
-        ISecurityService securityService) : Controller
+        ISecurityService securityService,
+        IReviewService reviewService) : Controller
     {
         private readonly IProfileService _profileService = profileService;
         private readonly IAuthService _authService = authService;
         private readonly IAppointmentService _appointmentService = appointmentService;
         private readonly ISecurityService _securityService = securityService;
+        private readonly IReviewService _reviewService = reviewService;
 
         [HttpGet]
         public async Task<IActionResult> Manage()
@@ -125,7 +127,7 @@ namespace Booknix.MVCUI.Controllers
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
 
             var result = await _authService.ChangePasswordAsync(userId, oldPassword, newPassword);
-            if (!result.Success)
+            if (!result.IsSuccess)
             {
                 return BadRequest(result.Message);
             }
@@ -147,7 +149,7 @@ namespace Booknix.MVCUI.Controllers
         {
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             var result = await _authService.ChangeEmail(userId, newEmail);
-            if (!result.Success)
+            if (!result.IsSuccess)
             {
                 return BadRequest(result.Message);
             }
@@ -160,7 +162,7 @@ namespace Booknix.MVCUI.Controllers
         {
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             var (result, email) = await _authService.ChangeEmailVerify(userId, VerificationCode);
-            if (!result.Success)
+            if (!result.IsSuccess)
             {
                 return BadRequest(result.Message);
             }
@@ -181,7 +183,7 @@ namespace Booknix.MVCUI.Controllers
         {
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             var result = await _authService.DeleteAccount(userId, CurrentPassword);
-            if (!result.Success)
+            if (!result.IsSuccess)
             {
                 return BadRequest(result.Message);
             }
@@ -194,7 +196,7 @@ namespace Booknix.MVCUI.Controllers
         {
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             var result = await _authService.DeleteAccountVerify(userId, VerificationCode);
-            if (!result.Success)
+            if (!result.IsSuccess)
             {
                 return BadRequest(result.Message);
             }
@@ -267,6 +269,63 @@ namespace Booknix.MVCUI.Controllers
 
             return Json(result); // { logs: [...], currentPage: 1, totalPages: 5 }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateReview(CreateReviewDto dto)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            dto.UserId = userId;
+            
+            var result = await _reviewService.CreateReviewAsync(dto);
+            
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Message);
+            }
+            
+            return Ok(result.Message ?? "Değerlendirmeniz için teşekkür ederiz.");
+        }
+
+
+
+        [HttpGet]
+        [AjaxOnly]
+        public async Task<IActionResult> GetReview(Guid serviceId)
+        {
+            var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
+            var reviewResult = await _reviewService.GetUserReviewAsync(userId, serviceId);
+
+            if (!reviewResult.IsSuccess || reviewResult.Value == null)
+                return NoContent();
+
+            return Json(reviewResult.Value);
+        }
+
+        [HttpGet]
+        [AjaxOnly]
+        public async Task<IActionResult> GetReviewByAppointment(Guid appointmentId)
+        {
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _reviewService.GetUserReviewByAppointmentIdAsync(userId, appointmentId);
+            if (!result.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return Json(result.Value);
+        }
+
+
+
+
+
+
 
 
     }

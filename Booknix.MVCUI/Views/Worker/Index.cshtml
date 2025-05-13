@@ -93,7 +93,7 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach (var appointment in Model)
                         {
-                            <tr class="hover:bg-gray-50 transition-colors">
+                            <tr class="hover:bg-gray-50 transition-colors" data-id="@appointment.Id">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                     @appointment.AppointmentDate.ToString("dd.MM.yyyy")
                                 </td>
@@ -171,6 +171,20 @@
                                             <button data-id="@appointment.Id" data-status="NoShow" class="update-appointment-status bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center">
                                                 <i class="fas fa-user-slash mr-1.5"></i> Gelmedi
                                             </button>
+                                        }
+                                        @if (appointment.Status == "Completed" && appointment.ReviewRating.HasValue)
+                                        {
+                                            <div class="review-box flex items-center bg-yellow-50 border border-yellow-200 text-yellow-700 px-3 py-1.5 rounded text-xs font-medium transition-colors cursor-pointer hover:bg-yellow-100 gap-1" data-appointment-id="@appointment.Id" id="review-@appointment.Id">
+                                                <i class="fas fa-star text-yellow-500 mr-1"></i>
+                                                <span>Değerlendirme:</span>
+                                                <div class="flex items-center text-yellow-500 ml-1">
+                                                    @for (int i = 0; i < appointment.ReviewRating; i++)
+                                                    {
+                                                        <i class="fas fa-star text-xs mr-0.5"></i>
+                                                    }
+                                                </div>
+                                                <span class="ml-1">(@appointment.ReviewRating)</span>
+                                            </div>
                                         }
                                     </div>
                                 </td>

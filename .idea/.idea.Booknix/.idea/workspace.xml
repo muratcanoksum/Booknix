@@ -12,10 +12,26 @@
   <component name="ChangeListManager">
     <list default="true" id="96c8b308-4f34-45ec-85e1-130b97399079" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Booknix/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Booknix/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.Domain/Interfaces/IRoleRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Domain/Interfaces/IRoleRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AdminController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AdminController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Admin/_Layout.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Admin/_Layout.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfRoleRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfRoleRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Application/DTOs/AppointmentDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/DTOs/AppointmentDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Application/DTOs/RequestResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/DTOs/RequestResult.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Application/Services/AppointmentService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/Services/AppointmentService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Application/Services/WorkerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/Services/WorkerService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Domain/Entities/Appointment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Domain/Entities/Appointment.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Domain/Entities/Review.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Domain/Entities/Review.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Domain/Interfaces/IReviewRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Domain/Interfaces/IReviewRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AccountController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AccountController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AuthController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AuthController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/PublicController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/PublicController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/WorkerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/WorkerController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Properties/launchSettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Account/Appointments/_AppointmentsPartial.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Account/Appointments/_AppointmentsPartial.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Worker/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Worker/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/appsettings.Development.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/wwwroot/js/account/appointments/appointments.js" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/wwwroot/js/account/appointments/appointments.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/wwwroot/js/worker/worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/wwwroot/js/worker/worker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Persistence/Migrations/BooknixDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Persistence/Migrations/BooknixDbContextModelSnapshot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfReviewRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfReviewRepository.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -4,6 +4,10 @@
     {
         public bool Success { get; set; }
         public string Message { get; set; } = string.Empty;
+        
+        // Add IsSuccess property for compatibility with Result class
+        public bool IsSuccess => Success;
+        public bool IsFailure => !Success;
 
         public RequestResult() { }
 

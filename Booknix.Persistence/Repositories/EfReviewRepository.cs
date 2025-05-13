@@ -16,12 +16,16 @@ namespace Booknix.Persistence.Repositories
 
         public async Task<Review?> GetByIdAsync(Guid id)
         {
-            return await _context.Reviews.FindAsync(id);
+            return await _context.Reviews
+                .Include(r => r.User)
+                .Include(r => r.Service)
+                .FirstOrDefaultAsync(r => r.Id == id);
         }
 
         public async Task<IEnumerable<Review>> GetByUserIdAsync(Guid userId)
         {
             return await _context.Reviews
+                .Include(r => r.Service)
                 .Where(r => r.UserId == userId)
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
@@ -30,6 +34,7 @@ namespace Booknix.Persistence.Repositories
         public async Task<IEnumerable<Review>> GetByServiceIdAsync(Guid serviceId)
         {
             return await _context.Reviews
+                .Include(r => r.User)
                 .Where(r => r.ServiceId == serviceId)
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
@@ -63,6 +68,32 @@ namespace Booknix.Persistence.Repositories
                 _context.Reviews.Remove(review);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<Review?> GetByUserAndServiceIdAsync(Guid userId, Guid serviceId)
+        {
+            return await _context.Reviews
+                .FirstOrDefaultAsync(r => r.UserId == userId && r.ServiceId == serviceId);
+        }
+
+        public async Task<Review?> GetByUserAndAppointmentIdAsync(Guid userId, Guid appointmentId)
+        {
+            return await _context.Reviews
+                .FirstOrDefaultAsync(r => r.UserId == userId && r.AppointmentId == appointmentId);
+        }
+
+        public async Task<List<Review>> GetByAppointmentIdsAsync(List<Guid> appointmentIds)
+        {
+            return await _context.Reviews
+                .Where(r => appointmentIds.Contains(r.AppointmentId))
+                .ToListAsync();
+        }
+
+        public async Task<Review?> GetByAppointmentIdAsync(Guid appointmentId)
+        {
+            return await _context.Reviews
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.AppointmentId == appointmentId);
         }
     }
 }

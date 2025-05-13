@@ -8,6 +8,7 @@ namespace Booknix.Domain.Entities
 
         public Guid UserId { get; set; }
         public Guid ServiceId { get; set; }
+        public Guid AppointmentId { get; set; }
 
         public int Rating { get; set; }  // 1–5 arası
         public string? Comment { get; set; }
