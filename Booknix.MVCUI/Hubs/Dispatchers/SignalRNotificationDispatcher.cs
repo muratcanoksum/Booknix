@@ -16,5 +16,10 @@ namespace Booknix.MVCUI.Hubs
         {
             await _hub.Clients.All.SendAsync(key, payload);
         }
+
+        public async Task PushToUserAsync(Guid userId, string key, object? payload = null)
+        {
+            await _hub.Clients.Group(userId.ToString()).SendAsync(key, payload);
+        }
     }
 }

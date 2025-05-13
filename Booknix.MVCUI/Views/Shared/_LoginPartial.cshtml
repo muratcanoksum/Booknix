@@ -6,6 +6,7 @@
     var firstName = fullName?.Split(" ").FirstOrDefault();
     var role = session?.GetString("Role");
     var locationRole = session?.GetString("LocationRole");
+    var userId = session?.GetString("UserId");
 }
 
 <ul class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
@@ -28,14 +29,14 @@
 
         if (locationRole == "LocationAdmin")
         {
-<li>
-    <a asp-controller="LocationAdmin" asp-action="Index" asp-fragment="services"
-       class="block px-4 py-1.5 border border-yellow-500 text-yellow-600 text-sm rounded hover:bg-yellow-500 hover:text-white transition">
-        Lokasyon Yönetimi
-    </a>
+            <li>
+                <a asp-controller="LocationAdmin" asp-action="Index" asp-fragment="services"
+                   class="block px-4 py-1.5 border border-yellow-500 text-yellow-600 text-sm rounded hover:bg-yellow-500 hover:text-white transition">
+                    Lokasyon Yönetimi
+                </a>
 
 
-</li>
+            </li>
         }
 
         @* Çalışan Paneli sadece LocationEmployee rolü için gösterilir *@
@@ -55,12 +56,43 @@
                 Hesabım
             </a>
         </li>
+
         <li>
             <a asp-controller="Auth" asp-action="Logout"
                class="block px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition">
                 Çıkış Yap
             </a>
         </li>
+
+        <!-- Bildirim Zil ve Panel -->
+        <li id="notification-bell" class="relative cursor-pointer group" data-userid="@userId">
+            <div id="animatedBell">
+                <i id="notification-icon" class="fas fa-bell text-2xl text-gray-600 transition"></i>
+                <span id="notification-count" class="absolute top-0 right-0 inline-flex items-center justify-center
+        px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full hidden">
+                    0
+                </span>
+            </div>
+            <!-- Bildirim Paneli -->
+            <div id="notification-panel" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+                <div class="p-4 border-b font-semibold text-gray-700">
+                    Bildirimler
+                    <button id="mark-all-read" class="float-right text-xs text-indigo-600 hover:underline">
+                        Tümünü Okundu Yap
+                    </button>
+                </div>
+                <ul id="notification-list" class="max-h-80 overflow-y-auto divide-y divide-gray-100">
+                    <!-- Bildirimler buraya dolacak -->
+                </ul>
+                <div class="p-3 text-center">
+                    <a id="delete-all-notification" class="text-sm text-indigo-600 hover:underline">
+                        Tüm Bildirimleri Sil
+                    </a>
+                </div>
+            </div>
+        </li>
+
+
     }
     else
     {
@@ -78,3 +110,4 @@
         </li>
     }
 </ul>
+

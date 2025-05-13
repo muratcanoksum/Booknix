@@ -61,7 +61,7 @@ namespace Booknix.Persistence.Data
 
             // User - Notification (1-N)
             modelBuilder.Entity<Notification>()
-                .HasOne(n => n.User)
+                .HasOne<User>()
                 .WithMany(u => u.Notifications)
                 .HasForeignKey(n => n.UserId)
                 .OnDelete(DeleteBehavior.Cascade);

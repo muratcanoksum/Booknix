@@ -85,6 +85,7 @@ builder.Services.AddScoped<IAuditLogger, AuditLogger>();
 builder.Services.AddScoped<IRawSmtpSender, SmtpEmailSender>();
 builder.Services.AddScoped<IEmailQueueNotifier, EmailQueueNotifier>();
 builder.Services.AddScoped<INotificationDispatcher, SignalRNotificationDispatcher>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 
 // Services
