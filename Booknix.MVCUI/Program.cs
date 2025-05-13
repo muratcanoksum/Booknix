@@ -105,7 +105,10 @@ builder.Services.AddHostedService<EmailQueueProcessor>();
 
 builder.Services.AddSingleton<IAppSettings, AppSettings>();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.SuppressAsyncSuffixInActionNames = false;
+});
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {
@@ -114,6 +117,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddMemoryCache();
+builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
@@ -121,6 +125,9 @@ var app = builder.Build();
 // Token süresi yapılandırması (EmailHelper'a aktar)
 var appSettings = app.Services.GetRequiredService<IAppSettings>();
 EmailHelper.Configure(appSettings.TokenExpireMinutes, appSettings.BaseUrl);
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 // Middleware
 app.UseHttpsRedirection();

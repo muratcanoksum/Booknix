@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 public class ErrorController : Controller
 {
     [Route("Error/404")]
+    [HttpGet]
     public IActionResult Error404()
     {
         return View("Error404");
     }
 
     [Route("Error/{code:int}")]
+    [HttpGet]
     public IActionResult General(int code)
     {
         var requestedUrl = HttpContext.Request.Query["url"]; // URL parametresini al
@@ -25,6 +27,7 @@ public class ErrorController : Controller
     }
 
     [Route("Error/AccessDenied")]
+    [HttpGet]
     public IActionResult AccessDenied()
     {
         ViewData["Title"] = "Erişim Reddedildi - 403";
