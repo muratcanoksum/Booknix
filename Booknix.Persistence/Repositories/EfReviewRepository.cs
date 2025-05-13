@@ -93,6 +93,8 @@ namespace Booknix.Persistence.Repositories
         {
             return await _context.Reviews
                 .Include(r => r.User)
+                .Include(r => r.Service)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.AppointmentId == appointmentId);
         }
     }

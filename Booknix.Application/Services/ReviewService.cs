@@ -148,16 +148,7 @@ namespace Booknix.Application.Services
             if (review == null)
                 return Result<ReviewDto>.Failure("Review bulunamadı.");
 
-            var reviewDto = new ReviewDto
-            {
-                Id = review.Id,
-                UserId = review.UserId,
-                ServiceId = review.ServiceId,
-                Rating = review.Rating,
-                Comment = review.Comment,
-                CreatedAt = review.CreatedAt
-            };
-            return Result<ReviewDto>.Success(reviewDto);
+            return Result<ReviewDto>.Success(MapToDto(review));
         }
 
         public async Task<Result<ReviewDto>> GetUserReviewByAppointmentIdAsync(Guid userId, Guid appointmentId)

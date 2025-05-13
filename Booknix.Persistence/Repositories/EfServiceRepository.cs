@@ -92,7 +92,7 @@ namespace Booknix.Persistence.Repositories
                 .Include(s => s.Location)
                 .Include(s => s.ServiceEmployees)
                     .ThenInclude(se => se.Worker)
-                        .ThenInclude(e => e.User)
+                        .ThenInclude(w => w!.User)
                 .FirstOrDefault(s => s.Id == id);
         }
 

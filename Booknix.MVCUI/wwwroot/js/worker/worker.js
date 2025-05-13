@@ -94,16 +94,24 @@ $(document).off("click", ".review-box").on("click", ".review-box", function(e) {
     console.log("Kullanılacak appointmentId:", appointmentId);
     
     // AJAX isteği ile değerlendirme bilgilerini getir
-    $.get("/Worker/GetAppointmentReview/" + appointmentId, function(response) {
+    $.get("/Worker/GetAppointmentReview?appointmentId=" + appointmentId, function(response) {
         console.log("API Yanıtı:", response);
         if (response && response.success) {
             const data = response.data;
             
             // Yorumu hazırla
-            let comment = data.comment || "Yorum yapılmamış";
+            let comment = data.comment;
+            // Yorumun kontrolünü geliştir
+            if (!comment || comment.trim() === '') {
+                comment = "Yorum yapılmamış";
+            }
+            
             let rating = data.rating || 0;
             let userName = data.userName || "Kullanıcı";
+            let serviceName = data.serviceName || "Hizmet";
             let date = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "";
+            
+            console.log("Değerlendirme detayları:", data);
             
             // Modal içeriğini oluştur
             const stars = Array(rating).fill('<i class="fas fa-star text-yellow-400"></i>').join('');
@@ -123,7 +131,13 @@ $(document).off("click", ".review-box").on("click", ".review-box", function(e) {
                                 </div>
                                 <span class="text-gray-700 font-medium">(${rating}/5)</span>
                             </div>
-                            <p class="text-gray-600 mb-2">${comment}</p>
+                            <div class="mb-2">
+                                <span class="text-sm text-gray-600">Hizmet: <span class="font-medium text-gray-800">${serviceName}</span></span>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-md mt-2 border border-gray-200 max-h-60 overflow-y-auto">
+                                <p class="text-gray-700 font-medium mb-1">Yorum:</p>
+                                <p class="text-gray-600 whitespace-pre-line break-words">${comment}</p>
+                            </div>
                             <div class="flex justify-between items-center mt-4 text-xs text-gray-500">
                                 <span>${userName}</span>
                                 <span>${date}</span>
@@ -146,7 +160,9 @@ $(document).off("click", ".review-box").on("click", ".review-box", function(e) {
             const errorMsg = response && response.message ? response.message : "Değerlendirme bulunamadı!";
             alert(errorMsg);
         }
-    }).fail(function(xhr) {
+    }).fail(function(xhr, status, error) {
+        console.error("AJAX Error:", status, error);
+        console.error("Response:", xhr.responseText);
         const response = xhr.responseJSON;
         const errorMsg = response && response.message ? response.message : "Değerlendirme bilgileri alınamadı!";
         alert(errorMsg);
