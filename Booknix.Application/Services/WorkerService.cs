@@ -36,10 +36,10 @@ namespace Booknix.Application.Services
         {
             // Get appointments where this worker is assigned
             var appointments = await _appointmentRepository.GetByWorkerIdAsync(workerId);
-            var appointmentIds = appointments.Select(a => a.Id).ToList(); 
+            var appointmentIds = appointments.Select(a => a.Id).ToList();
 
             var reviews = await _reviewRepository.GetByAppointmentIdsAsync(appointmentIds);
-            
+
             return appointments.Select(a => new AppointmentDto
             {
                 Id = a.Id,
@@ -49,7 +49,7 @@ namespace Booknix.Application.Services
                 LocationName = a.Service?.Location?.Name ?? string.Empty,
                 WorkerName = a.AppointmentSlot?.AssignerWorker?.User?.FullName ?? "Belirtilmemiş",
                 UserName = a.User?.FullName ?? "Belirtilmemiş",
-                Status = a.Status.ToString(),
+                Status = a.Status,
                 ServiceName = a.Service?.Name ?? string.Empty,
                 ReviewRating = reviews.FirstOrDefault(r => r.AppointmentId == a.Id)?.Rating // ⭐️ Burayı da tam ekle
             }).ToList();
@@ -59,39 +59,39 @@ namespace Booknix.Application.Services
         public async Task<bool> UpdateAppointmentStatusAsync(Guid workerId, Guid appointmentId, AppointmentStatus newStatus)
         {
             var appointment = await _appointmentRepository.GetByIdWithDetailsAsync(appointmentId);
-            
+
             // Check if appointment exists and belongs to this worker
             if (appointment == null || appointment.AppointmentSlot?.AssignerWorkerId != workerId)
             {
                 return false;
             }
-            
+
             // Check for valid status transitions
             bool isValidTransition = (appointment.Status, newStatus) switch
             {
                 // From Pending
                 (AppointmentStatus.Pending, AppointmentStatus.Approved) => true,
                 (AppointmentStatus.Pending, AppointmentStatus.Cancelled) => true,
-                
+
                 // From Approved
                 (AppointmentStatus.Approved, AppointmentStatus.Completed) => true,
                 (AppointmentStatus.Approved, AppointmentStatus.NoShow) => true,
                 (AppointmentStatus.Approved, AppointmentStatus.Cancelled) => true,
-                
+
                 // Invalid transitions
                 _ => false
             };
-            
+
             if (!isValidTransition)
             {
                 return false;
             }
-            
+
             // Update appointment status
             appointment.Status = newStatus;
             await _appointmentRepository.UpdateAsync(appointment);
-            
+
             return true;
         }
     }
-} 
+}
