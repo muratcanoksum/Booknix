@@ -18,7 +18,8 @@ namespace Booknix.Application.Services
         IRoleRepository roleRepo,
         IEmailSender emailSender,
         IWorkerWorkingHourRepository workerWorkingHourRepo,
-        IHttpContextAccessor httpContextAccesor
+        IHttpContextAccessor httpContextAccesor,
+        IReviewRepository reviewRepo
         ) : ILocationService
     {
         private readonly ILocationRepository _locationRepo = locationRepo;
@@ -30,6 +31,7 @@ namespace Booknix.Application.Services
         private readonly IEmailSender _emailSender = emailSender;
         private readonly IWorkerWorkingHourRepository _workerWorkingHourRepo = workerWorkingHourRepo;
         private readonly IHttpContextAccessor _httpContextAccesor = httpContextAccesor;
+        private readonly IReviewRepository _reviewRepo = reviewRepo;
 
         private bool IsInLocationAdminPanel =>
     _httpContextAccesor.HttpContext?.Request.Path.StartsWithSegments("/panel/lokasyon") == true;
@@ -197,6 +199,23 @@ namespace Booknix.Application.Services
         public async Task<IEnumerable<Worker>> GetAllWorkersAsync(Guid locationId)
         {
             return await _workerRepo.GetByLocationIdAsync(locationId);
+        }
+
+        public async Task<IEnumerable<WorkerWithReviewsDto>> GetWorkersWithReviewsAsync(Guid locationId)
+        {
+            // Get all workers for this location
+            var workers = await _workerRepo.GetByLocationIdAsync(locationId);
+            var workerDtos = workers.Select(WorkerWithReviewsDto.FromWorker).ToList();
+
+            // For each worker, fetch their review stats
+            foreach (var workerDto in workerDtos)
+            {
+                var stats = await _reviewRepo.GetWorkerReviewStatsAsync(workerDto.Id);
+                workerDto.ReviewCount = stats.Count;
+                workerDto.AverageRating = stats.AverageRating;
+            }
+
+            return workerDtos;
         }
 
         public async Task<RequestResult> AddWorkerToLocationAsync(WorkerAddDto dto)

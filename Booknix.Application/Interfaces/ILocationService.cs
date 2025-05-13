@@ -1,6 +1,4 @@
-﻿
-
-using Booknix.Application.DTOs;
+﻿using Booknix.Application.DTOs;
 using Booknix.Application.ViewModels;
 using Booknix.Domain.Entities;
 
@@ -20,6 +18,7 @@ namespace Booknix.Application.Interfaces
         Task<Service?> GetServiceByIdAsync(Guid id);
 
         Task<IEnumerable<Worker>> GetAllWorkersAsync(Guid locationId);
+        Task<IEnumerable<WorkerWithReviewsDto>> GetWorkersWithReviewsAsync(Guid locationId);
         Task<RequestResult> AddWorkerToLocationAsync(WorkerAddDto dto);
         Task<RequestResult> DeleteWorkerAsync(Guid id, Guid currentUserId);
         Task<RequestResult> UpdateWorkerAsync(Guid id, WorkerAddDto dto);

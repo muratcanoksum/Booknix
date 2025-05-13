@@ -127,7 +127,7 @@ namespace Booknix.MVCUI.Controllers
         [HttpGet("/LocationAdmin/GetWorkersByLocation/{locationId}")]
         public async Task<IActionResult> GetWorkersByLocation(Guid locationId)
         {
-            var workers = await _locationService.GetAllWorkersAsync(locationId);
+            var workers = await _locationService.GetWorkersWithReviewsAsync(locationId);
             ViewBag.LocationId = locationId;
             return PartialView("~/Views/Location/Sections/Worker/PartialView.cshtml", workers);
         }

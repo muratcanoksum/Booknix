@@ -12,11 +12,18 @@
   <component name="ChangeListManager">
     <list default="true" id="96c8b308-4f34-45ec-85e1-130b97399079" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Booknix/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Booknix/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.Application/Services/ReviewService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/Services/ReviewService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/WorkerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/WorkerController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/wwwroot/js/worker/worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/wwwroot/js/worker/worker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Application/DTOs/WorkerMiniDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/DTOs/WorkerMiniDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Application/Interfaces/IAdminService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/Interfaces/IAdminService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Application/Interfaces/ILocationService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/Interfaces/ILocationService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Application/Services/AdminService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/Services/AdminService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Application/Services/LocationService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/Services/LocationService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Application/Services/PublicService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Application/Services/PublicService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.Domain/Interfaces/IReviewRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Domain/Interfaces/IReviewRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AdminController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/AdminController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/LocationAdminController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Controllers/LocationAdminController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Location/Sections/Worker/PartialView.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Location/Sections/Worker/PartialView.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Booknix.MVCUI/Views/Public/ServiceDetails.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.MVCUI/Views/Public/ServiceDetails.cshtml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfReviewRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfReviewRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfServiceRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Booknix.Persistence/Repositories/EfServiceRepository.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

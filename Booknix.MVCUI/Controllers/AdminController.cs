@@ -317,7 +317,7 @@ public class AdminController(IAdminService adminService, IUserRepository userRep
     [AjaxOnly]
     public async Task<IActionResult> GetWorkersByLocation(Guid LocationId)
     {
-        var workers = await _adminService.GetAllWorkersAsync(LocationId);
+        var workers = await _adminService.GetWorkersWithReviewsAsync(LocationId);
         ViewBag.LocationId = LocationId;
         return PartialView("~/Views/Location/Sections/Worker/PartialView.cshtml", workers);
     }
