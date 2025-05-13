@@ -17,7 +17,8 @@ public class PublicService(
     IWorkerWorkingHourRepository workingHourRepo,
     IWorkerRepository workerRepo,
     IUserRepository userRepo,
-    IReviewRepository reviewRepo
+    IReviewRepository reviewRepo,
+    INotificationService notificationService
         ) : IPublicService
 {
     private readonly ISectorRepository _sectorRepo = sectorRepo;
@@ -30,6 +31,7 @@ public class PublicService(
     private readonly IWorkerWorkingHourRepository _workingHourRepo = workingHourRepo;
     private readonly IWorkerRepository _workerRepo = workerRepo;
     private readonly IReviewRepository _reviewRepo = reviewRepo;
+    private readonly INotificationService _notificationService = notificationService;
 
 
     public async Task<HomePageDto> GetHomePageDataAsync()
@@ -87,14 +89,14 @@ public class PublicService(
         var locationResults = locationEntities.Select(x => new SearchResultDto
         {
             Name = x.Name,
-            Url = $"/location/{x.Slug}",
+            Url = $"/lokasyon/{x.Slug}",
             CategoryName = x.Sector?.Name
         });
 
         var serviceResults = serviceEntities.Select(x => new SearchResultDto
         {
             Name = x.Name,
-            Url = $"/location/{x.Location?.Slug}/{x.Id}",
+            Url = $"/lokasyon/{x.Location?.Slug}/{x.Id}",
             LocationName = x.Location?.Name
         });
 
@@ -209,7 +211,7 @@ public class PublicService(
             {
                 Start = a.AppointmentSlot!.StartTime,
                 End = a.AppointmentSlot!.EndTime,
-                Status = a.Status // Artık gerçek appointment status
+                a.Status // Artık gerçek appointment status
             }).ToList();
 
         foreach (var day in workingDays)
@@ -350,6 +352,14 @@ public class PublicService(
             await _appointmentSlotRepo.DeleteAsync(appointmentSlot.Id);
             return new RequestResult(false, $"Randevu oluşturulamadı, slot geri alındı. Hata: {ex.Message}");
         }
+
+        await _notificationService.AddNotificationAsync(
+            userId,
+            "Randevu Talebiniz Alındı",
+            $"'{service.Name}' hizmeti için {location.Name} lokasyonunda, {worker.User?.FullName ?? "-"} ile {appointmentSlot.StartTime:dd.MM.yyyy HH:mm} tarihinde randevu talebiniz oluşturuldu. Onaylandığında ayrıca bildirim alacaksınız.",
+            NotificationType.Info
+        );
+
 
         return new RequestResult(true, "Randevu başarıyla oluşturuldu");
     }

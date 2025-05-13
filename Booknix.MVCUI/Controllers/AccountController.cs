@@ -276,14 +276,14 @@ namespace Booknix.MVCUI.Controllers
         {
             var userId = Guid.Parse(HttpContext.Session.GetString("UserId")!);
             dto.UserId = userId;
-            
+
             var result = await _reviewService.CreateReviewAsync(dto);
-            
+
             if (!result.IsSuccess)
             {
                 return BadRequest(result.Message);
             }
-            
+
             return Ok(result.Message ?? "Değerlendirmeniz için teşekkür ederiz.");
         }
 

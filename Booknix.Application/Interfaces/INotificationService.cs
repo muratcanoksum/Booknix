@@ -1,4 +1,5 @@
 ﻿using Booknix.Domain.Entities;
+using Booknix.Domain.Entities.Enums;
 
 namespace Booknix.Application.Interfaces
 {
@@ -8,7 +9,7 @@ namespace Booknix.Application.Interfaces
         Task<int> GetUnreadCountAsync(Guid userId);
         Task MarkAsReadAsync(Guid notificationId);
         Task MarkAllAsReadAsync(Guid userId);
-        Task AddNotificationAsync(Guid userId, string title, string message);
+        Task AddNotificationAsync(Guid userId, string title, string message, NotificationType type = NotificationType.Info);
         Task SoftDeleteAsync(Guid notificationId);
         Task SoftDeleteAllAsync(Guid userId);
 

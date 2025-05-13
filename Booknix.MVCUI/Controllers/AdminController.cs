@@ -467,7 +467,7 @@ public class AdminController(IAdminService adminService, IUserRepository userRep
             return Content("Aktif oturum bulunamadı.");
         }
 
-        return PartialView("Users/_UserSessionPartial.cshtml", sessions);
+        return PartialView("~/Views/Admin/Users/_UserSessionPartial.cshtml", sessions);
     }
 
 

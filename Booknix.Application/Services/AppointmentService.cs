@@ -4,26 +4,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Booknix.Application.DTOs;
 using Booknix.Application.Interfaces;
+using Booknix.Domain.Entities;
 using Booknix.Domain.Entities.Enums;
 using Booknix.Domain.Interfaces;
 
 namespace Booknix.Application.Services
 {
-    public class AppointmentService : IAppointmentService
+    public class AppointmentService(IAppointmentRepository appointmentRepository, IReviewRepository reviewRepository, INotificationService notificationService) : IAppointmentService
     {
-        private readonly IAppointmentRepository _appointmentRepository;
-        private readonly IReviewRepository _reviewRepository;
-
-        public AppointmentService(IAppointmentRepository appointmentRepository, IReviewRepository reviewRepository)
-        {
-            _appointmentRepository = appointmentRepository;
-            _reviewRepository = reviewRepository;
-        }
+        private readonly IAppointmentRepository _appointmentRepository = appointmentRepository;
+        private readonly IReviewRepository _reviewRepository = reviewRepository;
+        private readonly INotificationService _notificationService = notificationService;
 
         public async Task<List<AppointmentDto>> GetUserAppointmentsAsync(Guid userId)
         {
             var appointments = await _appointmentRepository.GetByUserIdAsync(userId);
-            
+
             var result = appointments.Select(a => new AppointmentDto
             {
                 Id = a.Id,
@@ -44,15 +40,15 @@ namespace Booknix.Application.Services
         public async Task<AppointmentDetailDto?> GetAppointmentDetailAsync(Guid userId, Guid appointmentId)
         {
             var appointment = await _appointmentRepository.GetByIdWithDetailsAsync(appointmentId);
-            
+
             if (appointment == null || appointment.UserId != userId)
             {
                 return null;
             }
-            
+
             // Check if the appointment can be cancelled
             bool canCancel = false;
-            if (appointment.Status != AppointmentStatus.Completed && 
+            if (appointment.Status != AppointmentStatus.Completed &&
                 appointment.Status != AppointmentStatus.Cancelled &&
                 appointment.Status != AppointmentStatus.NoShow)
             {
@@ -60,7 +56,7 @@ namespace Booknix.Application.Services
                 var appointmentDate = appointment.AppointmentSlot?.StartTime ?? DateTime.MinValue;
                 canCancel = appointmentDate > DateTime.Now;
             }
-            
+
             return new AppointmentDetailDto
             {
                 Id = appointment.Id,
@@ -82,43 +78,53 @@ namespace Booknix.Application.Services
         public async Task<bool> CancelAppointmentAsync(Guid userId, Guid appointmentId)
         {
             var appointment = await _appointmentRepository.GetByIdWithDetailsAsync(appointmentId);
-            
+
             if (appointment == null || appointment.UserId != userId)
             {
                 return false;
             }
-            
+
             // Cannot cancel if status is Completed, Cancelled, or NoShow
-            if (appointment.Status == AppointmentStatus.Completed || 
+            if (appointment.Status == AppointmentStatus.Completed ||
                 appointment.Status == AppointmentStatus.Cancelled ||
                 appointment.Status == AppointmentStatus.NoShow)
             {
                 return false;
             }
-            
+
             // Cannot cancel if appointment date has passed
             var appointmentDate = appointment.AppointmentSlot?.StartTime ?? DateTime.MinValue;
             if (appointmentDate <= DateTime.Now)
             {
                 return false;
             }
-            
+
             appointment.Status = AppointmentStatus.Cancelled;
+
+
             await _appointmentRepository.UpdateAsync(appointment);
-            
+
+            await _notificationService.AddNotificationAsync(
+                appointment.UserId,
+                "Randevu İptal Edildi",
+                $"'{appointment.Service?.Name}' hizmeti için {appointmentDate:dd.MM.yyyy HH:mm} tarihinde olan randevunuzu başarıyla iptal ettiniz.",
+                NotificationType.Success
+            );
+
+
             return true;
         }
 
         public async Task<List<AppointmentDto>> GetWorkerAppointmentsAsync(Guid workerId)
         {
             var appointments = await _appointmentRepository.GetByWorkerIdAsync(workerId);
-            
+
             // Randevuların ID'lerini al
             var appointmentIds = appointments.Select(a => a.Id).ToList();
-            
+
             // Bu ID'lere ait yorumları getir
             var reviews = await _reviewRepository.GetByAppointmentIdsAsync(appointmentIds);
-            
+
             return appointments.Select(a => new AppointmentDto
             {
                 Id = a.Id,
@@ -135,4 +141,4 @@ namespace Booknix.Application.Services
             }).ToList();
         }
     }
-} 
+}

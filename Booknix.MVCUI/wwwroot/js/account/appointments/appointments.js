@@ -17,13 +17,13 @@ $(document).off("click", ".cancel-appointment").on("click", ".cancel-appointment
 // Randevu iptal modalından iptal işlemini başlat
 $(document).off("click", "#confirm-cancel-yes").on("click", "#confirm-cancel-yes", function () {
     const appointmentId = $(this).data("id");
-    
+
     // Modalı kapat
     $("#confirm-cancel-modal").removeClass("flex").addClass("hidden");
-    
+
     // CSRF token al (sayfada form varsa)
     const csrfToken = $('input[name="__RequestVerificationToken"]').val();
-    
+
     // İptal AJAX isteği
     $.ajax({
         type: "POST",
@@ -34,8 +34,8 @@ $(document).off("click", "#confirm-cancel-yes").on("click", "#confirm-cancel-yes
         success: function (response) {
             // Randevu listesini yeniden yükle
             $.get("/Account/Appointments", function (html) {
-                $("#appointments-content").html(html);
-                
+                $("#account-loader").html(html);
+
                 // Başarılı bildirim ekle
                 const alertHtml = `
                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
@@ -50,10 +50,10 @@ $(document).off("click", "#confirm-cancel-yes").on("click", "#confirm-cancel-yes
                     </div>
                 `;
                 $("#appointments-content").prepend(alertHtml);
-                
+
                 // 5 saniye sonra bildirimi kaldır
-                setTimeout(function() {
-                    $("#appointments-content .bg-green-100").fadeOut("slow", function() {
+                setTimeout(function () {
+                    $("#appointments-content .bg-green-100").fadeOut("slow", function () {
                         $(this).remove();
                     });
                 }, 5000);
@@ -67,7 +67,7 @@ $(document).off("click", "#confirm-cancel-yes").on("click", "#confirm-cancel-yes
 });
 
 // İptal modalını kapat
-$(document).off("click", "#confirm-cancel-no").on("click", "#confirm-cancel-no", function() {
+$(document).off("click", "#confirm-cancel-no").on("click", "#confirm-cancel-no", function () {
     $("#confirm-cancel-modal").removeClass("flex").addClass("hidden");
 });
 
@@ -93,19 +93,19 @@ $(document).off("click", "a[data-id]").on("click", "a[data-id]:not(.cancel-appoi
 });
 
 // Detay modalından iptal et butonuna tıklama
-$(document).off("click", ".cancel-appointment-modal").on("click", ".cancel-appointment-modal", function() {
+$(document).off("click", ".cancel-appointment-modal").on("click", ".cancel-appointment-modal", function () {
     const appointmentId = $(this).data("id");
-    
+
     // Detay modalini gizle
     $("#modal-container").addClass("hidden");
-    
+
     // Konfirmasyon modalını göster
     $("#confirm-cancel-yes").data("id", appointmentId);
     $("#confirm-cancel-modal").removeClass("hidden").addClass("flex");
 });
 
 // Detay modalını kapat
-$(document).off("click", ".close-modal").on("click", ".close-modal", function() {
+$(document).off("click", ".close-modal").on("click", ".close-modal", function () {
     $("#modal-container").addClass("hidden");
 });
 
@@ -116,20 +116,20 @@ $(function () {
             $(this).remove();
         });
     }, 10000); // 10 saniye
-    
+
     // Sayfa yüklendiğinde tamamlanmış ve değerlendirilmiş randevuların yıldızlarını kontrol et
-    $(".review-appointment").each(function() {
+    $(".review-appointment").each(function () {
         const appointmentId = $(this).data("id");
         const reviewBtn = $(this);
-        
+
         // Yorum kontrolü yap
-        $.get("/Account/GetReviewByAppointment?appointmentId=" + appointmentId, function(data) {
+        $.get("/Account/GetReviewByAppointment?appointmentId=" + appointmentId, function (data) {
             if (data && data.rating > 0) {
                 const parentContainer = reviewBtn.closest('div');
-                
+
                 // Değerlendirme butonunu kaldır
                 reviewBtn.remove();
-                
+
                 // Yıldızları ekle
                 const starsHtml = `
                     <div class="flex items-center text-yellow-500 text-sm stars-container cursor-pointer" 
@@ -142,37 +142,37 @@ $(function () {
             }
         });
     });
-    
+
     // Yıldızlara tıklandığında değerlendirme modalını aç
-    $(document).off("click", ".stars-container").on("click", ".stars-container", function() {
+    $(document).off("click", ".stars-container").on("click", ".stars-container", function () {
         const appointmentId = $(this).data("id");
         const serviceId = $(this).data("service-id");
-        
+
         if (!appointmentId || !serviceId) {
             alert("Randevu veya hizmet bilgisi bulunamadı!");
             return;
         }
-        
+
         // Modal form değerlerini temizle
         $("#review-appointment-id").val(appointmentId);
         $("#review-service-id").val(serviceId);
-        $("#review-id").val(""); 
+        $("#review-id").val("");
         $("#rating-value").val(0);
         $("#review-comment").val("");
-        
+
         // Tüm yıldızları başlangıç durumuna getir
         $(".rating-star").removeClass("text-yellow-400").addClass("text-gray-300");
-        
+
         // Mevcut yorum kontrolü
-        $.get("/Account/GetReviewByAppointment?appointmentId=" + appointmentId, function(data) {
+        $.get("/Account/GetReviewByAppointment?appointmentId=" + appointmentId, function (data) {
             if (data) {
                 // Gelen bilgileri doldur
                 $("#review-id").val(data.id);
                 $("#rating-value").val(data.rating);
                 $("#review-comment").val(data.comment);
-                
+
                 // Yıldızları düzenle
-                $(".rating-star").each(function() {
+                $(".rating-star").each(function () {
                     const starRating = $(this).data("rating");
                     if (starRating <= data.rating) {
                         $(this).removeClass("text-gray-300").addClass("text-yellow-400");
@@ -181,7 +181,7 @@ $(function () {
                     }
                 });
             }
-        }).always(function() {
+        }).always(function () {
             // Modalı her durumda göster
             $("#review-modal").removeClass("hidden").addClass("flex");
         });
@@ -189,9 +189,9 @@ $(function () {
 });
 
 // Değerlendirme modalını aç
-$(document).off("click", ".review-appointment").on("click", ".review-appointment", function(e) {
+$(document).off("click", ".review-appointment").on("click", ".review-appointment", function (e) {
     e.preventDefault();
-    
+
     const appointmentId = $(this).data("id");
     const serviceId = $(this).data("service-id");
 
@@ -203,15 +203,15 @@ $(document).off("click", ".review-appointment").on("click", ".review-appointment
     // Modal form değerlerini temizle
     $("#review-appointment-id").val(appointmentId);
     $("#review-service-id").val(serviceId);
-    $("#review-id").val(""); 
+    $("#review-id").val("");
     $("#rating-value").val(0);
     $("#review-comment").val("");
-    
+
     // Tüm yıldızları başlangıç durumuna getir
     $(".rating-star").removeClass("text-yellow-400").addClass("text-gray-300");
 
     // Mevcut yorum kontrolü
-    $.get("/Account/GetReviewByAppointment?appointmentId=" + appointmentId, function(data) {
+    $.get("/Account/GetReviewByAppointment?appointmentId=" + appointmentId, function (data) {
         if (data) {
             // Gelen bilgileri doldur
             $("#review-id").val(data.id);
@@ -219,7 +219,7 @@ $(document).off("click", ".review-appointment").on("click", ".review-appointment
             $("#review-comment").val(data.comment);
 
             // Yıldızları düzenle
-            $(".rating-star").each(function() {
+            $(".rating-star").each(function () {
                 const starRating = $(this).data("rating");
                 if (starRating <= data.rating) {
                     $(this).removeClass("text-gray-300").addClass("text-yellow-400");
@@ -231,27 +231,27 @@ $(document).off("click", ".review-appointment").on("click", ".review-appointment
             // Eğer zaten değerlendirme yapılmışsa butonu kaldır
             $(".review-appointment[data-id='" + appointmentId + "']").remove();
         }
-    }).always(function() {
+    }).always(function () {
         // Modalı her durumda göster
         $("#review-modal").removeClass("hidden").addClass("flex");
     });
 });
 
 // Değerlendirme modalını kapat
-$(document).off("click", "#close-review-modal").on("click", "#close-review-modal", function() {
+$(document).off("click", "#close-review-modal").on("click", "#close-review-modal", function () {
     $("#review-modal").removeClass("flex").addClass("hidden");
 });
 
 // Yıldız değerlendirmeleri
-$(document).off("click", ".rating-star").on("click", ".rating-star", function() {
+$(document).off("click", ".rating-star").on("click", ".rating-star", function () {
     const rating = $(this).data("rating");
     $("#rating-value").val(rating);
-    
+
     // Tüm yıldızları sıfırla
     $(".rating-star").removeClass("text-yellow-400").addClass("text-gray-300");
-    
+
     // Seçilen yıldıza kadar olanları renklendir
-    $(".rating-star").each(function() {
+    $(".rating-star").each(function () {
         if ($(this).data("rating") <= rating) {
             $(this).removeClass("text-gray-300").addClass("text-yellow-400");
         }
@@ -259,18 +259,18 @@ $(document).off("click", ".rating-star").on("click", ".rating-star", function() 
 });
 
 // Değerlendirme gönder
-$(document).off("submit", "#review-form").on("submit", "#review-form", function(e) {
+$(document).off("submit", "#review-form").on("submit", "#review-form", function (e) {
     e.preventDefault();
-    
+
     const rating = $("#rating-value").val();
     if (rating < 1) {
         alert("Lütfen bir değerlendirme puanı seçin.");
         return;
     }
-    
+
     const csrfToken = $('input[name="__RequestVerificationToken"]').val();
     const formData = $(this).serialize();
-    
+
     $.ajax({
         type: "POST",
         url: "/Account/CreateReview",
@@ -278,10 +278,10 @@ $(document).off("submit", "#review-form").on("submit", "#review-form", function(
         headers: {
             "RequestVerificationToken": csrfToken
         },
-        success: function(response) {
+        success: function (response) {
             // Modalı kapat
             $("#review-modal").removeClass("flex").addClass("hidden");
-            
+
             // Başarılı mesajı göster
             const alertHtml = `
                 <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-100 border border-green-300 flex items-center gap-3" role="alert">
@@ -289,26 +289,26 @@ $(document).off("submit", "#review-form").on("submit", "#review-form", function(
                     <span>${response}</span>
                 </div>
             `;
-            
+
             $(".space-y-4").prepend(alertHtml);
-            
+
             // 5 saniye sonra bildirimi kaldır
-            setTimeout(function() {
-                $(".bg-green-100").fadeOut("slow", function() {
+            setTimeout(function () {
+                $(".bg-green-100").fadeOut("slow", function () {
                     $(this).remove();
                 });
             }, 5000);
-            
+
             // Değerlendir butonunu bulup yerine yıldızları koy
             const appointmentId = $("#review-appointment-id").val();
             const ratingValue = parseInt($("#rating-value").val());
             const serviceId = $("#review-service-id").val();
             const reviewButton = $(`.review-appointment[data-id='${appointmentId}']`);
             const parentContainer = reviewButton.closest('div');
-            
+
             // Değerlendirme butonunu kaldır
             reviewButton.remove();
-            
+
             // Yıldızları ekle - _AppointmentsPartial.cshtml dosyasındaki görünümle aynı
             const starsHtml = `
                 <div class="flex items-center text-yellow-500 text-sm stars-container cursor-pointer" 
@@ -319,7 +319,7 @@ $(document).off("submit", "#review-form").on("submit", "#review-form", function(
             `;
             parentContainer.append(starsHtml);
         },
-        error: function(xhr) {
+        error: function (xhr) {
             const errorMsg = xhr.responseText || "Değerlendirme gönderilirken bir hata oluştu.";
             alert(errorMsg);
         }

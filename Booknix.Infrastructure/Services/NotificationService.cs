@@ -1,5 +1,6 @@
 ﻿using Booknix.Application.Interfaces;
 using Booknix.Domain.Entities;
+using Booknix.Domain.Entities.Enums;
 using Booknix.Domain.Interfaces;
 using Booknix.Infrastructure.Interfaces;
 
@@ -47,7 +48,7 @@ namespace Booknix.Application.Services
         }
 
 
-        public async Task AddNotificationAsync(Guid userId, string title, string message)
+        public async Task AddNotificationAsync(Guid userId, string title, string message, NotificationType type = NotificationType.Info)
         {
             var notification = new Notification
             {
@@ -55,7 +56,7 @@ namespace Booknix.Application.Services
                 UserId = userId,
                 Title = title,
                 Message = message,
-                CreatedAt = DateTime.UtcNow
+                Type = type,
             };
 
             await _notificationRepo.AddNotificationAsync(notification);
@@ -66,8 +67,10 @@ namespace Booknix.Application.Services
                 notification.Id,
                 notification.Title,
                 notification.Message,
+                notification.Type,
                 CreatedAt = notification.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")
             });
         }
+
     }
 }
