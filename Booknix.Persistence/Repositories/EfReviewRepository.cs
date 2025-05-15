@@ -128,5 +128,16 @@ namespace Booknix.Persistence.Repositories
 
             return (count, avgRating);
         }
+
+        public async Task<List<Review>> GetReviewsByLocationAsync(Guid locationId)
+        {
+            return await _context.Reviews
+                .Include(r => r.User)
+                .Include(r => r.Service)
+                    .ThenInclude(s => s.Location)
+                .Where(r => r.Service.LocationId == locationId)
+                .ToListAsync();
+        }
+
     }
 }

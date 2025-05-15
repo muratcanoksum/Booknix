@@ -19,16 +19,16 @@ $(document)
     // Status değeri için doğru Türkçe metni göster
     const statusText =
       status === "Approved"
-        ? "Onaylamak"
+        ? "onaylamak"
         : status === "Completed"
-        ? "Tamamlamak"
+        ? "tamamlamak"
         : status === "NoShow"
-        ? "Gelmedi olarak işaretlemek"
+        ? "gelmedi olarak işaretlemek"
         : status === "Cancelled"
-        ? "İptal etmek"
-        : "Güncellemek";
+        ? "iptal etmek"
+        : "güncellemek";
 
-    $("#status-Aaction-text").text(statusText);
+    $("#status-action-text").text(statusText);
     $("#confirm-status-modal").removeClass("hidden").addClass("flex");
   });
 
@@ -48,7 +48,7 @@ $(document)
     // Güncelleme AJAX isteği
     $.ajax({
       type: "POST",
-      url: "/Worker/UpdateAppointmentStatus",
+      url: "/LocationAdmin/UpdateAppointmentStatus",
       data: {
         appointmentId: appointmentId,
         status: status,
@@ -58,8 +58,31 @@ $(document)
       },
       success: function (response) {
         if (response && response.success) {
-          // Başarılı ise sayfayı yenile
-          location.reload();
+          // Başarılı ise sayfayı yenile veya dinamik güncelle
+          // Burada sadece ilgili sekmeyi yeniden yükleyebiliriz
+          const locationId = $("#location-meta").data("location-id");
+          $.get(
+            `/LocationAdmin/GetWorkerAppointmentsWithReviews/${locationId}`,
+            function (html) {
+              $("#location-operation-panel").html(html);
+            }
+          );
+
+          // Başarı mesajı göster
+          const successHtml = `
+                <div id="success-message" class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-100 border border-green-300 flex items-center gap-3" role="alert">
+                    <i class="fas fa-check-circle text-green-600 text-lg"></i>
+                    <span>Randevu durumu başarıyla güncellendi.</span>
+                </div>`;
+
+          $("#location-operation-panel").prepend(successHtml);
+
+          // 10 saniye sonra mesajı kaybet
+          setTimeout(function () {
+            $("#success-message").fadeOut("slow", function () {
+              $(this).remove();
+            });
+          }, 10000);
         } else {
           const errorMsg =
             response && response.message
@@ -86,15 +109,6 @@ $(document)
     $("#confirm-status-modal").removeClass("flex").addClass("hidden");
   });
 
-// Başarı mesajlarını 10 saniye sonra kaybet
-$(function () {
-  setTimeout(function () {
-    $("#success-message").fadeOut("slow", function () {
-      $(this).remove();
-    });
-  }, 10000); // 10 saniye
-});
-
 // Değerlendirme detayını göstermek için tıklama olayı
 $(document)
   .off("click", ".review-box")
@@ -104,20 +118,16 @@ $(document)
 
     // Doğrudan eleman üzerinden appointmentId'yi al
     let appointmentId = $(this).data("appointment-id");
-    console.log("Tıklanan eleman data-appointment-id:", appointmentId);
 
     if (!appointmentId) {
       console.error("appointmentId bulunamadı!");
       return;
     }
 
-    console.log("Kullanılacak appointmentId:", appointmentId);
-
     // AJAX isteği ile değerlendirme bilgilerini getir
     $.get(
-      "/Worker/GetAppointmentReview?appointmentId=" + appointmentId,
+      "/LocationAdmin/GetAppointmentReview?appointmentId=" + appointmentId,
       function (response) {
-        console.log("API Yanıtı:", response);
         if (response && response.success) {
           const data = response.data;
 
@@ -134,8 +144,6 @@ $(document)
           let date = data.createdAt
             ? new Date(data.createdAt).toLocaleDateString()
             : "";
-
-          console.log("Değerlendirme detayları:", data);
 
           // Modal içeriğini oluştur
           const stars = Array(rating)
@@ -199,7 +207,6 @@ $(document)
       }
     ).fail(function (xhr, status, error) {
       console.error("AJAX Error:", status, error);
-      console.error("Response:", xhr.responseText);
       const response = xhr.responseJSON;
       const errorMsg =
         response && response.message

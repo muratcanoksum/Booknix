@@ -19,5 +19,8 @@ namespace Booknix.Application.Interfaces
         Task<Result<ReviewDto>> GetUserReviewAsync(Guid userId, Guid serviceId);
         Task<Result<ReviewDto>> GetUserReviewByAppointmentIdAsync(Guid userId, Guid appointmentId);
         Task<ReviewDto> GetReviewByAppointmentIdAsync(Guid appointmentId);
+
+        Task<List<ReviewDto>> GetReviewsByLocationAsync(Guid locationId);
+
     }
-} 
+}

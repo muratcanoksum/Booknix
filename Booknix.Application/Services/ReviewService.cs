@@ -168,5 +168,23 @@ namespace Booknix.Application.Services
 
             return MapToDto(review);
         }
+
+        public async Task<List<ReviewDto>> GetReviewsByLocationAsync(Guid locationId)
+        {
+            var reviews = await _reviewRepository.GetReviewsByLocationAsync(locationId);
+
+            return reviews.Select(r => new ReviewDto
+            {
+                Id = r.Id,
+                UserId = r.UserId,
+                ServiceId = r.ServiceId,
+                Rating = r.Rating,
+                Comment = r.Comment,
+                CreatedAt = r.CreatedAt,
+                UserName = r.User?.FullName ?? "Belirtilmemiş",
+                ServiceName = r.Service?.Name ?? "Belirtilmemiş"
+            }).ToList();
+        }
+
     }
 }

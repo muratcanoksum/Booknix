@@ -14,4 +14,8 @@ public interface IAppointmentRepository
     Task DeleteAsync(Guid id);
     Task<List<Appointment>> GetByUserIdAsync(Guid userId);
     Task<Appointment?> GetByIdWithDetailsAsync(Guid id);
+
+
+    Task<List<Appointment>> GetAppointmentsByLocationAsync(Guid locationId);
+
 }

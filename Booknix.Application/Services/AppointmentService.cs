@@ -140,5 +140,69 @@ namespace Booknix.Application.Services
                 ReviewRating = reviews.FirstOrDefault(r => r.AppointmentId == a.Id)?.Rating
             }).ToList();
         }
+
+        public async Task<List<AppointmentDto>> GetAppointmentsByLocationAsync(Guid locationId)
+        {
+            var appointments = await _appointmentRepository.GetAppointmentsByLocationAsync(locationId);
+
+            return appointments.Select(a => new AppointmentDto
+            {
+                Id = a.Id,
+                AppointmentDate = a.AppointmentSlot?.StartTime.Date ?? DateTime.MinValue,
+                StartTime = a.AppointmentSlot?.StartTime.ToString(@"hh\:mm") ?? string.Empty,
+                EndTime = a.AppointmentSlot?.EndTime.ToString(@"hh\:mm") ?? string.Empty,
+                LocationName = a.Service?.Location?.Name ?? string.Empty,
+                WorkerName = a.AppointmentSlot?.AssignerWorker?.User?.FullName ?? "Belirtilmemiş",
+                UserName = a.User?.FullName ?? "Belirtilmemiş",
+                Status = a.Status,
+                ServiceName = a.Service?.Name ?? string.Empty,
+                ServiceId = a.ServiceId,
+                ReviewRating = a.Review?.Rating
+            }).ToList();
+        }
+
+        public async Task<bool> UpdateAppointmentStatusAsync(Guid appointmentId, AppointmentStatus status)
+        {
+            var appointment = await _appointmentRepository.GetByIdWithDetailsAsync(appointmentId);
+            if (appointment == null)
+            {
+                return false;
+            }
+
+            appointment.Status = status;
+            await _appointmentRepository.UpdateAsync(appointment);
+
+            // Bildirim gönder
+            string statusMessage = status switch
+            {
+                AppointmentStatus.Approved => "onaylandı",
+                AppointmentStatus.Completed => "tamamlandı",
+                AppointmentStatus.Cancelled => "iptal edildi",
+                AppointmentStatus.NoShow => "gelmedi olarak işaretlendi",
+                _ => "güncellendi"
+            };
+
+            string serviceName = appointment.Service?.Name ?? "Randevu";
+            DateTime appointmentDate = appointment.AppointmentSlot?.StartTime ?? DateTime.MinValue;
+            string dateStr = appointmentDate.ToString("dd.MM.yyyy HH:mm");
+
+            var notificationType = status switch
+            {
+                AppointmentStatus.Approved => NotificationType.Success,
+                AppointmentStatus.Completed => NotificationType.Success,
+                AppointmentStatus.Cancelled => NotificationType.Info,
+                AppointmentStatus.NoShow => NotificationType.Info,
+                _ => NotificationType.Info
+            };
+
+            await _notificationService.AddNotificationAsync(
+                appointment.UserId,
+                $"Randevu {statusMessage}",
+                $"'{serviceName}' hizmeti için {dateStr} tarihindeki randevunuz lokasyon yöneticisi tarafından {statusMessage}.",
+                notificationType
+            );
+
+            return true;
+        }
     }
 }

@@ -55,3 +55,18 @@ $(function () {
         $(`.operation-tab[data-tag="${hash}"]`).trigger("click");
     }
 });
+
+
+// Tab tıklama yakalama
+$(document).on("click", ".operation-tab", function () {
+    var url = $(this).data("url");
+    if (!url) return;
+
+    $("#location-operation-loader").removeClass("hidden");
+    $("#location-operation-panel").html("");
+
+    $.get(url, function (response) {
+        $("#location-operation-loader").addClass("hidden");
+        $("#location-operation-panel").html(response);
+    });
+});

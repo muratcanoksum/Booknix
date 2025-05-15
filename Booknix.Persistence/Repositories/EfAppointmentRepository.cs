@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Booknix.Domain.Entities;
+﻿using Booknix.Domain.Entities;
+using Booknix.Domain.Entities.Enums;
 using Booknix.Domain.Interfaces;
 using Booknix.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Booknix.Persistence.Repositories;
 
@@ -20,7 +21,14 @@ public class EfAppointmentRepository : IAppointmentRepository
 
     public async Task<List<Appointment>> GetAllAsync()
     {
-        return await _context.Appointments.ToListAsync();
+        return await _context.Appointments
+            .Include(a => a.AppointmentSlot)
+                .ThenInclude(slot => slot.AssignerWorker)
+                    .ThenInclude(worker => worker.User)
+            .Include(a => a.Service)
+                .ThenInclude(service => service.Location)
+            .Include(a => a.User)
+            .ToListAsync();
     }
 
     public List<Appointment> GetByWorkerBetweenDates(Guid workerId, DateTime start, DateTime end)
@@ -103,4 +111,32 @@ public class EfAppointmentRepository : IAppointmentRepository
             .OrderByDescending(a => a.AppointmentSlot.StartTime)
             .ToListAsync();
     }
+
+    public async Task<List<Review>> GetReviewsByLocationAsync(Guid locationId)
+    {
+        return await _context.Reviews
+            .Include(r => r.User)
+            .Include(r => r.Service)
+            .Where(r => r.Service.LocationId == locationId)
+            .ToListAsync();
+    }
+
+    public async Task<List<Appointment>> GetAppointmentsByLocationAsync(Guid locationId)
+    {
+        return await _context.Appointments
+            .Include(a => a.AppointmentSlot)
+                .ThenInclude(slot => slot.AssignerWorker)
+                    .ThenInclude(worker => worker.User)
+            .Include(a => a.User)
+            .Include(a => a.Service)
+                .ThenInclude(s => s.Location)
+            .Include(a => a.Review)
+            .Where(a => a.Service.LocationId == locationId)
+            .OrderBy(a => a.Status == Domain.Entities.Enums.AppointmentStatus.Pending ? 0 : 1)
+            .ThenByDescending(a => a.AppointmentSlot.StartTime)
+            .ToListAsync();
+    }
+
+
+
 }

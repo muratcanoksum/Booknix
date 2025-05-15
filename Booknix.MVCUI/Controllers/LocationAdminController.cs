@@ -8,9 +8,11 @@ namespace Booknix.MVCUI.Controllers
 {
     [LocationAdmin]
     [Route("panel/location")]
-    public class LocationAdminController(ILocationService locationService) : Controller
+    public class LocationAdminController(ILocationService locationService, IReviewService reviewService, IAppointmentService appointmentService) : Controller
     {
         private readonly ILocationService _locationService = locationService;
+        private readonly IAppointmentService _appointmentService = appointmentService;
+        private readonly IReviewService _reviewService = reviewService;
 
 
         [HttpGet()]
@@ -221,5 +223,74 @@ namespace Booknix.MVCUI.Controllers
 
             return Ok(result.Message);
         }
+
+
+        [HttpGet]
+        [AjaxOnly]
+        [Route("/LocationAdmin/GetWorkerAppointmentsWithReviews/{locationId}")]
+        public async Task<IActionResult> GetWorkerAppointmentsWithReviews(Guid locationId)
+        {
+            var appointments = await _appointmentService.GetAppointmentsByLocationAsync(locationId);
+            var reviews = await _reviewService.GetReviewsByLocationAsync(locationId);
+
+            var model = new
+            {
+                Appointments = appointments,
+                Reviews = reviews
+            };
+
+            return PartialView("~/Views/Location/Sections/_WorkerAppointmentsWithReviewsPartial.cshtml", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("/LocationAdmin/UpdateAppointmentStatus")]
+        public async Task<IActionResult> UpdateAppointmentStatus(Guid appointmentId, string status)
+        {
+            if (!Enum.TryParse<Booknix.Domain.Entities.Enums.AppointmentStatus>(status, out var appointmentStatus))
+            {
+                return BadRequest(new { success = false, message = "Geçersiz randevu durumu." });
+            }
+
+            try
+            {
+                var result = await _appointmentService.UpdateAppointmentStatusAsync(appointmentId, appointmentStatus);
+                if (result)
+                {
+                    return Ok(new { success = true, message = "Randevu durumu başarıyla güncellendi." });
+                }
+                else
+                {
+                    return BadRequest(new { success = false, message = "Randevu durumu güncellenirken bir hata oluştu." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = $"Hata: {ex.Message}" });
+            }
+        }
+
+        [HttpGet]
+        [Route("/LocationAdmin/GetAppointmentReview")]
+        public async Task<IActionResult> GetAppointmentReview(Guid appointmentId)
+        {
+            try
+            {
+                var review = await _reviewService.GetReviewByAppointmentIdAsync(appointmentId);
+                if (review != null)
+                {
+                    return Ok(new { success = true, data = review });
+                }
+                else
+                {
+                    return NotFound(new { success = false, message = "Belirtilen randevu için değerlendirme bulunamadı." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = $"Hata: {ex.Message}" });
+            }
+        }
+
     }
 }

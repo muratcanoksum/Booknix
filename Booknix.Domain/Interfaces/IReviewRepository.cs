@@ -14,6 +14,9 @@ namespace Booknix.Domain.Interfaces
         Task<Review?> GetByAppointmentIdAsync(Guid appointmentId);
         Task<(int Count, double AverageRating)> GetWorkerReviewStatsAsync(Guid workerId);
 
+        Task<List<Review>> GetReviewsByLocationAsync(Guid locationId);
+
+
         Task AddAsync(Review review);
         Task UpdateAsync(Review review);
         Task DeleteAsync(Guid id);

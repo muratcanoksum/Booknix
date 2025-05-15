@@ -1,22 +1,25 @@
+using Booknix.Application.DTOs;
+using Booknix.Application.Interfaces;
+using Booknix.Application.Services;
+using Booknix.Domain.Entities;
+using Booknix.Domain.Entities.Enums;
+using Booknix.Domain.Interfaces;
+using Booknix.Infrastructure.Filters;
+using Booknix.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Booknix.Infrastructure.Filters;
-using Booknix.Application.Interfaces;
-using Booknix.Application.DTOs;
-using Booknix.Domain.Interfaces;
-using Booknix.Domain.Entities;
-using Booknix.Persistence.Repositories;
-using Booknix.Domain.Entities.Enums;
 
 namespace Booknix.MVCUI.Controllers;
 
 [Admin]
-public class AdminController(IAdminService adminService, IUserRepository userRepository, IRoleRepository roleRepository, IUserSessionRepository userSessionRepository) : Controller
+public class AdminController(IAdminService adminService, IUserRepository userRepository, IRoleRepository roleRepository, IUserSessionRepository userSessionRepository, IReviewService reviewService, IAppointmentService appointmentService) : Controller
 {
     private readonly IAdminService _adminService = adminService;
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IRoleRepository _roleRepository = roleRepository;
     private readonly IUserSessionRepository _userSessionRepo = userSessionRepository;
+    private readonly IAppointmentService _appointmentService = appointmentService;
+    private readonly IReviewService _reviewService = reviewService;
 
     [HttpGet]
     public IActionResult Index()
@@ -497,6 +500,78 @@ public class AdminController(IAdminService adminService, IUserRepository userRep
 
         return Ok(result.Message);
     }
+
+
+
+
+    [HttpGet]
+    [AjaxOnly]
+    [Route("/Admin/Location/GetWorkerAppointmentsWithReviews/{locationId}")]
+    public async Task<IActionResult> GetWorkerAppointmentsWithReviews(Guid locationId)
+    {
+        var appointments = await _appointmentService.GetAppointmentsByLocationAsync(locationId);
+        var reviews = await _reviewService.GetReviewsByLocationAsync(locationId);
+
+        var model = new
+        {
+            Appointments = appointments,
+            Reviews = reviews
+        };
+
+        return PartialView("~/Views/Location/Sections/_WorkerAppointmentsWithReviewsPartial.cshtml", model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("/Admin/Location/UpdateAppointmentStatus")]
+    public async Task<IActionResult> UpdateAppointmentStatus(Guid appointmentId, string status)
+    {
+        if (!Enum.TryParse<Booknix.Domain.Entities.Enums.AppointmentStatus>(status, out var appointmentStatus))
+        {
+            return BadRequest(new { success = false, message = "Geçersiz randevu durumu." });
+        }
+
+        try
+        {
+            var result = await _appointmentService.UpdateAppointmentStatusAsync(appointmentId, appointmentStatus);
+            if (result)
+            {
+                return Ok(new { success = true, message = "Randevu durumu başarıyla güncellendi." });
+            }
+            else
+            {
+                return BadRequest(new { success = false, message = "Randevu durumu güncellenirken bir hata oluştu." });
+            }
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { success = false, message = $"Hata: {ex.Message}" });
+        }
+    }
+
+    [HttpGet]
+    [Route("/Admin/Location/GetAppointmentReview")]
+    public async Task<IActionResult> GetAppointmentReview(Guid appointmentId)
+    {
+        try
+        {
+            var review = await _reviewService.GetReviewByAppointmentIdAsync(appointmentId);
+            if (review != null)
+            {
+                return Ok(new { success = true, data = review });
+            }
+            else
+            {
+                return NotFound(new { success = false, message = "Belirtilen randevu için değerlendirme bulunamadı." });
+            }
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { success = false, message = $"Hata: {ex.Message}" });
+        }
+    }
+
+
 
     // Email Queueu
 

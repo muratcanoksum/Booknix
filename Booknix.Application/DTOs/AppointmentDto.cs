@@ -6,6 +6,7 @@ namespace Booknix.Application.DTOs
     public class AppointmentDto
     {
         public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         public DateTime AppointmentDate { get; set; }
         public string StartTime { get; set; } = string.Empty;
         public string EndTime { get; set; } = string.Empty;
@@ -18,4 +19,4 @@ namespace Booknix.Application.DTOs
         public int? ReviewRating { get; set; }
 
     }
-} 
+}
