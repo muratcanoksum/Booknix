@@ -1,6 +1,25 @@
 # Booknix
 
+## 📑 İçindekiler
+
+- [Demo Site](#demo-site)
+- [🚀 Özellikler](#ozellikler)
+- [🏗️ Proje Yapısı](#proje-yapisi)
+- [🛠️ Teknoloji Altyapısı](#teknoloji-altyapisi)
+- [📋 Gereksinimler](#gereksinimler)
+- [🔧 Ortam Kurulumu](#ortam-kurulumu)
+- [🚀 Başlangıç](#baslangic)
+- [🔐 Güvenlik Özellikleri](#guvenlik-ozellikleri)
+- [📧 E-posta Sistemi](#e-posta-sistemi)
+- [🔄 Gerçek Zamanlı Özellikler](#gercek-zamanli-ozellikler)
+- [📱 Kullanıcı Arayüzü](#kullanici-arayuzu)
+- [📸 Ekran Görüntüleri](#ekran-goruntuleri)
+- [📝 Lisans](#lisans)
+- [🤝 Katkıda Bulunma](#katkida-bulunma)
+
 Booknix, .NET 8.0 ile geliştirilmiş modern bir randevu planlama ve hizmet yönetim sistemidir. Temiz mimari yaklaşımıyla randevuları, hizmetleri ve lokasyonları yönetmek için kapsamlı bir çözüm sunar.
+
+## Demo Site
 
 🌐 **Demo Site:** [https://booknix.ismailparlak.com](https://booknix.ismailparlak.com)
 
@@ -114,7 +133,60 @@ Uygulama, aşağıdaki özelliklere sahip sağlam bir e-posta sistemi içerir:
 
 ## 📸 Ekran Görüntüleri
 
-> Ekran görüntüleri yakında eklenecektir.
+### Kullanıcı Arayüzü
+
+#### Ana Sayfa
+
+- **Kategoriler**  
+  ![Kategoriler](https://github.com/user-attachments/assets/02f145a4-3bd7-47f6-8997-7ae3b7f0a6dc)
+- **Popüler Hizmetler**  
+  ![Popüler Hizmetler](https://github.com/user-attachments/assets/4c74c018-9878-4d70-8979-dd4466116c19)
+
+#### Lokasyon ve Hizmetler
+
+- **Kuaför Lokasyonları**  
+  ![Kuaför Lokasyonları](https://github.com/user-attachments/assets/2794ef54-8ab7-4f91-843d-0363b525c2f1)
+- **Kuaför Şubesi – Hizmetler**  
+  ![Kuaför Şubesi](https://github.com/user-attachments/assets/f654b9ed-131e-4ca6-8fe4-51f3690ef1db)
+
+#### Kullanıcı İşlemleri
+
+- **Giriş Ekranı**  
+  ![Giriş](https://github.com/user-attachments/assets/cdd8bd84-eeb5-4dcd-8475-ab089e18905e)
+- **Saç Kesimi Detayı – Çalışanlar**  
+  ![Çalışanlar](https://github.com/user-attachments/assets/c30ab9cc-f64e-4ef0-9d4e-a0987da87481)
+- **Randevu Slot Seçimi**  
+  ![Randevu](https://github.com/user-attachments/assets/627bccc7-c224-472a-89e2-1205dcdff7d7)
+- **Randevularım Sayfası**  
+  ![Randevularım](https://github.com/user-attachments/assets/31a14670-ee40-4cfd-8f15-ee28d4895694)
+- **Güvenlik Kaydı**  
+  ![Güvenlik](https://github.com/user-attachments/assets/7764c563-b6bf-4e35-9617-9031d2dacec2)
+- **Profil Ayarları**  
+  ![Profil](https://github.com/user-attachments/assets/d9010450-ff54-4f7f-a41c-747daf3301ab)
+
+### Yönetim Panelleri
+
+#### Admin Paneli
+
+- **Ana Sayfa**  
+  ![Admin Ana Sayfa](https://github.com/user-attachments/assets/af274370-cb10-42fa-a3e0-58ca4e8e13a7)
+- **Kullanıcı Yönetimi**  
+  ![Kullanıcı Yönetimi](https://github.com/user-attachments/assets/44c1ef4c-e714-427f-86f2-cbc393dca760)
+- **E-Posta Kuyruğu**  
+  ![E-Posta Kuyruğu](https://github.com/user-attachments/assets/c83db227-942f-4139-b88c-1b587e642b11)
+- **Lokasyon Detayları**  
+  ![Lokasyon Detayları](https://github.com/user-attachments/assets/4e284e60-6411-4a46-b7f7-18d10e54ed41)
+- **Çalışanlar**  
+  ![Çalışanlar](https://github.com/user-attachments/assets/d1c4bdf5-b238-48c5-aa75-b1f7681fb1b1)
+- **Çalışma Saatleri**  
+  ![Çalışma Saatleri](https://github.com/user-attachments/assets/ba9131b3-a114-46bf-a183-2fb3d82e7c56)
+- **Randevular & Yorumlar**  
+  ![Randevular](https://github.com/user-attachments/assets/3fed9444-4100-47c7-b815-74ff7ecc2fd3)
+
+#### Çalışan Paneli
+
+- **Ana Sayfa**  
+  ![Çalışan Paneli](https://github.com/user-attachments/assets/80c067e9-d3cd-4cee-aac1-bd40abfbed74)
 
 ## 📝 Lisans
 
