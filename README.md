@@ -3,27 +3,27 @@
 ## 📑 İçindekiler
 
 - [Demo Site](#demo-site)
-- [🚀 Özellikler](#ozellikler)
-- [🏗️ Proje Yapısı](#proje-yapisi)
-- [🛠️ Teknoloji Altyapısı](#teknoloji-altyapisi)
-- [📋 Gereksinimler](#gereksinimler)
-- [🔧 Ortam Kurulumu](#ortam-kurulumu)
-- [🚀 Başlangıç](#baslangic)
-- [🔐 Güvenlik Özellikleri](#guvenlik-ozellikleri)
-- [📧 E-posta Sistemi](#e-posta-sistemi)
-- [🔄 Gerçek Zamanlı Özellikler](#gercek-zamanli-ozellikler)
-- [📱 Kullanıcı Arayüzü](#kullanici-arayuzu)
-- [📸 Ekran Görüntüleri](#ekran-goruntuleri)
-- [📝 Lisans](#lisans)
-- [🤝 Katkıda Bulunma](#katkida-bulunma)
+- [Özellikler](#özellikler)
+- [Proje Yapısı](#proje-yapısı)
+- [Teknoloji Altyapısı](#teknoloji-altyapısı)
+- [Gereksinimler](#gereksinimler)
+- [Ortam Kurulumu](#ortam-kurulumu)
+- [Başlangıç](#başlangıç)
+- [Güvenlik Özellikleri](#güvenlik-özellikleri)
+- [E-posta Sistemi](#e-posta-sistemi)
+- [Gerçek Zamanlı Özellikler](#gerçek-zamanlı-özellikler)
+- [Kullanıcı Arayüzü](#kullanıcı-arayüzü)
+- [Ekran Görüntüleri](#ekran-görüntüleri)
+- [Lisans](#lisans)
+- [Katkıda Bulunma](#katkıda-bulunma)
 
-Booknix, .NET 8.0 ile geliştirilmiş modern bir randevu planlama ve hizmet yönetim sistemidir. Temiz mimari yaklaşımıyla randevuları, hizmetleri ve lokasyonları yönetmek için kapsamlı bir çözüm sunar.
+Booknix, .NET 8.0 ile geliştirilmiş modern bir randevu planlama ve hizmet yönetim sistemi. Temiz mimari yaklaşımıyla randevuları, hizmetleri ve lokasyonları yönetmek için kapsamlı bir çözüm sunar.
 
 ## Demo Site
 
 🌐 **Demo Site:** [https://booknix.ismailparlak.com](https://booknix.ismailparlak.com)
 
-## 🚀 Özellikler
+## Özellikler
 
 - Kullanıcı kimlik doğrulama ve yetkilendirme
 - Randevu planlama sistemi
@@ -35,7 +35,7 @@ Booknix, .NET 8.0 ile geliştirilmiş modern bir randevu planlama ve hizmet yön
 - Sektör bazlı organizasyon
 - Modern tasarımlı duyarlı kullanıcı arayüzü
 
-## 🏗️ Proje Yapısı
+## Proje Yapısı
 
 Çözüm, Temiz Mimari prensiplerini takip eder ve aşağıdaki projelerden oluşur:
 
@@ -46,7 +46,7 @@ Booknix, .NET 8.0 ile geliştirilmiş modern bir randevu planlama ve hizmet yön
 - **Booknix.Persistence**: Veritabanı erişimi ve repository'ler
 - **Booknix.Shared**: Paylaşılan yardımcı programlar ve yapılandırmalar
 
-## 🛠️ Teknoloji Altyapısı
+## Teknoloji Altyapısı
 
 - .NET 8.0
 - ASP.NET Core MVC
@@ -57,13 +57,13 @@ Booknix, .NET 8.0 ile geliştirilmiş modern bir randevu planlama ve hizmet yön
 - Stil için Tailwind CSS
 - jQuery ve modern JavaScript
 
-## 📋 Gereksinimler
+## Gereksinimler
 
 - .NET 8.0 SDK
 - PostgreSQL
 - E-posta işlevselliği için SMTP sunucusu
 
-## 🔧 Ortam Kurulumu
+## Ortam Kurulumu
 
 1. Kök dizinde aşağıdaki değişkenleri içeren bir `.env` dosyası oluşturun:
 
@@ -83,7 +83,7 @@ EMAIL_HOST_PASSWORD=eposta_sifresi
 
 2. `appsettings.json` ve ortama özel ayar dosyalarını uygun değerlerle güncelleyin.
 
-## 🚀 Başlangıç
+## Başlangıç
 
 1. Depoyu klonlayın
 2. Ortam değişkenlerini ayarlayın
@@ -100,7 +100,7 @@ Uygulama şu adreslerde erişilebilir olacaktır:
 - Geliştirme: http://localhost:5122
 - Üretim: https://booknix.ismailparlak.com
 
-## 🔐 Güvenlik Özellikleri
+## Güvenlik Özellikleri
 
 - BCrypt ile güvenli şifre hashleme
 - Oturum doğrulama middleware'i
@@ -108,7 +108,7 @@ Uygulama şu adreslerde erişilebilir olacaktır:
 - Denetim günlüğü
 - Güvenilir IP yönetimi
 
-## 📧 E-posta Sistemi
+## E-posta Sistemi
 
 Uygulama, aşağıdaki özelliklere sahip sağlam bir e-posta sistemi içerir:
 
@@ -117,13 +117,13 @@ Uygulama, aşağıdaki özelliklere sahip sağlam bir e-posta sistemi içerir:
 - Geliştirme modunda e-posta yönlendirme
 - HTML e-posta şablonları
 
-## 🔄 Gerçek Zamanlı Özellikler
+## Gerçek Zamanlı Özellikler
 
 - SignalR ile gerçek zamanlı bildirimler
 - Randevular için canlı güncellemeler
 - Anlık durum değişiklikleri
 
-## 📱 Kullanıcı Arayüzü
+## Kullanıcı Arayüzü
 
 - Duyarlı tasarım
 - Tailwind CSS ile modern arayüz
@@ -131,7 +131,7 @@ Uygulama, aşağıdaki özelliklere sahip sağlam bir e-posta sistemi içerir:
 - Aşamalı geliştirme
 - Mobil uyumlu arayüz
 
-## 📸 Ekran Görüntüleri
+## Ekran Görüntüleri
 
 ### Kullanıcı Arayüzü
 
