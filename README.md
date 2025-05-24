@@ -5,23 +5,6 @@
 - [Ahmet Muratcan Öksüm](https://github.com/muratcanoksum/)
 - [İsmail Parlak](https://github.com/ismail036/)
 
-## 📑 İçindekiler
-
-- 🌐 [Demo Site](#🌐-demo-site)
-- ✨ [Özellikler](#✨-özellikler)
-- 🏗️ [Proje Yapısı](#🏗️-proje-yapısı)
-- 🛠️ [Teknoloji Altyapısı](#🛠️-teknoloji-altyapısı)
-- 📋 [Gereksinimler](#📋-gereksinimler)
-- ⚙️ [Ortam Kurulumu](#⚙️-ortam-kurulumu)
-- 🚀 [Başlangıç](#🚀-başlangıç)
-- 🔐 [Güvenlik Özellikleri](#🔐-güvenlik-özellikleri)
-- 📬 [E-posta Sistemi](#📬-e-posta-sistemi)
-- 📡 [Gerçek Zamanlı Özellikler](#📡-gerçek-zamanlı-özellikler)
-- 💻 [Kullanıcı Arayüzü](#💻-kullanıcı-arayüzü)
-- 🖼️ [Ekran Görüntüleri](#🖼️-ekran-görüntüleri)
-- 📄 [Lisans](#📄-lisans)
-- 🤝 [Katkıda Bulunma](#🤝-katkıda-bulunma)
-
 Booknix, .NET 8.0 ile geliştirilmiş modern bir randevu planlama ve hizmet yönetim sistemi. Temiz mimari yaklaşımıyla randevuları, hizmetleri ve lokasyonları yönetmek için kapsamlı bir çözüm sunar.
 
 ## 🌐 Demo Site
